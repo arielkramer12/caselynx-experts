@@ -353,9 +353,34 @@
     @keyframes spin { to { transform: rotate(360deg); } }
 
     /* ── MAP ───────────────────────────────────────── */
-    #tab-map { }
+    #tab-map { position: relative; }
     #map-wrap { height: calc(100vh - 152px); min-height: 400px; }
     #map { height: 100%; width: 100%; }
+    .map-controls {
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      background: var(--wh);
+      border: 1.5px solid var(--bdr);
+      border-radius: 8px;
+      padding: 6px 10px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .map-controls select {
+      border: none;
+      outline: none;
+      font-family: 'Open Sans', sans-serif;
+      font-size: .83rem;
+      color: var(--black);
+      background: transparent;
+      cursor: pointer;
+      min-width: 160px;
+    }
     .leaflet-popup-content-wrapper { border-radius: 8px; box-shadow: var(--shadow); font-family: 'Open Sans', sans-serif; }
     .map-popup-name { font-family: 'Cabinet Grotesk', sans-serif; font-weight: 700; font-size: .9rem; color: var(--black); }
     .map-popup-detail { font-size: .78rem; color: var(--mid); margin-top: 2px; }
@@ -527,6 +552,12 @@
 
   <!-- MAP -->
   <div id="tab-map" class="tab-panel">
+    <div class="map-controls">
+      <svg width="14" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 5h14M6 10h8M9 15h2" stroke="#A0A0A0" stroke-width="2" stroke-linecap="round"/></svg>
+      <select id="map-filter-specialty" aria-label="Filter map by specialty">
+        <option value="">All Specialties</option>
+      </select>
+    </div>
     <div id="map-wrap"><div id="map"></div></div>
   </div>
 
@@ -599,16 +630,20 @@
 // TODO: Replace with your actual Railway service URL
 const API_BASE = 'https://caselynx-email-server-production.up.railway.app';
 
-// ── SPECIALTY STYLES ──────────────────────────────────────────────
-const GROUP_LABELS = {
-  'GROUP_1': 'Surgical Specialist',
-  'GROUP_2': 'Non-Surgical Specialist',
-  'GROUP_3': 'General Practice',
+// ── SPECIALTY CONFIG ──────────────────────────────────────────────
+const SPECIALTY_LABELS = {
+  'ORTHOPEDICS':   'Orthopedics',
+  'NEUROSURGERY':  'Neurosurgery',
+  'NEUROLOGY':     'Neurology',
+  'CARDIOLOGY':    'Cardiology',
+  'DENTAL_SURGERY':'Dental Surgery',
 };
-const GROUP_COLORS = {
-  'GROUP_1': { bg: '#ECEEFA', color: '#2C39DB' },
-  'GROUP_2': { bg: '#EDFAF5', color: '#0d7a5f' },
-  'GROUP_3': { bg: '#F0F9FF', color: '#0369a1' },
+const SPECIALTY_COLORS = {
+  'ORTHOPEDICS':   { bg: '#ECEEFA', color: '#2C39DB' },
+  'NEUROSURGERY':  { bg: '#F4EFFC', color: '#6b21a8' },
+  'NEUROLOGY':     { bg: '#EDE9FE', color: '#7c3aed' },
+  'CARDIOLOGY':    { bg: '#FEE2E2', color: '#dc2626' },
+  'DENTAL_SURGERY':{ bg: '#FEF3C7', color: '#d97706' },
 };
 
 // ── HELPERS ───────────────────────────────────────────────────────
@@ -620,11 +655,18 @@ function initials(name) {
     : (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-function specialtyTag(group, keywords) {
-  const label = GROUP_LABELS[group] || 'Specialist';
-  const s = GROUP_COLORS[group] || { bg: '#f4f4f6', color: '#676767' };
-  const sub = keywords && keywords.length ? ` · ${keywords.slice(0,2).join(', ')}` : '';
-  return `<span class="specialty-tag" style="background:${s.bg};color:${s.color}">${label}${sub}</span>`;
+function specialtyTag(relationship) {
+  const label = SPECIALTY_LABELS[relationship] || 'Specialist';
+  const s = SPECIALTY_COLORS[relationship] || { bg: '#f4f4f6', color: '#676767' };
+  return `<span class="specialty-tag" style="background:${s.bg};color:${s.color}">${label}</span>`;
+}
+
+function formatKeyword(kw) {
+  return kw.split('_').map(w => w.charAt(0) + w.slice(1).toLowerCase()).join(' ');
+}
+
+function formatCounty(c) {
+  return c.split('_').map(w => w.charAt(0) + w.slice(1).toLowerCase()).join(' ');
 }
 
 function yesNo(val, label) {
@@ -761,16 +803,16 @@ async function loadRoster() {
 }
 
 function populateFilters(doctors) {
-  const groups   = [...new Set(doctors.map(d => d.feeScheduleGroup).filter(Boolean))].sort();
-  const counties = [...new Set(doctors.flatMap(d => Array.isArray(d.flCounty) ? d.flCounty : []).filter(Boolean))].sort();
-  groups.forEach(g => {
+  const specialties = [...new Set(doctors.map(d => d.relationship).filter(Boolean))].sort();
+  const counties    = [...new Set(doctors.flatMap(d => Array.isArray(d.flCounty) ? d.flCounty : []).filter(Boolean))].sort();
+  specialties.forEach(s => {
     const o = document.createElement('option');
-    o.value = g; o.textContent = GROUP_LABELS[g] || g;
+    o.value = s; o.textContent = SPECIALTY_LABELS[s] || s;
     filterSpecialty.appendChild(o);
   });
   counties.forEach(c => {
     const o = document.createElement('option');
-    o.value = c; o.textContent = c.charAt(0) + c.slice(1).toLowerCase() + ' County';
+    o.value = c; o.textContent = formatCounty(c) + ' County';
     filterCounty.appendChild(o);
   });
 }
@@ -779,10 +821,10 @@ filterSpecialty.addEventListener('change', applyFilters);
 filterCounty.addEventListener('change', applyFilters);
 
 function applyFilters() {
-  const gr = filterSpecialty.value;
+  const sp = filterSpecialty.value;
   const co = filterCounty.value;
   renderRoster(allDoctors.filter(d =>
-    (!gr || d.feeScheduleGroup === gr) &&
+    (!sp || d.relationship === sp) &&
     (!co || (Array.isArray(d.flCounty) && d.flCounty.includes(co)))
   ));
 }
@@ -806,14 +848,18 @@ function renderRoster(doctors) {
           ${location ? `<div class="doctor-location">📍 ${location}</div>` : ''}
         </div>
       </div>
-      <div>${specialtyTag(d.feeScheduleGroup, keywords)}</div>
+      <div>${specialtyTag(d.relationship)}</div>
       <div class="doctor-attrs">
         ${yesNo(d.willingnessToTravel, 'Travels')}
         ${yesNo(d.willingnessToCommentOnMinors, 'Comments on Minors')}
       </div>
+      ${keywords.length ? `<div class="qualified-section">
+        <div class="qualified-label">Sub-specialties</div>
+        <div class="qualified-chips">${keywords.map(k => `<span class="qualified-chip">${formatKeyword(k)}</span>`).join('')}</div>
+      </div>` : ''}
       ${counties.length ? `<div class="qualified-section">
-        <div class="qualified-label">Coverage Areas</div>
-        <div class="qualified-chips">${counties.map(c => `<span class="qualified-chip">${c.charAt(0)+c.slice(1).toLowerCase()}</span>`).join('')}</div>
+        <div class="qualified-label">County</div>
+        <div class="qualified-chips">${counties.map(c => `<span class="qualified-chip">${formatCounty(c)}</span>`).join('')}</div>
       </div>` : ''}
       <a class="cv-link" href="${cvMailto(d.name)}">&#9993; Request CV</a>
     </div>`;
@@ -823,35 +869,63 @@ function renderRoster(doctors) {
 }
 
 // ── MAP ───────────────────────────────────────────────────────────
-function initMap(doctors) {
-  const map = L.map('map').setView([27.8, -81.7], 7);
+let mapInstance = null;
+let mapMarkers = [];
 
+function pinColor(relationship) {
+  return (SPECIALTY_COLORS[relationship] || { color: '#2C39DB' }).color;
+}
+
+function initMap(doctors) {
+  mapInstance = L.map('map').setView([27.8, -81.7], 7);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     maxZoom: 18,
-  }).addTo(map);
+  }).addTo(mapInstance);
 
-  const pinIcon = L.divIcon({
-    className: '',
-    html: `<div style="width:13px;height:13px;background:#2C39DB;border:2.5px solid #fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.3)"></div>`,
-    iconSize: [13, 13],
-    iconAnchor: [6, 6],
-    popupAnchor: [0, -9],
+  // Populate map specialty filter
+  const mapFilter = document.getElementById('map-filter-specialty');
+  const specialties = [...new Set(doctors.map(d => d.relationship).filter(Boolean))].sort();
+  specialties.forEach(s => {
+    const o = document.createElement('option');
+    o.value = s; o.textContent = SPECIALTY_LABELS[s] || s;
+    mapFilter.appendChild(o);
   });
+  mapFilter.addEventListener('change', () => renderMapMarkers(allDoctors, mapFilter.value));
 
-  doctors.forEach(d => {
+  renderMapMarkers(doctors, '');
+}
+
+function renderMapMarkers(doctors, specialtyFilter) {
+  mapMarkers.forEach(m => m.remove());
+  mapMarkers = [];
+
+  const filtered = specialtyFilter ? doctors.filter(d => d.relationship === specialtyFilter) : doctors;
+
+  filtered.forEach(d => {
     const lat = parseFloat(d.lattitude);
     const lng = parseFloat(d.longitude);
     if (!lat || !lng || isNaN(lat) || isNaN(lng)) return;
+
+    const color = pinColor(d.relationship);
+    const icon = L.divIcon({
+      className: '',
+      html: `<div style="width:13px;height:13px;background:${color};border:2.5px solid #fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.3)"></div>`,
+      iconSize: [13, 13],
+      iconAnchor: [6, 6],
+      popupAnchor: [0, -9],
+    });
+
     const location = d.city ? `${d.city}, FL` : '';
-    const groupLabel = GROUP_LABELS[d.feeScheduleGroup] || '';
-    L.marker([lat, lng], { icon: pinIcon })
-      .addTo(map)
+    const specLabel = SPECIALTY_LABELS[d.relationship] || '';
+    const marker = L.marker([lat, lng], { icon })
+      .addTo(mapInstance)
       .bindPopup(`
         <div class="map-popup-name">${d.name || '—'}</div>
-        <div class="map-popup-detail">${groupLabel}</div>
+        <div class="map-popup-detail">${specLabel}</div>
         ${location ? `<div class="map-popup-detail">📍 ${location}</div>` : ''}
       `);
+    mapMarkers.push(marker);
   });
 }
 </script>
