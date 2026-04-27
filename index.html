@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CaseLynx Expert Network</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@400,500,700,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:   #1a56db;
+      --blue-lt:#e8effc;
+      --sky:    #6e80ff;
+      --cream:  #FCF9F2;
+      --black:  #1a1a1a;
+      --mid:    #44446a;
+      --lt:     #888899;
+      --bdr:    #e3e1d9;
+      --wh:     #fff;
+      --radius: 12px;
+      --shadow: 0 2px 12px rgba(0,0,0,.07);
+    }
+
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background: var(--cream);
+      color: var(--black);
+      min-height: 100vh;
+    }
+
+    /* ── LOGO ────────────────────────────────── */
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+    .logo-mark {
+      width: 32px; height: 32px;
+      background: var(--blue);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo-mark svg { width: 18px; height: 18px; fill: #fff; }
+    .logo-text {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: var(--black);
+      letter-spacing: -0.3px;
+    }
+    .logo-text span { color: var(--blue); }
+
+    /* ── GATE ────────────────────────────────── */
+    #gate {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+    .gate-card {
+      background: var(--wh);
+      border-radius: 20px;
+      box-shadow: 0 8px 40px rgba(26,86,219,.10);
+      padding: 48px 44px;
+      width: 100%;
+      max-width: 480px;
+    }
+    .gate-card .logo { margin-bottom: 32px; }
+    .gate-headline {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-weight: 800;
+      font-size: 1.65rem;
+      line-height: 1.2;
+      color: var(--black);
+      margin-bottom: 12px;
+    }
+    .gate-subline {
+      font-size: .9rem;
+      color: var(--mid);
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+    .field + .field { margin-top: 14px; }
+    .field label {
+      display: block;
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--mid);
+      margin-bottom: 5px;
+      letter-spacing: .3px;
+    }
+    .field input {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--bdr);
+      border-radius: 8px;
+      font-family: 'Open Sans', sans-serif;
+      font-size: .9rem;
+      color: var(--black);
+      background: var(--cream);
+      outline: none;
+      transition: border-color .15s;
+    }
+    .field input:focus { border-color: var(--blue); background: var(--wh); }
+    .attest-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin: 24px 0 20px;
+      cursor: pointer;
+    }
+    .attest-row input[type="checkbox"] {
+      width: 18px; height: 18px;
+      flex-shrink: 0;
+      margin-top: 2px;
+      accent-color: var(--blue);
+      cursor: pointer;
+    }
+    .attest-row span {
+      font-size: .82rem;
+      color: var(--mid);
+      line-height: 1.5;
+    }
+    #unlock-btn {
+      width: 100%;
+      padding: 13px;
+      background: var(--blue);
+      color: #fff;
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: opacity .15s, background .15s;
+    }
+    #unlock-btn:disabled { opacity: .4; cursor: not-allowed; }
+    #unlock-btn:not(:disabled):hover { background: #1548c0; }
+    .gate-footer {
+      text-align: center;
+      font-size: .75rem;
+      color: var(--lt);
+      margin-top: 20px;
+    }
+    #gate-error {
+      display: none;
+      background: #fef2f2;
+      border: 1px solid #fca5a5;
+      color: #b91c1c;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: .82rem;
+      margin-top: 12px;
+    }
+
+    /* ── APP SHELL ───────────────────────────── */
+    #app { display: none; flex-direction: column; min-height: 100vh; }
+    #app.visible { display: flex; }
+
+    .contact-bar {
+      background: var(--blue);
+      color: #fff;
+      text-align: center;
+      padding: 9px 16px;
+      font-size: .82rem;
+      letter-spacing: .1px;
+    }
+    .contact-bar a { color: #fff; text-decoration: none; font-weight: 600; }
+    .contact-bar a:hover { text-decoration: underline; }
+
+    .app-header {
+      background: var(--wh);
+      border-bottom: 1px solid var(--bdr);
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+    .app-header .logo { padding: 16px 0; flex: 1; }
+
+    /* ── TABS ────────────────────────────────── */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--wh);
+      border-bottom: 1px solid var(--bdr);
+      padding: 0 20px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab-btn {
+      padding: 14px 18px;
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: .88rem;
+      color: var(--lt);
+      background: none;
+      border: none;
+      border-bottom: 2.5px solid transparent;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: color .15s, border-color .15s;
+    }
+    .tab-btn:hover { color: var(--blue); }
+    .tab-btn.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+    /* ── TAB PANELS ──────────────────────────── */
+    .tab-panel { display: none; padding: 28px 24px; max-width: 1200px; margin: 0 auto; width: 100%; }
+    .tab-panel.active { display: block; }
+
+    /* ── ROSTER ──────────────────────────────── */
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .filters select {
+      padding: 9px 14px;
+      border: 1.5px solid var(--bdr);
+      border-radius: 8px;
+      font-family: 'Open Sans', sans-serif;
+      font-size: .85rem;
+      color: var(--black);
+      background: var(--wh);
+      outline: none;
+      cursor: pointer;
+      min-width: 180px;
+    }
+    .filters select:focus { border-color: var(--blue); }
+
+    .doctor-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 18px;
+    }
+    .doctor-card {
+      background: var(--wh);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .doctor-card-header { display: flex; align-items: flex-start; gap: 14px; }
+    .doctor-avatar {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: var(--blue-lt);
+      color: var(--blue);
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-weight: 800;
+      font-size: 1rem;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .doctor-info { flex: 1; min-width: 0; }
+    .doctor-name {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--black);
+      line-height: 1.3;
+    }
+    .doctor-location {
+      font-size: .8rem;
+      color: var(--lt);
+      margin-top: 2px;
+    }
+    .specialty-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: .75rem;
+      font-weight: 600;
+    }
+    .doctor-attrs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+    .attr-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #f4f4f8;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: .75rem;
+      color: var(--mid);
+      font-weight: 500;
+    }
+    .attr-chip.yes { background: #edfaf5; color: #0d7a5f; }
+    .attr-chip.no  { background: #fef2f2; color: #b91c1c; }
+    .qualified-section { }
+    .qualified-label {
+      font-size: .72rem;
+      font-weight: 600;
+      color: var(--lt);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 6px;
+    }
+    .qualified-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+    .qualified-chip {
+      background: var(--blue-lt);
+      color: var(--blue);
+      border-radius: 6px;
+      padding: 3px 9px;
+      font-size: .72rem;
+      font-weight: 600;
+    }
+    .cv-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--blue);
+      font-size: .82rem;
+      font-weight: 600;
+      text-decoration: none;
+      margin-top: auto;
+    }
+    .cv-link:hover { text-decoration: underline; }
+    .roster-empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--lt);
+      font-size: .9rem;
+    }
+    .loading {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--lt);
+    }
+    .loading-spinner {
+      width: 36px; height: 36px;
+      border: 3px solid var(--bdr);
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      margin: 0 auto 14px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── MAP ─────────────────────────────────── */
+    #tab-map { padding: 0; max-width: 100%; }
+    #map-wrap { height: calc(100vh - 160px); min-height: 400px; }
+    #map { height: 100%; width: 100%; }
+    .leaflet-popup-content-wrapper { border-radius: 10px; box-shadow: var(--shadow); }
+    .map-popup-name {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: .95rem;
+      color: var(--black);
+    }
+    .map-popup-detail { font-size: .8rem; color: var(--mid); margin-top: 2px; }
+
+    /* ── FEE SCHEDULE ────────────────────────── */
+    .fee-section { margin-bottom: 36px; }
+    .fee-section-title {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--black);
+      margin-bottom: 6px;
+    }
+    .fee-section-sub {
+      font-size: .82rem;
+      color: var(--mid);
+      margin-bottom: 14px;
+    }
+    .fee-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .fee-table {
+      width: 100%;
+      min-width: 480px;
+      border-collapse: collapse;
+      background: var(--wh);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .fee-table th {
+      background: var(--blue);
+      color: #fff;
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: .85rem;
+      padding: 12px 18px;
+      text-align: left;
+    }
+    .fee-table td {
+      padding: 12px 18px;
+      font-size: .88rem;
+      border-top: 1px solid var(--bdr);
+      color: var(--black);
+    }
+    .fee-table tr:nth-child(even) td { background: #fafafa; }
+    .fee-table td:not(:first-child) {
+      font-weight: 600;
+      color: var(--blue);
+    }
+    .fee-note {
+      font-size: .78rem;
+      color: var(--lt);
+      margin-top: 24px;
+      font-style: italic;
+    }
+
+    /* ── FEE ESTIMATOR ───────────────────────── */
+    #tab-estimator { padding: 0; max-width: 100%; }
+    #estimator-frame {
+      width: 100%;
+      height: calc(100vh - 160px);
+      min-height: 500px;
+      border: none;
+      display: block;
+    }
+
+    /* ── RESPONSIVE ──────────────────────────── */
+    @media (max-width: 600px) {
+      .gate-card { padding: 32px 24px; }
+      .gate-headline { font-size: 1.4rem; }
+      .tab-panel { padding: 20px 16px; }
+      .doctor-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── GATE ─────────────────────────────────────────────────────── -->
+<div id="gate">
+  <div class="gate-card">
+    <a class="logo" href="#">
+      <div class="logo-mark">
+        <svg viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 3h5v2H5v8h3v2H3V3zm9 0h3v12h-5v-2h3V5h-3V3h2z"/>
+        </svg>
+      </div>
+      <span class="logo-text"><span>Case</span>Lynx</span>
+    </a>
+
+    <h1 class="gate-headline">High-quality medical expert testimony, effortlessly.</h1>
+    <p class="gate-subline">We connect law firms &amp; carriers with highly vetted doctors to deliver better expert testimony with a hands-on, partner-first approach.</p>
+
+    <form id="gate-form" novalidate>
+      <div class="field">
+        <label for="g-name">Your name</label>
+        <input id="g-name" type="text" placeholder="Jane Smith" autocomplete="name" required>
+      </div>
+      <div class="field">
+        <label for="g-firm">Firm or company name</label>
+        <input id="g-firm" type="text" placeholder="Smith &amp; Associates" autocomplete="organization" required>
+      </div>
+      <div class="field">
+        <label for="g-email">Work email</label>
+        <input id="g-email" type="email" placeholder="jane@smithlaw.com" autocomplete="email" required>
+      </div>
+
+      <label class="attest-row">
+        <input type="checkbox" id="g-attest">
+        <span>I confirm I am accessing this on behalf of a law firm, insurance carrier, or claims organization.</span>
+      </label>
+
+      <button type="submit" id="unlock-btn" disabled>Unlock Expert Network</button>
+      <div id="gate-error"></div>
+    </form>
+
+    <p class="gate-footer">For law firms, insurers, and claims professionals only.</p>
+  </div>
+</div>
+
+<!-- ─── APP ──────────────────────────────────────────────────────── -->
+<div id="app">
+  <div class="contact-bar">
+    <a href="mailto:hello@caselynx.co">hello@caselynx.co</a>
+    &nbsp;·&nbsp;
+    <a href="tel:+14073749080">(407) 374-9080</a>
+  </div>
+
+  <div class="app-header">
+    <a class="logo" href="#">
+      <div class="logo-mark">
+        <svg viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 3h5v2H5v8h3v2H3V3zm9 0h3v12h-5v-2h3V5h-3V3h2z"/>
+        </svg>
+      </div>
+      <span class="logo-text"><span>Case</span>Lynx</span>
+    </a>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab-btn active" data-tab="roster" role="tab" aria-selected="true">Roster</button>
+    <button class="tab-btn" data-tab="map" role="tab" aria-selected="false">Map</button>
+    <button class="tab-btn" data-tab="fees" role="tab" aria-selected="false">Fee Schedule</button>
+    <button class="tab-btn" data-tab="estimator" role="tab" aria-selected="false">Fee Estimator</button>
+  </div>
+
+  <!-- ROSTER -->
+  <div id="tab-roster" class="tab-panel active">
+    <div class="filters">
+      <select id="filter-specialty" aria-label="Filter by specialty">
+        <option value="">All Specialties</option>
+      </select>
+      <select id="filter-county" aria-label="Filter by county">
+        <option value="">All Counties</option>
+      </select>
+    </div>
+    <div id="roster-content">
+      <div class="loading">
+        <div class="loading-spinner"></div>
+        Loading experts…
+      </div>
+    </div>
+  </div>
+
+  <!-- MAP -->
+  <div id="tab-map" class="tab-panel">
+    <div id="map-wrap"><div id="map"></div></div>
+  </div>
+
+  <!-- FEE SCHEDULE -->
+  <div id="tab-fees" class="tab-panel">
+    <div class="fee-section">
+      <div class="fee-section-title">Group 1 — Surgical Specialists</div>
+      <div class="fee-section-sub">Orthopedic Surgery · Neurosurgery</div>
+      <div class="fee-table-wrap">
+        <table class="fee-table">
+          <thead>
+            <tr>
+              <th>Service</th>
+              <th>Fee</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>IME / CME</td><td>$5,750</td></tr>
+            <tr><td>Record Review Only</td><td>$3,500</td></tr>
+            <tr><td>Exam Only</td><td>$2,250</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="fee-section">
+      <div class="fee-section-title">Group 2 — Non-Surgical Specialists</div>
+      <div class="fee-section-sub">Physiatry · Neurology · Pain Management · Cardiology · Psychiatry · Podiatry · Urology</div>
+      <div class="fee-table-wrap">
+        <table class="fee-table">
+          <thead>
+            <tr>
+              <th>Service</th>
+              <th>Fee</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>IME / CME</td><td>$4,600</td></tr>
+            <tr><td>Record Review Only</td><td>$2,800</td></tr>
+            <tr><td>Exam Only</td><td>$1,800</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="fee-section">
+      <div class="fee-section-title">Group 3 — General Practice</div>
+      <div class="fee-section-sub">Dentistry / Oral Surgery · Chiropractic · Family Medicine / Internal Medicine</div>
+      <div class="fee-table-wrap">
+        <table class="fee-table">
+          <thead>
+            <tr>
+              <th>Service</th>
+              <th>Fee</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>IME / CME</td><td>$3,750</td></tr>
+            <tr><td>Record Review Only</td><td>$2,275</td></tr>
+            <tr><td>Exam Only</td><td>$1,475</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <p class="fee-note">Page overages, imaging, expedite, and court-related services billed separately.</p>
+  </div>
+
+  <!-- FEE ESTIMATOR -->
+  <div id="tab-estimator" class="tab-panel">
+    <iframe
+      id="estimator-frame"
+      src="https://arielkramer12.github.io/caselynx-fee-estimator/"
+      title="CaseLynx Fee Estimator"
+      allowfullscreen
+    ></iframe>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// ── CONFIG ────────────────────────────────────────────────────────
+// Update API_BASE to your Railway service URL
+const API_BASE = 'https://caselynx-email-server-production.up.railway.app';
+
+// ── SPECIALTY STYLES ──────────────────────────────────────────────
+const SPECIALTY_COLORS = {
+  'Orthopedic Surgery':  { bg: '#eef0fc', color: '#1a56db' },
+  'Neurosurgery':        { bg: '#f4effc', color: '#6b21a8' },
+  'Physiatry':           { bg: '#edfaf5', color: '#0d7a5f' },
+  'Neurology':           { bg: '#f4effc', color: '#6b21a8' },
+  'Pain Management':     { bg: '#fff7ed', color: '#9a3412' },
+  'Cardiology':          { bg: '#fceef0', color: '#c0283e' },
+  'Psychiatry':          { bg: '#fdf4ff', color: '#7e22ce' },
+  'Podiatry':            { bg: '#f0fdf4', color: '#166534' },
+  'Urology':             { bg: '#eff6ff', color: '#1d4ed8' },
+  'Dentistry/Oral Surgery': { bg: '#fffbeb', color: '#92400e' },
+  'Chiropractic':        { bg: '#f0fdf4', color: '#15803d' },
+  'Family Medicine':     { bg: '#f0f9ff', color: '#0369a1' },
+  'Internal Medicine':   { bg: '#f0f9ff', color: '#0369a1' },
+};
+
+const SURGICAL_SPECIALTIES = ['Orthopedic Surgery', 'Neurosurgery'];
+
+// ── HELPERS ───────────────────────────────────────────────────────
+function initials(name) {
+  if (!name) return '?';
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0][0].toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+function specialtyTag(specialty) {
+  const style = SPECIALTY_COLORS[specialty] || { bg: '#f4f4f8', color: '#44446a' };
+  return `<span class="specialty-tag" style="background:${style.bg};color:${style.color}">${specialty || 'Specialist'}</span>`;
+}
+
+function yesNo(val, label) {
+  const is = val === true || val === 'true' || val === 'Yes' || val === 'YES';
+  return `<span class="attr-chip ${is ? 'yes' : 'no'}">${label}: ${is ? 'Yes' : 'No'}</span>`;
+}
+
+function cvMailto(name) {
+  const sub = encodeURIComponent(`CV Request – ${name}`);
+  const body = encodeURIComponent(`Hi CaseLynx team,\n\nI'd like to request the CV for ${name}.\n\nThank you.`);
+  return `mailto:hello@caselynx.co?subject=${sub}&body=${body}`;
+}
+
+function utmParams() {
+  const p = new URLSearchParams(window.location.search);
+  return {
+    utm_source:   p.get('utm_source')   || '',
+    utm_medium:   p.get('utm_medium')   || '',
+    utm_campaign: p.get('utm_campaign') || '',
+  };
+}
+
+// ── GATE ──────────────────────────────────────────────────────────
+const gateEl   = document.getElementById('gate');
+const appEl    = document.getElementById('app');
+const attest   = document.getElementById('g-attest');
+const unlockBtn= document.getElementById('unlock-btn');
+const gateForm = document.getElementById('gate-form');
+const gateErr  = document.getElementById('gate-error');
+
+function showApp() {
+  gateEl.style.display = 'none';
+  appEl.classList.add('visible');
+  loadRoster();
+}
+
+// Skip gate if already unlocked this session
+if (sessionStorage.getItem('caselynx_unlocked') === '1') {
+  showApp();
+}
+
+attest.addEventListener('change', () => {
+  unlockBtn.disabled = !attest.checked;
+});
+
+gateForm.addEventListener('submit', async e => {
+  e.preventDefault();
+  const name  = document.getElementById('g-name').value.trim();
+  const firm  = document.getElementById('g-firm').value.trim();
+  const email = document.getElementById('g-email').value.trim();
+
+  if (!name || !firm || !email) {
+    showGateError('Please complete all fields.');
+    return;
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    showGateError('Please enter a valid email address.');
+    return;
+  }
+
+  unlockBtn.disabled = true;
+  unlockBtn.textContent = 'Unlocking…';
+
+  const utms = utmParams();
+  const qs = Object.entries(utms)
+    .filter(([, v]) => v)
+    .map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
+    .join('&');
+
+  try {
+    const res = await fetch(`${API_BASE}/experts-gate${qs ? '?' + qs : ''}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, firm, email }),
+    });
+    if (!res.ok) throw new Error('Server error');
+  } catch (_) {
+    // Don't block access on API failure
+  }
+
+  sessionStorage.setItem('caselynx_unlocked', '1');
+  showApp();
+});
+
+function showGateError(msg) {
+  gateErr.textContent = msg;
+  gateErr.style.display = 'block';
+  unlockBtn.disabled = !attest.checked;
+  unlockBtn.textContent = 'Unlock Expert Network';
+}
+
+// ── TABS ──────────────────────────────────────────────────────────
+let mapInitialized = false;
+let allDoctors = [];
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => {
+      b.classList.remove('active');
+      b.setAttribute('aria-selected', 'false');
+    });
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+
+    btn.classList.add('active');
+    btn.setAttribute('aria-selected', 'true');
+    const panel = document.getElementById('tab-' + btn.dataset.tab);
+    panel.classList.add('active');
+
+    if (btn.dataset.tab === 'map' && !mapInitialized && allDoctors.length) {
+      initMap(allDoctors);
+      mapInitialized = true;
+    }
+  });
+});
+
+// ── ROSTER ────────────────────────────────────────────────────────
+const rosterContent  = document.getElementById('roster-content');
+const filterSpecialty= document.getElementById('filter-specialty');
+const filterCounty   = document.getElementById('filter-county');
+
+async function loadRoster() {
+  try {
+    const res = await fetch(`${API_BASE}/doctors`);
+    if (!res.ok) throw new Error('Failed to load');
+    allDoctors = await res.json();
+    populateFilters(allDoctors);
+    renderRoster(allDoctors);
+  } catch (err) {
+    rosterContent.innerHTML = '<div class="roster-empty">Unable to load expert roster. Please try again later.</div>';
+  }
+}
+
+function populateFilters(doctors) {
+  const specialties = [...new Set(doctors.map(d => d.specialty).filter(Boolean))].sort();
+  const counties    = [...new Set(doctors.map(d => d.county).filter(Boolean))].sort();
+
+  specialties.forEach(s => {
+    const o = document.createElement('option');
+    o.value = s; o.textContent = s;
+    filterSpecialty.appendChild(o);
+  });
+  counties.forEach(c => {
+    const o = document.createElement('option');
+    o.value = c; o.textContent = c;
+    filterCounty.appendChild(o);
+  });
+}
+
+function applyFilters() {
+  const sp = filterSpecialty.value;
+  const co = filterCounty.value;
+  const filtered = allDoctors.filter(d =>
+    (!sp || d.specialty === sp) &&
+    (!co || d.county === co)
+  );
+  renderRoster(filtered);
+}
+
+filterSpecialty.addEventListener('change', applyFilters);
+filterCounty.addEventListener('change', applyFilters);
+
+function renderRoster(doctors) {
+  if (!doctors.length) {
+    rosterContent.innerHTML = '<div class="roster-empty">No experts match the selected filters.</div>';
+    return;
+  }
+
+  const cards = doctors.map(d => {
+    const isSurgical = SURGICAL_SPECIALTIES.includes(d.specialty);
+    const qualifiedItems = d.qualifiedToComment
+      ? (Array.isArray(d.qualifiedToComment)
+          ? d.qualifiedToComment
+          : d.qualifiedToComment.split(/[,;|]+/).map(s => s.trim()).filter(Boolean))
+      : [];
+    const showQualified = isSurgical && qualifiedItems.length > 0;
+
+    const locationParts = [d.city, d.state].filter(Boolean).join(', ');
+
+    return `
+      <div class="doctor-card">
+        <div class="doctor-card-header">
+          <div class="doctor-avatar">${initials(d.fullName)}</div>
+          <div class="doctor-info">
+            <div class="doctor-name">${d.fullName || '—'}</div>
+            ${locationParts ? `<div class="doctor-location">📍 ${locationParts}</div>` : ''}
+          </div>
+        </div>
+        <div>${specialtyTag(d.specialty)}</div>
+        <div class="doctor-attrs">
+          ${yesNo(d.travels, 'Travels')}
+          ${yesNo(d.commentOnMinors, 'Comments on Minors')}
+        </div>
+        ${showQualified ? `
+          <div class="qualified-section">
+            <div class="qualified-label">Qualified to Comment</div>
+            <div class="qualified-chips">
+              ${qualifiedItems.map(q => `<span class="qualified-chip">${q}</span>`).join('')}
+            </div>
+          </div>` : ''}
+        <a class="cv-link" href="${cvMailto(d.fullName)}">
+          ✉ Request CV
+        </a>
+      </div>`;
+  }).join('');
+
+  rosterContent.innerHTML = `<div class="doctor-grid">${cards}</div>`;
+}
+
+// ── MAP ───────────────────────────────────────────────────────────
+function initMap(doctors) {
+  const map = L.map('map').setView([27.8, -81.7], 7); // Florida center
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 18,
+  }).addTo(map);
+
+  const pinIcon = L.divIcon({
+    className: '',
+    html: `<div style="width:14px;height:14px;background:#1a56db;border:2px solid #fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.35)"></div>`,
+    iconSize: [14, 14],
+    iconAnchor: [7, 7],
+    popupAnchor: [0, -10],
+  });
+
+  doctors.forEach(d => {
+    const lat = parseFloat(d.lat);
+    const lng = parseFloat(d.lng);
+    if (!lat || !lng || isNaN(lat) || isNaN(lng)) return;
+
+    const locationParts = [d.city, d.state].filter(Boolean).join(', ');
+    L.marker([lat, lng], { icon: pinIcon })
+      .addTo(map)
+      .bindPopup(`
+        <div class="map-popup-name">${d.fullName || '—'}</div>
+        <div class="map-popup-detail">${d.specialty || ''}</div>
+        ${locationParts ? `<div class="map-popup-detail">📍 ${locationParts}</div>` : ''}
+      `);
+  });
+}
+</script>
+</body>
+</html>
