@@ -600,23 +600,16 @@
 const API_BASE = 'https://caselynx-email-server-production.up.railway.app';
 
 // ── SPECIALTY STYLES ──────────────────────────────────────────────
-const SPECIALTY_COLORS = {
-  'Orthopedic Surgery':     { bg: '#ECEEFA', color: '#2C39DB' },
-  'Neurosurgery':           { bg: '#F4EFFC', color: '#6b21a8' },
-  'Physiatry':              { bg: '#EDFAF5', color: '#0d7a5f' },
-  'Neurology':              { bg: '#F4EFFC', color: '#6b21a8' },
-  'Pain Management':        { bg: '#FFF7ED', color: '#9a3412' },
-  'Cardiology':             { bg: '#FCEEF0', color: '#c0283e' },
-  'Psychiatry':             { bg: '#FDF4FF', color: '#7e22ce' },
-  'Podiatry':               { bg: '#F0FDF4', color: '#166534' },
-  'Urology':                { bg: '#EFF6FF', color: '#1d4ed8' },
-  'Dentistry/Oral Surgery': { bg: '#FFFBEB', color: '#92400e' },
-  'Chiropractic':           { bg: '#F0FDF4', color: '#15803d' },
-  'Family Medicine':        { bg: '#F0F9FF', color: '#0369a1' },
-  'Internal Medicine':      { bg: '#F0F9FF', color: '#0369a1' },
+const GROUP_LABELS = {
+  'GROUP_1': 'Surgical Specialist',
+  'GROUP_2': 'Non-Surgical Specialist',
+  'GROUP_3': 'General Practice',
 };
-
-const SURGICAL_SPECIALTIES = ['Orthopedic Surgery', 'Neurosurgery'];
+const GROUP_COLORS = {
+  'GROUP_1': { bg: '#ECEEFA', color: '#2C39DB' },
+  'GROUP_2': { bg: '#EDFAF5', color: '#0d7a5f' },
+  'GROUP_3': { bg: '#F0F9FF', color: '#0369a1' },
+};
 
 // ── HELPERS ───────────────────────────────────────────────────────
 function initials(name) {
@@ -627,13 +620,15 @@ function initials(name) {
     : (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-function specialtyTag(specialty) {
-  const s = SPECIALTY_COLORS[specialty] || { bg: '#f4f4f6', color: '#676767' };
-  return `<span class="specialty-tag" style="background:${s.bg};color:${s.color}">${specialty || 'Specialist'}</span>`;
+function specialtyTag(group, keywords) {
+  const label = GROUP_LABELS[group] || 'Specialist';
+  const s = GROUP_COLORS[group] || { bg: '#f4f4f6', color: '#676767' };
+  const sub = keywords && keywords.length ? ` · ${keywords.slice(0,2).join(', ')}` : '';
+  return `<span class="specialty-tag" style="background:${s.bg};color:${s.color}">${label}${sub}</span>`;
 }
 
 function yesNo(val, label) {
-  const yes = val === true || val === 'true' || val === 'Yes' || val === 'YES';
+  const yes = val === 'YES' || val === 'Yes' || val === true;
   return `<span class="attr-chip ${yes ? 'yes' : 'no'}">${label}: ${yes ? 'Yes' : 'No'}</span>`;
 }
 
@@ -766,14 +761,16 @@ async function loadRoster() {
 }
 
 function populateFilters(doctors) {
-  const specialties = [...new Set(doctors.map(d => d.specialty).filter(Boolean))].sort();
-  const counties    = [...new Set(doctors.map(d => d.county).filter(Boolean))].sort();
-  specialties.forEach(s => {
-    const o = document.createElement('option'); o.value = s; o.textContent = s;
+  const groups   = [...new Set(doctors.map(d => d.feeScheduleGroup).filter(Boolean))].sort();
+  const counties = [...new Set(doctors.flatMap(d => Array.isArray(d.flCounty) ? d.flCounty : []).filter(Boolean))].sort();
+  groups.forEach(g => {
+    const o = document.createElement('option');
+    o.value = g; o.textContent = GROUP_LABELS[g] || g;
     filterSpecialty.appendChild(o);
   });
   counties.forEach(c => {
-    const o = document.createElement('option'); o.value = c; o.textContent = c + ' County';
+    const o = document.createElement('option');
+    o.value = c; o.textContent = c.charAt(0) + c.slice(1).toLowerCase() + ' County';
     filterCounty.appendChild(o);
   });
 }
@@ -782,10 +779,11 @@ filterSpecialty.addEventListener('change', applyFilters);
 filterCounty.addEventListener('change', applyFilters);
 
 function applyFilters() {
-  const sp = filterSpecialty.value;
+  const gr = filterSpecialty.value;
   const co = filterCounty.value;
   renderRoster(allDoctors.filter(d =>
-    (!sp || d.specialty === sp) && (!co || d.county === co)
+    (!gr || d.feeScheduleGroup === gr) &&
+    (!co || (Array.isArray(d.flCounty) && d.flCounty.includes(co)))
   ));
 }
 
@@ -796,33 +794,28 @@ function renderRoster(doctors) {
   }
 
   const cards = doctors.map(d => {
-    const isSurgical   = SURGICAL_SPECIALTIES.includes(d.specialty);
-    const qualItems    = d.qualifiedToComment
-      ? (Array.isArray(d.qualifiedToComment)
-          ? d.qualifiedToComment
-          : String(d.qualifiedToComment).split(/[,;|]+/).map(s => s.trim()).filter(Boolean))
-      : [];
-    const showQualified = isSurgical && qualItems.length > 0;
-    const location = [d.city, d.state].filter(Boolean).join(', ');
+    const keywords = Array.isArray(d.subSpecialtyKeywords) ? d.subSpecialtyKeywords : [];
+    const counties = Array.isArray(d.flCounty) ? d.flCounty : [];
+    const location = d.city ? `${d.city}, FL` : '';
 
     return `<div class="doctor-card">
       <div class="doctor-card-header">
-        <div class="doctor-avatar">${initials(d.fullName)}</div>
+        <div class="doctor-avatar">${initials(d.name)}</div>
         <div class="doctor-info">
-          <div class="doctor-name">${d.fullName || '—'}</div>
+          <div class="doctor-name">${d.name || '—'}</div>
           ${location ? `<div class="doctor-location">📍 ${location}</div>` : ''}
         </div>
       </div>
-      <div>${specialtyTag(d.specialty)}</div>
+      <div>${specialtyTag(d.feeScheduleGroup, keywords)}</div>
       <div class="doctor-attrs">
-        ${yesNo(d.travels, 'Travels')}
-        ${yesNo(d.commentOnMinors, 'Comments on Minors')}
+        ${yesNo(d.willingnessToTravel, 'Travels')}
+        ${yesNo(d.willingnessToCommentOnMinors, 'Comments on Minors')}
       </div>
-      ${showQualified ? `<div class="qualified-section">
-        <div class="qualified-label">Qualified to Comment</div>
-        <div class="qualified-chips">${qualItems.map(q => `<span class="qualified-chip">${q}</span>`).join('')}</div>
+      ${counties.length ? `<div class="qualified-section">
+        <div class="qualified-label">Coverage Areas</div>
+        <div class="qualified-chips">${counties.map(c => `<span class="qualified-chip">${c.charAt(0)+c.slice(1).toLowerCase()}</span>`).join('')}</div>
       </div>` : ''}
-      <a class="cv-link" href="${cvMailto(d.fullName)}">&#9993; Request CV</a>
+      <a class="cv-link" href="${cvMailto(d.name)}">&#9993; Request CV</a>
     </div>`;
   }).join('');
 
@@ -847,15 +840,16 @@ function initMap(doctors) {
   });
 
   doctors.forEach(d => {
-    const lat = parseFloat(d.lat);
-    const lng = parseFloat(d.lng);
+    const lat = parseFloat(d.lattitude);
+    const lng = parseFloat(d.longitude);
     if (!lat || !lng || isNaN(lat) || isNaN(lng)) return;
-    const location = [d.city, d.state].filter(Boolean).join(', ');
+    const location = d.city ? `${d.city}, FL` : '';
+    const groupLabel = GROUP_LABELS[d.feeScheduleGroup] || '';
     L.marker([lat, lng], { icon: pinIcon })
       .addTo(map)
       .bindPopup(`
-        <div class="map-popup-name">${d.fullName || '—'}</div>
-        <div class="map-popup-detail">${d.specialty || ''}</div>
+        <div class="map-popup-name">${d.name || '—'}</div>
+        <div class="map-popup-detail">${groupLabel}</div>
         ${location ? `<div class="map-popup-detail">📍 ${location}</div>` : ''}
       `);
   });
