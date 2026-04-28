@@ -6,24 +6,23 @@
   <title>CaseLynx Expert Network</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,500;0,600&display=swap" rel="stylesheet">
   <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --blue:    #2C39DB;
-      --sky:     #6E80FF;
-      --blue-lt: #ECEEFA;
-      --cream:   #FCF9F2;
-      --page:    #FAFAF8;
-      --wh:      #fff;
-      --black:   #1A1A1A;
-      --mid:     #555;
-      --lt:      #888;
-      --bdr:     #E5E5E0;
-      --radius:  8px;
+      --blue:     #1a56db;
+      --blue-lt:  #EEF2FD;
+      --blue-av:  #E6F1FB;
+      --blue-avt: #0C447C;
+      --page:     #fafaf8;
+      --wh:       #fff;
+      --black:    #1a1a1a;
+      --mid:      #555;
+      --muted:    #888;
+      --bdr:      #e5e5e0;
     }
 
     body {
@@ -34,142 +33,230 @@
       min-height: 100vh;
     }
 
-    /* ── GATE ──────────────────────────────────────── */
+    /* ════════════════════════════════════════════════
+       GATE — split layout
+    ════════════════════════════════════════════════ */
     #gate {
+      display: flex;
       min-height: 100vh;
+    }
+
+    /* Left panel */
+    .gate-left {
+      width: 50%;
+      min-width: 360px;
+      background: var(--wh);
+      padding: 48px 44px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .gate-logo-wrap {
       display: flex;
       align-items: center;
-      justify-content: center;
-      padding: 32px 16px;
-      background: var(--cream);
+      gap: 9px;
+      margin-bottom: 36px;
     }
-    .gate-card {
-      background: var(--wh);
-      border-radius: 16px;
-      box-shadow: 0 8px 48px rgba(44,57,219,.12);
-      padding: 48px 44px 40px;
-      width: 100%;
-      max-width: 476px;
-    }
-    .gate-logo { margin-bottom: 36px; }
-    .gate-headline {
+    .gate-logo-wrap svg { display: block; }
+    .gate-logo-name {
       font-family: 'Cabinet Grotesk', sans-serif;
-      font-weight: 800;
-      font-size: 1.6rem;
-      line-height: 1.18;
+      font-weight: 500;
+      font-size: 19px;
+      color: var(--blue);
+      line-height: 1;
+    }
+    .gate-headline {
+      font-family: 'Open Sans', sans-serif;
+      font-weight: 500;
+      font-size: 18px;
       color: var(--black);
-      margin-bottom: 12px;
+      line-height: 1.35;
+      margin-bottom: 10px;
     }
     .gate-subline {
-      font-size: .875rem;
-      color: var(--lt);
+      font-size: 13px;
+      color: var(--muted);
       line-height: 1.65;
-      margin-bottom: 32px;
+      margin-bottom: 28px;
     }
-    .field + .field { margin-top: 12px; }
+
+    .field { margin-bottom: 12px; }
     .field label {
       display: block;
-      font-size: .75rem;
+      font-size: 11px;
       font-weight: 600;
-      color: #676767;
-      margin-bottom: 5px;
-      letter-spacing: .2px;
+      color: var(--muted);
       text-transform: uppercase;
+      letter-spacing: .4px;
+      margin-bottom: 5px;
     }
     .field input {
       width: 100%;
-      padding: 10px 13px;
-      border: 1.5px solid var(--bdr);
+      padding: 9px 12px;
+      border: 1px solid var(--bdr);
       border-radius: 7px;
       font-family: 'Open Sans', sans-serif;
-      font-size: .875rem;
+      font-size: 13px;
       color: var(--black);
-      background: var(--cream);
+      background: var(--page);
       outline: none;
-      transition: border-color .15s, background .15s;
+      transition: border-color .15s;
     }
     .field input:focus { border-color: var(--blue); background: var(--wh); }
-    .field input::placeholder { color: #ccc; }
+    .field input::placeholder { color: #c8c8c4; }
+
     .attest-row {
       display: flex;
       align-items: flex-start;
-      gap: 10px;
-      margin: 22px 0 18px;
+      gap: 9px;
+      margin: 16px 0 14px;
       cursor: pointer;
     }
     .attest-row input[type="checkbox"] {
-      width: 17px; height: 17px;
+      width: 16px; height: 16px;
       flex-shrink: 0;
       margin-top: 1px;
       accent-color: var(--blue);
       cursor: pointer;
     }
-    .attest-row span { font-size: .82rem; color: #676767; line-height: 1.55; }
+    .attest-row span { font-size: 12px; color: var(--mid); line-height: 1.5; }
+
     #unlock-btn {
       width: 100%;
-      padding: 12px;
+      padding: 11px;
       background: var(--blue);
       color: #fff;
-      font-family: 'Cabinet Grotesk', sans-serif;
-      font-weight: 700;
-      font-size: .95rem;
+      font-family: 'Open Sans', sans-serif;
+      font-weight: 600;
+      font-size: 13px;
       border: none;
       border-radius: 7px;
       cursor: pointer;
-      letter-spacing: .1px;
       transition: background .15s, opacity .15s;
     }
     #unlock-btn:disabled { opacity: .38; cursor: not-allowed; }
-    #unlock-btn:not(:disabled):hover { background: #2231c4; }
+    #unlock-btn:not(:disabled):hover { background: #1644bb; }
+
     #gate-error {
       display: none;
       background: #fef2f2;
       border: 1px solid #fca5a5;
       color: #b91c1c;
-      border-radius: 7px;
-      padding: 9px 13px;
-      font-size: .8rem;
-      margin-top: 11px;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 12px;
+      margin-top: 10px;
     }
-    .gate-footer { text-align: center; font-size: .74rem; color: #ccc; margin-top: 18px; }
+    .gate-fine { font-size: 11px; color: #bbb; text-align: center; margin-top: 14px; }
 
-    /* ── APP SHELL ─────────────────────────────────── */
+    /* Right panel */
+    .gate-right {
+      flex: 1;
+      position: relative;
+      background: var(--blue) url('assets/15.jpg') center/cover no-repeat;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      overflow: hidden;
+    }
+    .gate-right::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(26, 86, 219, 0.82);
+    }
+    .gate-right-content {
+      position: relative;
+      z-index: 1;
+      padding: 36px;
+    }
+    .gate-ghost {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-weight: 500;
+      font-size: 64px;
+      color: rgba(255,255,255,0.1);
+      letter-spacing: -2px;
+      line-height: 1;
+      margin-bottom: 20px;
+    }
+    .gate-right-headline {
+      font-family: 'Open Sans', sans-serif;
+      font-weight: 500;
+      font-size: 20px;
+      color: #fff;
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+    .gate-right-sub {
+      font-size: 13px;
+      color: rgba(255,255,255,0.7);
+      line-height: 1.6;
+    }
+
+    /* ════════════════════════════════════════════════
+       APP SHELL
+    ════════════════════════════════════════════════ */
     #app { display: none; flex-direction: column; min-height: 100vh; }
     #app.visible { display: flex; }
 
-    .contact-bar {
-      background: var(--blue);
-      color: #fff;
-      text-align: center;
-      padding: 8px 16px;
-      font-size: .8rem;
-      letter-spacing: .1px;
-    }
-    .contact-bar a { color: #fff; text-decoration: none; font-weight: 600; }
-    .contact-bar a:hover { text-decoration: underline; }
-
+    /* Header */
     .app-header {
       background: var(--wh);
-      border-bottom: 1px solid var(--bdr);
-      padding: 14px 24px;
-    }
-
-    /* ── TABS ──────────────────────────────────────── */
-    .tabs {
-      display: flex;
-      background: var(--wh);
-      border-bottom: 1px solid var(--bdr);
+      border-bottom: 0.5px solid var(--bdr);
+      height: 56px;
       padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .header-logo-name {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-weight: 500;
+      font-size: 16px;
+      color: var(--blue);
+      line-height: 1;
+    }
+    .header-tag {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 400;
+      margin-left: 2px;
+    }
+    .header-contact {
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .header-contact a { color: var(--muted); text-decoration: none; }
+    .header-contact a:hover { color: var(--blue); }
+    .header-contact .sep { opacity: .4; }
+
+    /* Tabs */
+    .tabs {
+      background: var(--wh);
+      border-bottom: 0.5px solid var(--bdr);
+      padding: 0 24px;
+      display: flex;
       overflow-x: auto;
       scrollbar-width: none;
+      flex-shrink: 0;
     }
     .tabs::-webkit-scrollbar { display: none; }
     .tab-btn {
-      padding: 12px 16px;
-      font-family: 'Cabinet Grotesk', sans-serif;
-      font-weight: 700;
-      font-size: .875rem;
-      color: var(--lt);
+      padding: 11px 14px;
+      font-family: 'Open Sans', sans-serif;
+      font-weight: 500;
+      font-size: 13px;
+      color: var(--muted);
       background: none;
       border: none;
       border-bottom: 2px solid transparent;
@@ -181,50 +268,110 @@
     .tab-btn:hover { color: var(--black); }
     .tab-btn.active { color: var(--blue); border-bottom-color: var(--blue); }
 
-    /* ── TAB PANELS ────────────────────────────────── */
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
-    #tab-map.active { display: flex; flex-direction: column; }
+    /* Tab panels */
+    .tab-panel { display: none; flex: 1; }
+    .tab-panel.active { display: flex; flex-direction: column; }
 
-    /* ── FILTER TOOLBAR ────────────────────────────── */
-    .filter-toolbar {
+    /* ════════════════════════════════════════════════
+       ROSTER TAB — sidebar layout
+    ════════════════════════════════════════════════ */
+    #tab-roster { flex-direction: row !important; align-items: flex-start; }
+
+    /* Sidebar */
+    .roster-sidebar {
+      width: 220px;
+      flex-shrink: 0;
+      border-right: 0.5px solid var(--bdr);
+      padding: 24px 20px;
       background: var(--wh);
-      border-bottom: 0.5px solid var(--bdr);
-      padding: 10px 24px;
+      min-height: calc(100vh - 120px);
+      position: sticky;
+      top: 0;
+      overflow-y: auto;
+      max-height: calc(100vh - 120px);
+    }
+    .sidebar-section { margin-bottom: 24px; }
+    .sidebar-section:last-child { margin-bottom: 0; }
+    .sidebar-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 10px;
+    }
+    .sidebar-option {
       display: flex;
       align-items: center;
       gap: 8px;
-    }
-    .filter-toolbar select,
-    .map-toolbar select {
-      padding: 6px 10px;
-      border: 1px solid var(--bdr);
-      border-radius: 6px;
-      font-family: 'Open Sans', sans-serif;
-      font-size: 13px;
-      color: var(--black);
-      background: var(--wh);
-      outline: none;
+      padding: 4px 0;
       cursor: pointer;
-      min-width: 130px;
     }
-    .filter-toolbar select:focus,
-    .map-toolbar select:focus { border-color: var(--blue); }
-    .filter-count { margin-left: auto; font-size: 12px; color: var(--lt); white-space: nowrap; }
+    .sidebar-option input[type="checkbox"] {
+      width: 14px; height: 14px;
+      accent-color: var(--blue);
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .sidebar-option span { font-size: 13px; color: var(--black); line-height: 1.3; }
 
-    /* ── ROSTER LIST ───────────────────────────────── */
-    #tab-roster { background: var(--page); }
-    #roster-content { max-width: 900px; margin: 0 auto; }
-    .roster-list { background: var(--wh); border-radius: 0; }
+    /* Toggle switch */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 5px 0;
+    }
+    .toggle-label { font-size: 13px; color: var(--black); }
+    .toggle {
+      position: relative;
+      width: 32px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-track {
+      position: absolute;
+      inset: 0;
+      background: #ddd;
+      border-radius: 999px;
+      transition: background .2s;
+      cursor: pointer;
+    }
+    .toggle-track::before {
+      content: '';
+      position: absolute;
+      width: 14px; height: 14px;
+      left: 2px; top: 2px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform .2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,.2);
+    }
+    .toggle input:checked + .toggle-track { background: var(--blue); }
+    .toggle input:checked + .toggle-track::before { transform: translateX(14px); }
 
+    /* Roster main area */
+    .roster-main { flex: 1; min-width: 0; background: var(--wh); }
+
+    .roster-header {
+      padding: 14px 28px;
+      border-bottom: 0.5px solid var(--bdr);
+      font-size: 13px;
+      color: var(--muted);
+      background: var(--wh);
+    }
+    .roster-header strong { color: var(--black); font-weight: 600; }
+
+    /* Doctor rows */
     .doctor-row {
-      padding: 24px 32px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      padding: 22px 28px;
       border-bottom: 0.5px solid var(--bdr);
       background: var(--wh);
       transition: background .1s;
-      display: flex;
-      gap: 18px;
-      align-items: flex-start;
     }
     .doctor-row:last-child { border-bottom: none; }
     .doctor-row:hover { background: var(--page); }
@@ -233,11 +380,11 @@
       width: 40px; height: 40px;
       border-radius: 50%;
       flex-shrink: 0;
-      background: var(--blue-lt);
-      color: var(--blue);
+      background: var(--blue-av);
+      color: var(--blue-avt);
       font-family: 'Cabinet Grotesk', sans-serif;
-      font-weight: 800;
-      font-size: .85rem;
+      font-weight: 700;
+      font-size: .82rem;
       display: flex; align-items: center; justify-content: center;
       overflow: hidden;
     }
@@ -245,7 +392,7 @@
 
     .doctor-body { flex: 1; min-width: 0; }
 
-    .doctor-name-line {
+    .doctor-name-row {
       display: flex;
       align-items: center;
       gap: 8px;
@@ -258,80 +405,118 @@
       font-size: 15px;
       color: var(--black);
     }
-    .specialty-tag {
-      display: inline-flex;
-      align-items: center;
-      padding: 2px 9px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: .1px;
-    }
-    .doctor-meta { font-size: 12px; color: var(--lt); margin-bottom: 8px; }
-    .doctor-bio { font-size: 13px; color: var(--mid); line-height: 1.6; margin-bottom: 10px; }
-
-    .sub-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
-    .sub-chip {
+    .specialty-pill {
       background: var(--blue-lt);
       color: var(--blue);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 9px;
+      border-radius: 999px;
+    }
+    .doctor-meta { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+    .doctor-bio {
+      font-size: 13px;
+      color: var(--mid);
+      line-height: 1.6;
+      margin-bottom: 8px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* Sub-specialty chips — orthopedic/surgical only */
+    .sub-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+    .sub-chip {
+      border: 1px solid var(--bdr);
       border-radius: 5px;
       padding: 2px 8px;
       font-size: 11px;
-      font-weight: 600;
+      color: var(--mid);
     }
 
+    /* Footer row */
     .doctor-footer {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
+      gap: 12px;
       flex-wrap: wrap;
     }
-    .doctor-dots { display: flex; align-items: center; gap: 14px; }
-    .dot-indicator { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--lt); }
+    .doctor-dots { display: flex; align-items: center; gap: 12px; }
+    .dot-item { display: flex; align-items: center; gap: 5px; font-size: 12px; }
+    .dot-item.yes { color: var(--mid); }
+    .dot-item.no  { color: #bbb; }
     .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
     .dot.yes { background: #16a34a; }
     .dot.no  { background: #d1d5db; }
-
-    .cv-link { font-size: 13px; color: var(--blue); text-decoration: none; font-weight: 500; white-space: nowrap; }
+    .cv-link { font-size: 13px; color: var(--blue); text-decoration: none; white-space: nowrap; }
     .cv-link:hover { text-decoration: underline; }
 
-    .roster-empty { text-align: center; padding: 64px 20px; color: var(--lt); font-size: .88rem; line-height: 1.6; }
-    .loading { text-align: center; padding: 64px 20px; color: var(--lt); font-size: .88rem; }
+    .roster-empty, .loading {
+      padding: 64px 28px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
     .loading-spinner {
-      width: 34px; height: 34px;
-      border: 3px solid var(--bdr);
+      width: 30px; height: 30px;
+      border: 2.5px solid var(--bdr);
       border-top-color: var(--blue);
       border-radius: 50%;
       animation: spin .65s linear infinite;
-      margin: 0 auto 14px;
+      margin: 0 auto 12px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ── MAP ───────────────────────────────────────── */
+    /* ════════════════════════════════════════════════
+       MAP TAB
+    ════════════════════════════════════════════════ */
     .map-toolbar {
       background: var(--wh);
       border-bottom: 0.5px solid var(--bdr);
-      padding: 10px 24px;
+      padding: 10px 20px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
+      flex-shrink: 0;
     }
-    .map-split {
+    .map-toolbar select {
+      height: 36px;
+      padding: 0 12px;
+      border: 1px solid var(--bdr);
+      border-radius: 8px;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 13px;
+      color: var(--black);
+      background: var(--wh);
+      outline: none;
+      cursor: pointer;
+      min-width: 160px;
+    }
+    .map-toolbar select:focus { border-color: var(--blue); }
+    .map-toolbar-count { font-size: 12px; color: var(--muted); margin-left: auto; }
+
+    .map-body {
       display: flex;
       flex: 1;
-      height: calc(100vh - 210px);
-      min-height: 400px;
+      min-height: 0;
+      height: calc(100vh - 175px);
     }
+
     .map-list-panel {
-      width: 300px;
+      width: 280px;
       flex-shrink: 0;
       overflow-y: auto;
       border-right: 0.5px solid var(--bdr);
       background: var(--wh);
     }
     .map-list-item {
-      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 12px 14px;
       border-bottom: 0.5px solid var(--bdr);
       cursor: pointer;
       transition: background .1s;
@@ -339,94 +524,197 @@
     .map-list-item:last-child { border-bottom: none; }
     .map-list-item:hover { background: var(--page); }
     .map-list-item.selected { background: var(--blue-lt); }
-    .map-item-name {
+    .map-list-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: var(--blue-av);
+      color: var(--blue-avt);
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .map-list-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .map-list-info { min-width: 0; }
+    .map-list-name {
       font-family: 'Cabinet Grotesk', sans-serif;
       font-weight: 700;
       font-size: 13px;
       color: var(--black);
-      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-    .map-item-meta { font-size: 11px; color: var(--lt); }
-    #map { flex: 1; }
+    .map-list-meta { font-size: 11px; color: var(--muted); }
 
-    .leaflet-popup-content-wrapper { border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,.12); font-family: 'Open Sans', sans-serif; }
-    .map-popup-name { font-family: 'Cabinet Grotesk', sans-serif; font-weight: 700; font-size: .9rem; color: var(--black); }
-    .map-popup-detail { font-size: .78rem; color: var(--lt); margin-top: 2px; }
+    /* Map itself */
+    .map-wrap { flex: 1; position: relative; }
+    #map { width: 100%; height: 100%; }
 
-    /* ── FEE SCHEDULE ──────────────────────────────── */
-    #tab-fees { padding: 32px 24px; max-width: 900px; margin: 0 auto; width: 100%; }
-    .fee-section { margin-bottom: 40px; }
-    .fee-section-title {
+    /* Floating info card */
+    #map-info-card {
+      display: none;
+      position: absolute;
+      bottom: 24px;
+      left: 16px;
+      z-index: 1000;
+      background: var(--wh);
+      border-radius: 10px;
+      box-shadow: 0 4px 24px rgba(0,0,0,.14);
+      padding: 14px 16px;
+      min-width: 220px;
+      max-width: 280px;
+    }
+    #map-info-card.visible { display: block; }
+    .info-card-name {
       font-family: 'Cabinet Grotesk', sans-serif;
-      font-weight: 800;
-      font-size: 1.05rem;
+      font-weight: 700;
+      font-size: 14px;
       color: var(--black);
-      margin-bottom: 4px;
+      margin-bottom: 3px;
     }
-    .fee-section-sub { font-size: .8rem; color: var(--lt); margin-bottom: 14px; line-height: 1.5; }
+    .info-card-specialty { font-size: 12px; color: var(--muted); margin-bottom: 2px; }
+    .info-card-city { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+    .info-card-link {
+      font-size: 12px;
+      color: var(--blue);
+      text-decoration: none;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .info-card-link:hover { text-decoration: underline; }
+    .info-card-close {
+      position: absolute;
+      top: 8px; right: 10px;
+      font-size: 16px;
+      color: #bbb;
+      cursor: pointer;
+      line-height: 1;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+    .info-card-close:hover { color: var(--black); }
+
+    .leaflet-popup-content-wrapper {
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.12);
+      font-family: 'Open Sans', sans-serif;
+      font-size: 13px;
+    }
+    .leaflet-popup-content { margin: 10px 14px; }
+
+    /* ════════════════════════════════════════════════
+       FEE SCHEDULE TAB
+    ════════════════════════════════════════════════ */
+    #tab-fees { padding: 32px 28px; flex-direction: column !important; }
+    #tab-fees .inner { max-width: 800px; width: 100%; margin: 0 auto; }
+
+    .fee-section { margin-bottom: 36px; }
+    .fee-group-title {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--black);
+      margin-bottom: 3px;
+    }
+    .fee-group-sub { font-size: 12px; color: var(--muted); margin-bottom: 12px; line-height: 1.5; }
     .fee-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     .fee-table {
       width: 100%;
-      min-width: 400px;
+      min-width: 360px;
       border-collapse: collapse;
       background: var(--wh);
-      border-radius: var(--radius);
+      border-radius: 8px;
       overflow: hidden;
-      box-shadow: 0 2px 12px rgba(44,57,219,.07);
+      border: 0.5px solid var(--bdr);
     }
     .fee-table th {
       background: var(--blue);
       color: #fff;
-      font-family: 'Cabinet Grotesk', sans-serif;
-      font-weight: 700;
-      font-size: .82rem;
-      padding: 11px 20px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 10px 18px;
       text-align: left;
-      letter-spacing: .2px;
+      letter-spacing: .1px;
     }
-    .fee-table td { padding: 11px 20px; font-size: .875rem; border-top: 1px solid var(--bdr); color: var(--black); }
+    .fee-table td {
+      padding: 10px 18px;
+      font-size: 13px;
+      border-top: 0.5px solid var(--bdr);
+      color: var(--black);
+    }
     .fee-table tr:nth-child(even) td { background: var(--page); }
-    .fee-table td:last-child { font-weight: 700; color: var(--blue); }
-    .fee-note { font-size: .78rem; color: var(--lt); margin-top: 4px; font-style: italic; line-height: 1.5; }
+    .fee-table td:last-child { font-weight: 600; color: var(--blue); }
+    .fee-note { font-size: 12px; color: var(--muted); margin-top: 6px; font-style: italic; }
 
-    /* ── FEE ESTIMATOR ─────────────────────────────── */
-    #estimator-frame { width: 100%; height: calc(100vh - 152px); min-height: 500px; border: none; display: block; }
+    /* ════════════════════════════════════════════════
+       FEE ESTIMATOR TAB
+    ════════════════════════════════════════════════ */
+    #tab-estimator { flex-direction: column !important; }
+    #estimator-frame { width: 100%; height: 600px; border: none; display: block; flex-shrink: 0; }
 
-    /* ── RESPONSIVE ────────────────────────────────── */
+    /* ════════════════════════════════════════════════
+       CONTACT BAR (bottom)
+    ════════════════════════════════════════════════ */
+    .contact-bar {
+      border-top: 0.5px solid var(--bdr);
+      padding: 20px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+      background: var(--wh);
+      margin-top: auto;
+      flex-shrink: 0;
+    }
+    .contact-bar a { color: var(--muted); text-decoration: none; }
+    .contact-bar a:hover { color: var(--blue); }
+    .contact-bar .sep { margin: 0 6px; opacity: .4; }
+
+    /* ════════════════════════════════════════════════
+       MOBILE
+    ════════════════════════════════════════════════ */
     @media (max-width: 700px) {
-      .gate-card { padding: 32px 22px 28px; }
-      .gate-headline { font-size: 1.38rem; }
-      .doctor-row { padding: 18px 16px; }
+      #gate { flex-direction: column; }
+      .gate-left { width: 100%; min-width: 0; padding: 36px 24px; }
+      .gate-right { display: none; }
+      #tab-roster { flex-direction: column !important; }
+      .roster-sidebar { width: 100%; min-height: auto; position: static; max-height: none; border-right: none; border-bottom: 0.5px solid var(--bdr); }
+      .map-body { flex-direction: column; height: auto; }
+      .map-list-panel { width: 100%; height: 200px; border-right: none; border-bottom: 0.5px solid var(--bdr); }
+      #map { height: 360px; }
+      .header-contact { display: none; }
       #tab-fees { padding: 20px 16px; }
-      .map-split { flex-direction: column; height: auto; }
-      .map-list-panel { width: 100%; height: 220px; border-right: none; border-bottom: 0.5px solid var(--bdr); }
-      #map { height: 380px; }
     }
   </style>
 </head>
 <body>
 
-<!-- ─── GATE ──────────────────────────────────────────────────── -->
+<!-- ══════════════════════════════════════════════════════
+     GATE
+═══════════════════════════════════════════════════════ -->
 <div id="gate">
-  <div class="gate-card">
-    <div class="gate-logo">
-      <a href="#">
-        <svg width="192" height="33" viewBox="0 0 1920 330" xmlns="http://www.w3.org/2000/svg" aria-label="CaseLynx">
-          <defs><style>.cls-1{fill:#2c39db}.cls-2{fill:#6e80ff}</style></defs>
-          <g fill="#1A1A1A">
-            <path d="M427.5,145.1c0-69.19,41.58-123.32,115.43-123.32,53.06,0,89.62,27.25,106.47,74.21l-35.13,25.81c-7.53-36.21-29.76-61.66-70.98-61.66-49.47,0-72.77,35.13-72.77,84.96s23.3,84.96,72.77,84.96c41.23,0,63.45-25.81,70.98-61.66l35.13,25.81c-16.85,46.6-53.42,74.21-106.47,74.21-73.85,0-115.43-54.13-115.43-123.32Z"/>
-            <path d="M674.16,227.91c0-24.74,17.21-39.79,45.53-50.91l58.43-24.74c-1.43-17.57-9.32-29.39-33.34-29.39s-41.58,13.62-51.62,31.9l-24.02-28.68c13.62-18.64,40.87-38.72,79.59-38.72,43.38,0,67.75,24.74,67.75,67.75v65.6c0,7.89,2.87,10.4,9.32,10.4h11.11v34.42h-24.74c-18.64,0-33.34-8.61-33.34-33.7v-12.91c-5.38,22.94-22.23,50.19-58.79,50.19-28.68,0-45.89-16.13-45.89-41.23ZM734.39,237.95c26.53,0,44.45-15.77,44.45-39.44v-18.64l-44.81,20.08c-15.06,6.81-21.15,12.91-21.15,21.87,0,10.04,6.81,16.13,21.51,16.13Z"/>
-            <path d="M849.48,226.47l23.66-25.09c9.68,17.56,31.19,35.49,62.38,35.49,17.21,0,28.32-6.09,28.32-18.64s-13.26-17.21-32.62-21.87l-23.3-5.74c-27.6-6.45-53.06-18.64-53.06-50.54s26.17-52.34,66.32-52.34c37.28,0,63.45,17.92,74.21,37.64l-23.66,25.09c-12.19-19.36-30.83-30.83-53.41-30.83-15.42,0-25.81,6.45-25.81,18.28,0,12.55,9.32,17.21,32.98,23.3l21.15,5.38c39.08,10.04,53.42,25.81,53.42,50.91,0,34.41-29.04,51.62-65.96,51.62s-71.34-15.06-84.6-42.66Z"/>
-            <path d="M1019.78,178.44c0-54.85,34.06-91.06,83.17-91.06,52.34,0,81.38,34.77,81.38,83.17,0,6.45-.72,13.98-1.43,17.57h-124.76c2.15,31.19,20.43,48.04,48.04,48.04,30.47,0,44.09-15.77,50.55-30.47l24.74,25.81c-13.26,20.08-36.92,37.64-75.64,37.64-51.98,0-86.04-36.21-86.04-90.7ZM1058.49,162.3h89.62c-2.87-27.6-18.64-42.66-45.17-42.66-24.74,0-41.23,14.34-44.45,42.66Z"/>
-            <path d="M1222.69,265.55V25.36h40.51v204.34h122.96v35.85h-163.47Z"/>
-            <path d="M1377.57,298.89l19-32.27c9.32,13.26,20.08,23.3,36.21,23.3,13.62,0,22.23-6.09,28.68-25.45l3.23-9.68h-24.74l-57.72-163.83h44.09l31.55,98.94,12.55,46.6,12.55-46.6,31.19-98.94h44.45l-64.53,186.78c-12.55,35.13-32.98,47.68-61.3,47.68-25.09,0-45.53-12.91-55.21-26.53Z"/>
-            <path d="M1575.47,265.55V90.96h40.15v47.68c6.45-27.6,24.38-51.26,59.15-51.26s54.85,20.43,54.85,56.64v121.53h-40.51v-109.34c0-21.51-7.17-36.21-34.06-36.21-29.4,0-39.43,19-39.43,47.68v97.87h-40.15Z"/>
-            <path d="M1742.19,265.55l61.66-87.47-58.08-87.11h45.89l25.09,39.44,16.13,27.96,15.42-26.89,25.81-40.51h45.89l-60.59,86.4,58.79,88.19h-45.89l-25.81-40.51-16.49-27.6-16.13,27.25-25.81,40.87h-45.89Z"/>
-          </g>
-          <polygon class="cls-1" points="366.39 153.64 240.67 265.55 1.73 265.55 127.45 153.64 366.39 153.64"/>
-          <polygon class="cls-2" points="240 4.58 240 134.01 119.93 134.01 0 240.82 0 4.58 120.02 93.46 240 4.58"/>
-        </svg>
-      </a>
+
+  <!-- Left: form -->
+  <div class="gate-left">
+    <div class="gate-logo-wrap">
+      <svg width="148" height="26" viewBox="0 0 1920 330" xmlns="http://www.w3.org/2000/svg" aria-label="CaseLynx">
+        <defs><style>.g1{fill:#1a56db}.g2{fill:#6e80ff}</style></defs>
+        <g fill="#1a1a1a">
+          <path d="M427.5,145.1c0-69.19,41.58-123.32,115.43-123.32,53.06,0,89.62,27.25,106.47,74.21l-35.13,25.81c-7.53-36.21-29.76-61.66-70.98-61.66-49.47,0-72.77,35.13-72.77,84.96s23.3,84.96,72.77,84.96c41.23,0,63.45-25.81,70.98-61.66l35.13,25.81c-16.85,46.6-53.42,74.21-106.47,74.21-73.85,0-115.43-54.13-115.43-123.32Z"/>
+          <path d="M674.16,227.91c0-24.74,17.21-39.79,45.53-50.91l58.43-24.74c-1.43-17.57-9.32-29.39-33.34-29.39s-41.58,13.62-51.62,31.9l-24.02-28.68c13.62-18.64,40.87-38.72,79.59-38.72,43.38,0,67.75,24.74,67.75,67.75v65.6c0,7.89,2.87,10.4,9.32,10.4h11.11v34.42h-24.74c-18.64,0-33.34-8.61-33.34-33.7v-12.91c-5.38,22.94-22.23,50.19-58.79,50.19-28.68,0-45.89-16.13-45.89-41.23ZM734.39,237.95c26.53,0,44.45-15.77,44.45-39.44v-18.64l-44.81,20.08c-15.06,6.81-21.15,12.91-21.15,21.87,0,10.04,6.81,16.13,21.51,16.13Z"/>
+          <path d="M849.48,226.47l23.66-25.09c9.68,17.56,31.19,35.49,62.38,35.49,17.21,0,28.32-6.09,28.32-18.64s-13.26-17.21-32.62-21.87l-23.3-5.74c-27.6-6.45-53.06-18.64-53.06-50.54s26.17-52.34,66.32-52.34c37.28,0,63.45,17.92,74.21,37.64l-23.66,25.09c-12.19-19.36-30.83-30.83-53.41-30.83-15.42,0-25.81,6.45-25.81,18.28,0,12.55,9.32,17.21,32.98,23.3l21.15,5.38c39.08,10.04,53.42,25.81,53.42,50.91,0,34.41-29.04,51.62-65.96,51.62s-71.34-15.06-84.6-42.66Z"/>
+          <path d="M1019.78,178.44c0-54.85,34.06-91.06,83.17-91.06,52.34,0,81.38,34.77,81.38,83.17,0,6.45-.72,13.98-1.43,17.57h-124.76c2.15,31.19,20.43,48.04,48.04,48.04,30.47,0,44.09-15.77,50.55-30.47l24.74,25.81c-13.26,20.08-36.92,37.64-75.64,37.64-51.98,0-86.04-36.21-86.04-90.7ZM1058.49,162.3h89.62c-2.87-27.6-18.64-42.66-45.17-42.66-24.74,0-41.23,14.34-44.45,42.66Z"/>
+          <path d="M1222.69,265.55V25.36h40.51v204.34h122.96v35.85h-163.47Z"/>
+          <path d="M1377.57,298.89l19-32.27c9.32,13.26,20.08,23.3,36.21,23.3,13.62,0,22.23-6.09,28.68-25.45l3.23-9.68h-24.74l-57.72-163.83h44.09l31.55,98.94,12.55,46.6,12.55-46.6,31.19-98.94h44.45l-64.53,186.78c-12.55,35.13-32.98,47.68-61.3,47.68-25.09,0-45.53-12.91-55.21-26.53Z"/>
+          <path d="M1575.47,265.55V90.96h40.15v47.68c6.45-27.6,24.38-51.26,59.15-51.26s54.85,20.43,54.85,56.64v121.53h-40.51v-109.34c0-21.51-7.17-36.21-34.06-36.21-29.4,0-39.43,19-39.43,47.68v97.87h-40.15Z"/>
+          <path d="M1742.19,265.55l61.66-87.47-58.08-87.11h45.89l25.09,39.44,16.13,27.96,15.42-26.89,25.81-40.51h45.89l-60.59,86.4,58.79,88.19h-45.89l-25.81-40.51-16.49-27.6-16.13,27.25-25.81,40.87h-45.89Z"/>
+        </g>
+        <polygon class="g1" points="366.39 153.64 240.67 265.55 1.73 265.55 127.45 153.64 366.39 153.64"/>
+        <polygon class="g2" points="240 4.58 240 134.01 119.93 134.01 0 240.82 0 4.58 120.02 93.46 240 4.58"/>
+      </svg>
     </div>
 
     <h1 class="gate-headline">High-quality medical expert testimony, effortlessly.</h1>
@@ -445,34 +733,39 @@
         <label for="g-email">Work email</label>
         <input id="g-email" type="email" placeholder="jane@smithlaw.com" autocomplete="email" required>
       </div>
-
       <label class="attest-row">
         <input type="checkbox" id="g-attest">
         <span>I confirm I am accessing this on behalf of a law firm, insurance carrier, or claims organization.</span>
       </label>
-
-      <button type="submit" id="unlock-btn" disabled>Unlock Expert Network</button>
+      <button type="submit" id="unlock-btn" disabled>View our experts →</button>
       <div id="gate-error"></div>
     </form>
 
-    <p class="gate-footer">For law firms, insurers, and claims professionals only.</p>
+    <p class="gate-fine">For law firms, insurers, and claims professionals only.</p>
   </div>
-</div>
 
-<!-- ─── APP ───────────────────────────────────────────────────── -->
+  <!-- Right: image panel -->
+  <div class="gate-right">
+    <div class="gate-right-content">
+      <div class="gate-ghost">IME / CME / Records</div>
+      <div class="gate-right-headline">Florida's expert testimony network.</div>
+      <div class="gate-right-sub">Board-certified specialists available for IME, CME, and record review — statewide.</div>
+    </div>
+  </div>
+
+</div><!-- /#gate -->
+
+<!-- ══════════════════════════════════════════════════════
+     APP
+═══════════════════════════════════════════════════════ -->
 <div id="app">
 
-  <div class="contact-bar">
-    <a href="mailto:hello@caselynx.co">hello@caselynx.co</a>
-    &nbsp;·&nbsp;
-    <a href="tel:+14073749080">(407) 374-9080</a>
-  </div>
-
-  <div class="app-header">
-    <a href="#">
-      <svg width="152" height="26" viewBox="0 0 1920 330" xmlns="http://www.w3.org/2000/svg" aria-label="CaseLynx">
-        <defs><style>.hcls-1{fill:#2c39db}.hcls-2{fill:#6e80ff}</style></defs>
-        <g fill="#1A1A1A">
+  <!-- Header -->
+  <header class="app-header">
+    <a class="header-brand" href="#">
+      <svg width="110" height="19" viewBox="0 0 1920 330" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs><style>.h1{fill:#1a56db}.h2{fill:#6e80ff}</style></defs>
+        <g fill="#1a1a1a">
           <path d="M427.5,145.1c0-69.19,41.58-123.32,115.43-123.32,53.06,0,89.62,27.25,106.47,74.21l-35.13,25.81c-7.53-36.21-29.76-61.66-70.98-61.66-49.47,0-72.77,35.13-72.77,84.96s23.3,84.96,72.77,84.96c41.23,0,63.45-25.81,70.98-61.66l35.13,25.81c-16.85,46.6-53.42,74.21-106.47,74.21-73.85,0-115.43-54.13-115.43-123.32Z"/>
           <path d="M674.16,227.91c0-24.74,17.21-39.79,45.53-50.91l58.43-24.74c-1.43-17.57-9.32-29.39-33.34-29.39s-41.58,13.62-51.62,31.9l-24.02-28.68c13.62-18.64,40.87-38.72,79.59-38.72,43.38,0,67.75,24.74,67.75,67.75v65.6c0,7.89,2.87,10.4,9.32,10.4h11.11v34.42h-24.74c-18.64,0-33.34-8.61-33.34-33.7v-12.91c-5.38,22.94-22.23,50.19-58.79,50.19-28.68,0-45.89-16.13-45.89-41.23ZM734.39,237.95c26.53,0,44.45-15.77,44.45-39.44v-18.64l-44.81,20.08c-15.06,6.81-21.15,12.91-21.15,21.87,0,10.04,6.81,16.13,21.51,16.13Z"/>
           <path d="M849.48,226.47l23.66-25.09c9.68,17.56,31.19,35.49,62.38,35.49,17.21,0,28.32-6.09,28.32-18.64s-13.26-17.21-32.62-21.87l-23.3-5.74c-27.6-6.45-53.06-18.64-53.06-50.54s26.17-52.34,66.32-52.34c37.28,0,63.45,17.92,74.21,37.64l-23.66,25.09c-12.19-19.36-30.83-30.83-53.41-30.83-15.42,0-25.81,6.45-25.81,18.28,0,12.55,9.32,17.21,32.98,23.3l21.15,5.38c39.08,10.04,53.42,25.81,53.42,50.91,0,34.41-29.04,51.62-65.96,51.62s-71.34-15.06-84.6-42.66Z"/>
@@ -482,100 +775,144 @@
           <path d="M1575.47,265.55V90.96h40.15v47.68c6.45-27.6,24.38-51.26,59.15-51.26s54.85,20.43,54.85,56.64v121.53h-40.51v-109.34c0-21.51-7.17-36.21-34.06-36.21-29.4,0-39.43,19-39.43,47.68v97.87h-40.15Z"/>
           <path d="M1742.19,265.55l61.66-87.47-58.08-87.11h45.89l25.09,39.44,16.13,27.96,15.42-26.89,25.81-40.51h45.89l-60.59,86.4,58.79,88.19h-45.89l-25.81-40.51-16.49-27.6-16.13,27.25-25.81,40.87h-45.89Z"/>
         </g>
-        <polygon class="hcls-1" points="366.39 153.64 240.67 265.55 1.73 265.55 127.45 153.64 366.39 153.64"/>
-        <polygon class="hcls-2" points="240 4.58 240 134.01 119.93 134.01 0 240.82 0 4.58 120.02 93.46 240 4.58"/>
+        <polygon class="h1" points="366.39 153.64 240.67 265.55 1.73 265.55 127.45 153.64 366.39 153.64"/>
+        <polygon class="h2" points="240 4.58 240 134.01 119.93 134.01 0 240.82 0 4.58 120.02 93.46 240 4.58"/>
       </svg>
+      <span class="header-tag">Expert Network</span>
     </a>
-  </div>
-
-  <div class="tabs" role="tablist">
-    <button class="tab-btn active" data-tab="roster"    role="tab" aria-selected="true">Roster</button>
-    <button class="tab-btn"        data-tab="map"       role="tab" aria-selected="false">Map</button>
-    <button class="tab-btn"        data-tab="fees"      role="tab" aria-selected="false">Fee Schedule</button>
-    <button class="tab-btn"        data-tab="estimator" role="tab" aria-selected="false">Fee Estimator</button>
-  </div>
-
-  <!-- ROSTER -->
-  <div id="tab-roster" class="tab-panel active">
-    <div class="filter-toolbar">
-      <select id="filter-specialty" aria-label="Filter by specialty">
-        <option value="">All Specialties</option>
-      </select>
-      <select id="filter-county" aria-label="Filter by county">
-        <option value="">All Counties</option>
-      </select>
-      <span class="filter-count" id="roster-count"></span>
+    <div class="header-contact">
+      <a href="mailto:hello@caselynx.co">hello@caselynx.co</a>
+      <span class="sep">·</span>
+      <a href="tel:+14073749080">(407) 374-9080</a>
     </div>
-    <div id="roster-content">
-      <div class="loading">
-        <div class="loading-spinner"></div>
-        Loading experts…
+  </header>
+
+  <!-- Tabs -->
+  <div class="tabs" role="tablist">
+    <button class="tab-btn active" data-tab="roster"     role="tab" aria-selected="true">Roster</button>
+    <button class="tab-btn"        data-tab="map"        role="tab" aria-selected="false">Map</button>
+    <button class="tab-btn"        data-tab="fees"       role="tab" aria-selected="false">Fee Schedule</button>
+    <button class="tab-btn"        data-tab="estimator"  role="tab" aria-selected="false">Fee Estimator</button>
+  </div>
+
+  <!-- ── ROSTER ────────────────────────────────────── -->
+  <div id="tab-roster" class="tab-panel active">
+
+    <!-- Sidebar -->
+    <aside class="roster-sidebar" id="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Specialty</div>
+        <div id="sidebar-specialties"></div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">County</div>
+        <div id="sidebar-counties"></div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Availability</div>
+        <div class="toggle-row">
+          <span class="toggle-label">Travels</span>
+          <label class="toggle">
+            <input type="checkbox" id="toggle-travels">
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+        <div class="toggle-row" style="margin-top:8px">
+          <span class="toggle-label">Comments on minors</span>
+          <label class="toggle">
+            <input type="checkbox" id="toggle-minors">
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main roster -->
+    <div class="roster-main">
+      <div class="roster-header" id="roster-count-bar">Loading…</div>
+      <div id="roster-list">
+        <div class="loading">
+          <div class="loading-spinner"></div>
+          Loading experts…
+        </div>
       </div>
     </div>
+
   </div>
 
-  <!-- MAP -->
+  <!-- ── MAP ──────────────────────────────────────── -->
   <div id="tab-map" class="tab-panel">
     <div class="map-toolbar">
-      <select id="map-filter-specialty" aria-label="Filter map by specialty">
+      <select id="map-specialty-filter">
         <option value="">All Specialties</option>
       </select>
-      <span class="filter-count" id="map-count"></span>
+      <span class="map-toolbar-count" id="map-count"></span>
     </div>
-    <div class="map-split">
+    <div class="map-body">
       <div class="map-list-panel" id="map-list"></div>
-      <div id="map"></div>
+      <div class="map-wrap">
+        <div id="map"></div>
+        <div id="map-info-card">
+          <button class="info-card-close" id="info-card-close">×</button>
+          <div class="info-card-name" id="ic-name"></div>
+          <div class="info-card-specialty" id="ic-specialty"></div>
+          <div class="info-card-city" id="ic-city"></div>
+          <a class="info-card-link" id="ic-roster-link">View on roster →</a>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- FEE SCHEDULE -->
+  <!-- ── FEE SCHEDULE ─────────────────────────────── -->
   <div id="tab-fees" class="tab-panel">
-    <div class="fee-section">
-      <div class="fee-section-title">Group 1 — Surgical Specialists</div>
-      <div class="fee-section-sub">Orthopedic Surgery · Neurosurgery</div>
-      <div class="fee-table-wrap">
-        <table class="fee-table">
-          <thead><tr><th>Service</th><th>Fee</th></tr></thead>
-          <tbody>
-            <tr><td>IME / CME</td><td>$5,750</td></tr>
-            <tr><td>Record Review Only</td><td>$3,500</td></tr>
-            <tr><td>Exam Only</td><td>$2,250</td></tr>
-          </tbody>
-        </table>
+    <div class="inner">
+      <div class="fee-section">
+        <div class="fee-group-title">Group 1 — Surgical Specialists</div>
+        <div class="fee-group-sub">Orthopedic Surgery · Neurosurgery</div>
+        <div class="fee-table-wrap">
+          <table class="fee-table">
+            <thead><tr><th>Service</th><th>Fee</th></tr></thead>
+            <tbody>
+              <tr><td>IME / CME</td><td>$5,750</td></tr>
+              <tr><td>Record Review Only</td><td>$3,500</td></tr>
+              <tr><td>Exam Only</td><td>$2,250</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
-    <div class="fee-section">
-      <div class="fee-section-title">Group 2 — Non-Surgical Specialists</div>
-      <div class="fee-section-sub">Physiatry · Neurology · Pain Management · Cardiology · Psychiatry · Podiatry · Urology</div>
-      <div class="fee-table-wrap">
-        <table class="fee-table">
-          <thead><tr><th>Service</th><th>Fee</th></tr></thead>
-          <tbody>
-            <tr><td>IME / CME</td><td>$4,600</td></tr>
-            <tr><td>Record Review Only</td><td>$2,800</td></tr>
-            <tr><td>Exam Only</td><td>$1,800</td></tr>
-          </tbody>
-        </table>
+      <div class="fee-section">
+        <div class="fee-group-title">Group 2 — Non-Surgical Specialists</div>
+        <div class="fee-group-sub">Physiatry · Neurology · Pain Management · Cardiology · Psychiatry · Podiatry · Urology</div>
+        <div class="fee-table-wrap">
+          <table class="fee-table">
+            <thead><tr><th>Service</th><th>Fee</th></tr></thead>
+            <tbody>
+              <tr><td>IME / CME</td><td>$4,600</td></tr>
+              <tr><td>Record Review Only</td><td>$2,800</td></tr>
+              <tr><td>Exam Only</td><td>$1,800</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
-    <div class="fee-section">
-      <div class="fee-section-title">Group 3 — General Practice</div>
-      <div class="fee-section-sub">Dentistry / Oral Surgery · Chiropractic · Family Medicine / Internal Medicine</div>
-      <div class="fee-table-wrap">
-        <table class="fee-table">
-          <thead><tr><th>Service</th><th>Fee</th></tr></thead>
-          <tbody>
-            <tr><td>IME / CME</td><td>$3,750</td></tr>
-            <tr><td>Record Review Only</td><td>$2,275</td></tr>
-            <tr><td>Exam Only</td><td>$1,475</td></tr>
-          </tbody>
-        </table>
+      <div class="fee-section">
+        <div class="fee-group-title">Group 3 — General Practice</div>
+        <div class="fee-group-sub">Dentistry / Oral Surgery · Chiropractic · Family Medicine / Internal Medicine</div>
+        <div class="fee-table-wrap">
+          <table class="fee-table">
+            <thead><tr><th>Service</th><th>Fee</th></tr></thead>
+            <tbody>
+              <tr><td>IME / CME</td><td>$3,750</td></tr>
+              <tr><td>Record Review Only</td><td>$2,275</td></tr>
+              <tr><td>Exam Only</td><td>$1,475</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
+      <p class="fee-note">Page overages, imaging, expedite, and court-related services billed separately.</p>
     </div>
-    <p class="fee-note">Page overages, imaging, expedite, and court-related services billed separately.</p>
   </div>
 
-  <!-- FEE ESTIMATOR -->
+  <!-- ── FEE ESTIMATOR ─────────────────────────────── -->
   <div id="tab-estimator" class="tab-panel">
     <iframe
       id="estimator-frame"
@@ -583,6 +920,13 @@
       title="CaseLynx Fee Estimator"
       allowfullscreen
     ></iframe>
+  </div>
+
+  <!-- Contact bar -->
+  <div class="contact-bar">
+    <a href="mailto:hello@caselynx.co">hello@caselynx.co</a>
+    <span class="sep">·</span>
+    <a href="tel:+14073749080">(407) 374-9080</a>
   </div>
 
 </div><!-- /#app -->
@@ -599,32 +943,23 @@ const SPECIALTY_LABELS = {
   'CARDIOLOGY':     'Cardiology',
   'DENTAL_SURGERY': 'Dental Surgery',
 };
-const SPECIALTY_COLORS = {
-  'ORTHOPEDICS':    { bg: '#ECEEFA', color: '#2C39DB' },
-  'NEUROSURGERY':   { bg: '#F4EFFC', color: '#6b21a8' },
-  'NEUROLOGY':      { bg: '#EDE9FE', color: '#7c3aed' },
-  'CARDIOLOGY':     { bg: '#FEE2E2', color: '#dc2626' },
-  'DENTAL_SURGERY': { bg: '#FEF3C7', color: '#d97706' },
-};
-// Show sub-specialty chips only for these specialties
+
+// Sub-specialty chips only for these
 const SURGICAL_RELS = new Set(['ORTHOPEDICS', 'NEUROSURGERY']);
 
 // ── HELPERS ───────────────────────────────────────────────────────
 function initials(name) {
   if (!name) return '?';
   const parts = name.trim().split(/\s+/);
-  return parts.length === 1
-    ? parts[0][0].toUpperCase()
+  return parts.length === 1 ? parts[0][0].toUpperCase()
     : (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-function specialtyTag(rel) {
-  const label = SPECIALTY_LABELS[rel] || 'Specialist';
-  const s = SPECIALTY_COLORS[rel] || { bg: '#f4f4f6', color: '#676767' };
-  return `<span class="specialty-tag" style="background:${s.bg};color:${s.color}">${label}</span>`;
+function specialtyLabel(rel) {
+  return SPECIALTY_LABELS[rel] || rel || 'Specialist';
 }
 
-function formatKeyword(kw) {
+function formatKw(kw) {
   return kw.split('_').map(w => w.charAt(0) + w.slice(1).toLowerCase()).join(' ');
 }
 
@@ -638,22 +973,18 @@ function cvMailto(name) {
   return `mailto:hello@caselynx.co?subject=${sub}&body=${body}`;
 }
 
-function dotIndicator(val, label) {
-  const yes = val === 'YES' || val === 'Yes' || val === true;
-  return `<span class="dot-indicator"><span class="dot ${yes ? 'yes' : 'no'}"></span>${label}</span>`;
-}
+function isYes(v) { return v === 'YES' || v === 'Yes' || v === true; }
 
-function pinColor(rel) {
-  return (SPECIALTY_COLORS[rel] || { color: '#2C39DB' }).color;
+function avatarHtml(d, size) {
+  const url = d.headshot?.url;
+  const sz  = size || 40;
+  if (url) return `<div class="doctor-avatar" style="width:${sz}px;height:${sz}px"><img src="${url}" alt="${d.name}" loading="lazy"></div>`;
+  return `<div class="doctor-avatar" style="width:${sz}px;height:${sz}px">${initials(d.name)}</div>`;
 }
 
 function utmParams() {
   const p = new URLSearchParams(window.location.search);
-  return {
-    utm_source:   p.get('utm_source')   || '',
-    utm_medium:   p.get('utm_medium')   || '',
-    utm_campaign: p.get('utm_campaign') || '',
-  };
+  return { utm_source: p.get('utm_source')||'', utm_medium: p.get('utm_medium')||'', utm_campaign: p.get('utm_campaign')||'' };
 }
 
 // ── GATE ──────────────────────────────────────────────────────────
@@ -677,28 +1008,22 @@ attestEl.addEventListener('change', () => { unlockBtn.disabled = !attestEl.check
 gateForm.addEventListener('submit', async e => {
   e.preventDefault();
   gateErr.style.display = 'none';
-
   const name  = document.getElementById('g-name').value.trim();
   const firm  = document.getElementById('g-firm').value.trim();
   const email = document.getElementById('g-email').value.trim();
-
   if (!name || !firm || !email) return showGateError('Please complete all fields.');
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showGateError('Please enter a valid work email address.');
-
   unlockBtn.disabled = true;
-  unlockBtn.textContent = 'Unlocking…';
-
+  unlockBtn.textContent = 'Loading…';
   const utms = utmParams();
-  const qs = Object.entries(utms).filter(([,v]) => v).map(([k,v]) => `${k}=${encodeURIComponent(v)}`).join('&');
-
+  const qs = Object.entries(utms).filter(([,v])=>v).map(([k,v])=>`${k}=${encodeURIComponent(v)}`).join('&');
   try {
-    await fetch(`${API_BASE}/experts-gate${qs ? '?' + qs : ''}`, {
+    await fetch(`${API_BASE}/experts-gate${qs?'?'+qs:''}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, firm, email }),
     });
-  } catch (_) { /* don't block on API error */ }
-
+  } catch(_) {}
   sessionStorage.setItem('caselynx_unlocked', '1');
   showApp();
 });
@@ -707,7 +1032,7 @@ function showGateError(msg) {
   gateErr.textContent = msg;
   gateErr.style.display = 'block';
   unlockBtn.disabled = !attestEl.checked;
-  unlockBtn.textContent = 'Unlock Expert Network';
+  unlockBtn.textContent = 'View our experts →';
 }
 
 // ── TABS ──────────────────────────────────────────────────────────
@@ -716,16 +1041,11 @@ let allDoctors = [];
 
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('.tab-btn').forEach(b => {
-      b.classList.remove('active');
-      b.setAttribute('aria-selected', 'false');
-    });
+    document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-
     btn.classList.add('active');
-    btn.setAttribute('aria-selected', 'true');
+    btn.setAttribute('aria-selected','true');
     document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-
     if (btn.dataset.tab === 'map' && !mapInitialized) {
       initMap(allDoctors);
       mapInitialized = true;
@@ -733,91 +1053,113 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
   });
 });
 
-// ── ROSTER ────────────────────────────────────────────────────────
-const rosterContent   = document.getElementById('roster-content');
-const filterSpecialty = document.getElementById('filter-specialty');
-const filterCounty    = document.getElementById('filter-county');
-const rosterCount     = document.getElementById('roster-count');
+// ── ROSTER + SIDEBAR ──────────────────────────────────────────────
+const rosterListEl = document.getElementById('roster-list');
+const countBarEl   = document.getElementById('roster-count-bar');
+
+// Filter state
+let selSpecialties = new Set();
+let selCounties    = new Set();
+let filterTravels  = false;
+let filterMinors   = false;
 
 async function loadRoster() {
   try {
     const res = await fetch(`${API_BASE}/doctors`);
-    if (!res.ok) throw new Error(`${res.status}`);
+    if (!res.ok) throw new Error(res.status);
     allDoctors = await res.json();
-    populateFilters(allDoctors);
-    renderRoster(allDoctors);
+    buildSidebar(allDoctors);
+    applyFilters();
   } catch {
-    rosterContent.innerHTML = `
-      <div class="roster-empty">
-        Unable to load the expert roster.<br>Please contact
-        <a href="mailto:hello@caselynx.co" style="color:var(--blue)">hello@caselynx.co</a>
-        if this persists.
-      </div>`;
+    rosterListEl.innerHTML = `<div class="roster-empty">Unable to load roster. Contact <a href="mailto:hello@caselynx.co" style="color:var(--blue)">hello@caselynx.co</a>.</div>`;
+    countBarEl.textContent = '';
   }
 }
 
-function populateFilters(doctors) {
+function buildSidebar(doctors) {
   const specialties = [...new Set(doctors.map(d => d.relationship).filter(Boolean))].sort();
   const counties    = [...new Set(doctors.flatMap(d => Array.isArray(d.flCounty) ? d.flCounty : []).filter(Boolean))].sort();
 
+  const spEl = document.getElementById('sidebar-specialties');
+  spEl.innerHTML = '';
   specialties.forEach(s => {
-    const o = document.createElement('option');
-    o.value = s; o.textContent = SPECIALTY_LABELS[s] || s;
-    filterSpecialty.appendChild(o);
+    const lbl = document.createElement('label');
+    lbl.className = 'sidebar-option';
+    lbl.innerHTML = `<input type="checkbox" value="${s}"><span>${specialtyLabel(s)}</span>`;
+    lbl.querySelector('input').addEventListener('change', e => {
+      if (e.target.checked) selSpecialties.add(s); else selSpecialties.delete(s);
+      applyFilters();
+    });
+    spEl.appendChild(lbl);
   });
+
+  const coEl = document.getElementById('sidebar-counties');
+  coEl.innerHTML = '';
   counties.forEach(c => {
-    const o = document.createElement('option');
-    o.value = c; o.textContent = formatCounty(c) + ' County';
-    filterCounty.appendChild(o);
+    const lbl = document.createElement('label');
+    lbl.className = 'sidebar-option';
+    lbl.innerHTML = `<input type="checkbox" value="${c}"><span>${formatCounty(c)}</span>`;
+    lbl.querySelector('input').addEventListener('change', e => {
+      if (e.target.checked) selCounties.add(c); else selCounties.delete(c);
+      applyFilters();
+    });
+    coEl.appendChild(lbl);
   });
+
+  document.getElementById('toggle-travels').addEventListener('change', e => { filterTravels = e.target.checked; applyFilters(); });
+  document.getElementById('toggle-minors').addEventListener('change',  e => { filterMinors  = e.target.checked; applyFilters(); });
 }
 
-filterSpecialty.addEventListener('change', applyFilters);
-filterCounty.addEventListener('change', applyFilters);
-
 function applyFilters() {
-  const sp = filterSpecialty.value;
-  const co = filterCounty.value;
-  renderRoster(allDoctors.filter(d =>
-    (!sp || d.relationship === sp) &&
-    (!co || (Array.isArray(d.flCounty) && d.flCounty.includes(co)))
-  ));
+  const filtered = allDoctors.filter(d => {
+    if (selSpecialties.size > 0 && !selSpecialties.has(d.relationship)) return false;
+    if (selCounties.size > 0) {
+      const dc = Array.isArray(d.flCounty) ? d.flCounty : [];
+      if (!dc.some(c => selCounties.has(c))) return false;
+    }
+    if (filterTravels && !isYes(d.willingnessToTravel)) return false;
+    if (filterMinors  && !isYes(d.willingnessToCommentOnMinors)) return false;
+    return true;
+  });
+  renderRoster(filtered);
 }
 
 function renderRoster(doctors) {
-  if (!doctors.length) {
-    rosterCount.textContent = '';
-    rosterContent.innerHTML = '<div class="roster-empty">No experts match the selected filters.</div>';
+  const n = doctors.length;
+  countBarEl.innerHTML = `<strong>${n}</strong> specialist${n !== 1 ? 's' : ''}`;
+
+  if (!n) {
+    rosterListEl.innerHTML = '<div class="roster-empty">No specialists match the selected filters.</div>';
     return;
   }
 
-  rosterCount.textContent = `${doctors.length} specialist${doctors.length !== 1 ? 's' : ''}`;
-
   const rows = doctors.map(d => {
-    const headshotUrl = d.headshot?.url || null;
-    const keywords    = Array.isArray(d.subSpecialtyKeywords) ? d.subSpecialtyKeywords : [];
-    const counties    = Array.isArray(d.flCounty) ? d.flCounty : [];
-    const location    = [d.city ? d.city + ', FL' : null, counties.map(formatCounty).join(' · ') || null].filter(Boolean).join(' — ');
-    const showChips   = SURGICAL_RELS.has(d.relationship) && keywords.length > 0;
+    const kws      = Array.isArray(d.subSpecialtyKeywords) ? d.subSpecialtyKeywords : [];
+    const counties = Array.isArray(d.flCounty) ? d.flCounty : [];
+    const showChips = SURGICAL_RELS.has(d.relationship) && kws.length > 0;
+    const meta     = [d.city ? d.city + ', FL' : null, counties.map(formatCounty).join(' · ') || null].filter(Boolean).join(' · ');
+    const trav     = isYes(d.willingnessToTravel);
+    const min      = isYes(d.willingnessToCommentOnMinors);
 
-    const avatar = headshotUrl
+    const headshotUrl = d.headshot?.url;
+    const ava = headshotUrl
       ? `<div class="doctor-avatar"><img src="${headshotUrl}" alt="${d.name}" loading="lazy"></div>`
       : `<div class="doctor-avatar">${initials(d.name)}</div>`;
 
-    return `<div class="doctor-row">
-      ${avatar}
+    return `<div class="doctor-row" data-id="${d.id}">
+      ${ava}
       <div class="doctor-body">
-        <div class="doctor-name-line">
+        <div class="doctor-name-row">
           <span class="doctor-name">${d.name || '—'}</span>
-          ${specialtyTag(d.relationship)}
+          <span class="specialty-pill">${specialtyLabel(d.relationship)}</span>
         </div>
-        ${location ? `<div class="doctor-meta">${location}</div>` : ''}
+        ${meta ? `<div class="doctor-meta">${meta}</div>` : ''}
         ${d.bio ? `<div class="doctor-bio">${d.bio}</div>` : ''}
-        ${showChips ? `<div class="sub-chips">${keywords.map(k => `<span class="sub-chip">${formatKeyword(k)}</span>`).join('')}</div>` : ''}
+        ${showChips ? `<div class="sub-chips">${kws.map(k=>`<span class="sub-chip">${formatKw(k)}</span>`).join('')}</div>` : ''}
         <div class="doctor-footer">
           <div class="doctor-dots">
-            ${dotIndicator(d.willingnessToTravel, 'Travels')}
-            ${dotIndicator(d.willingnessToCommentOnMinors, 'Comments on Minors')}
+            <span class="dot-item ${trav?'yes':'no'}"><span class="dot ${trav?'yes':'no'}"></span>Travels</span>
+            <span class="dot-item ${min?'yes':'no'}"><span class="dot ${min?'yes':'no'}"></span>Comments on minors</span>
           </div>
           <a class="cv-link" href="${cvMailto(d.name)}">Request CV →</a>
         </div>
@@ -825,109 +1167,125 @@ function renderRoster(doctors) {
     </div>`;
   }).join('');
 
-  rosterContent.innerHTML = `<div class="roster-list">${rows}</div>`;
+  rosterListEl.innerHTML = rows;
 }
 
 // ── MAP ───────────────────────────────────────────────────────────
 let mapInstance  = null;
-let mapMarkers   = {};    // id → { marker, doctor }
-let selectedId   = null;
+let mapMarkerMap = {};   // id → { marker, doctor }
+let selectedMapId = null;
 
 function initMap(doctors) {
-  mapInstance = L.map('map').setView([27.8, -81.7], 7);
+  mapInstance = L.map('map', { zoomControl: true }).setView([27.8, -83.5], 6.8);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     maxZoom: 18,
   }).addTo(mapInstance);
 
-  // Populate map specialty filter
-  const mapFilter    = document.getElementById('map-filter-specialty');
-  const mapCountEl   = document.getElementById('map-count');
-  const specialties  = [...new Set(doctors.map(d => d.relationship).filter(Boolean))].sort();
-  specialties.forEach(s => {
+  // Populate map specialty dropdown
+  const sel = document.getElementById('map-specialty-filter');
+  const sps = [...new Set(doctors.map(d => d.relationship).filter(Boolean))].sort();
+  sps.forEach(s => {
     const o = document.createElement('option');
-    o.value = s; o.textContent = SPECIALTY_LABELS[s] || s;
-    mapFilter.appendChild(o);
+    o.value = s; o.textContent = specialtyLabel(s);
+    sel.appendChild(o);
   });
-  mapFilter.addEventListener('change', () => renderMap(allDoctors, mapFilter.value, mapCountEl));
+  sel.addEventListener('change', () => renderMapView(allDoctors, sel.value));
 
-  renderMap(doctors, '', mapCountEl);
+  // Info card close button
+  document.getElementById('info-card-close').addEventListener('click', () => {
+    document.getElementById('map-info-card').classList.remove('visible');
+  });
+
+  renderMapView(doctors, '');
 }
 
-function renderMap(doctors, specialtyFilter, countEl) {
-  // Clear existing markers
-  Object.values(mapMarkers).forEach(({ marker }) => marker.remove());
-  mapMarkers = {};
+function renderMapView(doctors, specialtyFilter) {
+  // Clear old markers
+  Object.values(mapMarkerMap).forEach(({ marker }) => marker.remove());
+  mapMarkerMap = {};
 
-  const listEl  = document.getElementById('map-list');
+  const listEl = document.getElementById('map-list');
   listEl.innerHTML = '';
 
   const filtered = specialtyFilter ? doctors.filter(d => d.relationship === specialtyFilter) : doctors;
-  if (countEl) countEl.textContent = `${filtered.length} specialist${filtered.length !== 1 ? 's' : ''}`;
+  document.getElementById('map-count').textContent = `${filtered.length} specialist${filtered.length !== 1 ? 's' : ''}`;
 
   filtered.forEach(d => {
     const lat = parseFloat(d.lattitude);
     const lng = parseFloat(d.longitude);
-    const hasCoords = lat && lng && !isNaN(lat) && !isNaN(lng);
+    const hasCoords = !isNaN(lat) && !isNaN(lng) && (lat !== 0 || lng !== 0);
+    const specL = specialtyLabel(d.relationship);
+    const city  = d.city ? `${d.city}, FL` : '';
 
     // List item
     const item = document.createElement('div');
     item.className = 'map-list-item';
     item.dataset.id = d.id;
-    const specLabel = SPECIALTY_LABELS[d.relationship] || '';
-    const city      = d.city ? `${d.city}, FL` : '';
-    item.innerHTML  = `<div class="map-item-name">${d.name || '—'}</div>
-      <div class="map-item-meta">${[specLabel, city].filter(Boolean).join(' · ')}</div>`;
+
+    const headshotUrl = d.headshot?.url;
+    const ava = headshotUrl
+      ? `<div class="map-list-avatar"><img src="${headshotUrl}" alt="${d.name}" loading="lazy"></div>`
+      : `<div class="map-list-avatar">${initials(d.name)}</div>`;
+
+    item.innerHTML = `${ava}<div class="map-list-info">
+      <div class="map-list-name">${d.name || '—'}</div>
+      <div class="map-list-meta">${[specL, city].filter(Boolean).join(' · ')}</div>
+    </div>`;
 
     item.addEventListener('click', () => {
-      if (!hasCoords) return;
-      // Deselect previous
-      if (selectedId !== null) {
-        const prev = listEl.querySelector(`[data-id="${selectedId}"]`);
-        if (prev) prev.classList.remove('selected');
-      }
-      item.classList.add('selected');
-      selectedId = d.id;
-      mapInstance.flyTo([lat, lng], 12, { animate: true, duration: 0.6 });
-      mapMarkers[d.id]?.marker.openPopup();
+      selectMapDoctor(d, item);
+      if (hasCoords) mapInstance.flyTo([lat, lng], 12, { animate: true, duration: 0.5 });
     });
 
     listEl.appendChild(item);
 
-    // Map marker
     if (!hasCoords) return;
-    const color = pinColor(d.relationship);
-    const icon  = L.divIcon({
-      className: '',
-      html: `<div style="width:13px;height:13px;background:${color};border:2.5px solid #fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.3)"></div>`,
-      iconSize:    [13, 13],
-      iconAnchor:  [6, 6],
-      popupAnchor: [0, -10],
-    });
 
-    const marker = L.marker([lat, lng], { icon })
-      .addTo(mapInstance)
-      .bindPopup(`
-        <div class="map-popup-name">${d.name || '—'}</div>
-        <div class="map-popup-detail">${specLabel}</div>
-        ${city ? `<div class="map-popup-detail">📍 ${city}</div>` : ''}
-      `);
+    // Pin
+    const marker = L.circleMarker([lat, lng], {
+      radius: 7,
+      fillColor: '#1a56db',
+      color: '#fff',
+      weight: 2,
+      fillOpacity: 1,
+    }).addTo(mapInstance);
 
     marker.on('click', () => {
-      if (selectedId !== null) {
-        const prev = listEl.querySelector(`[data-id="${selectedId}"]`);
-        if (prev) prev.classList.remove('selected');
-      }
-      const li = listEl.querySelector(`[data-id="${d.id}"]`);
-      if (li) {
-        li.classList.add('selected');
-        li.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-      }
-      selectedId = d.id;
+      selectMapDoctor(d, item);
+      item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     });
 
-    mapMarkers[d.id] = { marker, doctor: d };
+    mapMarkerMap[d.id] = { marker, doctor: d };
   });
+}
+
+function selectMapDoctor(d, listItem) {
+  // Deselect previous
+  if (selectedMapId !== null) {
+    const prev = document.querySelector(`#map-list .map-list-item[data-id="${selectedMapId}"]`);
+    if (prev) prev.classList.remove('selected');
+    mapMarkerMap[selectedMapId]?.marker.setStyle({ fillColor: '#1a56db', weight: 2 });
+  }
+  selectedMapId = d.id;
+  listItem.classList.add('selected');
+  mapMarkerMap[d.id]?.marker.setStyle({ fillColor: '#0d3fa8', weight: 3 });
+
+  // Show floating info card
+  const card = document.getElementById('map-info-card');
+  document.getElementById('ic-name').textContent = d.name || '—';
+  document.getElementById('ic-specialty').textContent = specialtyLabel(d.relationship);
+  document.getElementById('ic-city').textContent = d.city ? `${d.city}, FL` : '';
+  const rosterLink = document.getElementById('ic-roster-link');
+  rosterLink.onclick = () => {
+    // Switch to Roster tab and scroll to row
+    document.querySelector('[data-tab="roster"]').click();
+    setTimeout(() => {
+      const row = document.querySelector(`.doctor-row[data-id="${d.id}"]`);
+      if (row) row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+  };
+  card.classList.add('visible');
 }
 </script>
 </body>
