@@ -1088,7 +1088,7 @@
           </table>
         </div>
       </div>
-      <p class="fee-note">Page overages, imaging, expedite, and court-related services billed separately.</p>
+      <p class="fee-note">Other fees (e.g. travel, teleconference calls, imaging) billed separately.</p>
     </div>
   </div>
 
@@ -1455,9 +1455,10 @@ function initMap(doctors) {
     `<div class="legend-item"><span class="legend-dot" style="background:${e.color}"></span>${e.label}</div>`
   ).join('');
 
-  // Dismiss info card when clicking the map background (not a pin or the card)
-  mapInstance.getContainer().addEventListener('mousedown', e => {
-    if (e.target.closest('.cl-pin') || e.target.closest('#map-info-card')) return;
+  // Dismiss info card on background map click.
+  // Leaflet stops click propagation from markers to the map, so this only
+  // fires when the user clicks the map background — never on a pin.
+  mapInstance.on('click', () => {
     document.getElementById('map-info-card').classList.remove('visible');
     if (selectedMapId !== null) {
       const prev = document.querySelector(`#map-list .map-list-item[data-id="${selectedMapId}"]`);
