@@ -566,6 +566,7 @@
     /* Map itself */
     .map-wrap { flex: 1; position: relative; }
     #map { width: 100%; height: 100%; }
+    .cl-pin { cursor: pointer; background: transparent !important; border: none !important; }
 
     /* Floating info card */
     #map-info-card {
@@ -1235,14 +1236,18 @@ const SPECIALTY_PIN_COLORS = {
 function pinColor(rel) { return SPECIALTY_PIN_COLORS[rel] || '#5F5E5A'; }
 
 function makePinIcon(color, selected) {
-  const size = selected ? 16 : 12;
-  const ring = selected ? `box-shadow:0 0 0 3px #fff,0 0 0 5px ${color};` : 'box-shadow:0 1px 4px rgba(0,0,0,.35);';
+  const viz  = selected ? 16 : 12;
+  const hit  = 28; // invisible hit area — much easier to click
+  const off  = (hit - viz) / 2;
+  const ring = selected
+    ? `box-shadow:0 0 0 3px #fff,0 0 0 5px ${color};`
+    : 'box-shadow:0 1px 4px rgba(0,0,0,.35);';
   return L.divIcon({
-    className: '',
-    html: `<div style="width:${size}px;height:${size}px;background:${color};border:2px solid rgba(255,255,255,0.9);border-radius:50%;${ring}"></div>`,
-    iconSize:    [size, size],
-    iconAnchor:  [size / 2, size / 2],
-    popupAnchor: [0, -size],
+    className: 'cl-pin',
+    html: `<div style="position:absolute;width:${viz}px;height:${viz}px;top:${off}px;left:${off}px;background:${color};border:2px solid rgba(255,255,255,0.9);border-radius:50%;${ring};pointer-events:none"></div>`,
+    iconSize:    [hit, hit],
+    iconAnchor:  [hit / 2, hit / 2],
+    popupAnchor: [0, -(viz / 2 + off)],
   });
 }
 
@@ -1288,9 +1293,9 @@ function initMap(doctors) {
     `<div class="legend-item"><span class="legend-dot" style="background:${e.color}"></span>${e.label}</div>`
   ).join('');
 
-  // Close info card on map click (suppressed when a pin was just clicked)
-  mapInstance.on('click', () => {
-    if (suppressMapClick) return;
+  // Dismiss info card when clicking the map background (not a pin or the card)
+  mapInstance.getContainer().addEventListener('mousedown', e => {
+    if (e.target.closest('.cl-pin') || e.target.closest('#map-info-card')) return;
     document.getElementById('map-info-card').classList.remove('visible');
     if (selectedMapId !== null) {
       const prev = document.querySelector(`#map-list .map-list-item[data-id="${selectedMapId}"]`);
@@ -1353,10 +1358,8 @@ function renderMapView(doctors, specialtyFilter) {
 
     const marker = L.marker([lat, lng], { icon: makePinIcon(color, false) }).addTo(mapInstance);
 
-    // Pin click — suppress map click handler, no zoom change
+    // Pin click — no zoom change
     marker.on('click', () => {
-      suppressMapClick = true;
-      setTimeout(() => { suppressMapClick = false; }, 50);
       selectMapDoctor(d, item);
       item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     });
