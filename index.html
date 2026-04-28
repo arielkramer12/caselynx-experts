@@ -239,6 +239,20 @@
     .header-contact a { color: var(--muted); text-decoration: none; }
     .header-contact a:hover { color: var(--blue); }
     .header-contact .sep { opacity: .4; }
+    .submit-case-btn {
+      border: 1px solid var(--blue);
+      color: var(--blue);
+      background: var(--wh);
+      border-radius: 20px;
+      padding: 7px 16px;
+      font-size: 13px;
+      font-family: 'Open Sans', sans-serif;
+      font-weight: 500;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: background .15s, color .15s;
+    }
+    .submit-case-btn:hover { background: var(--blue); color: #fff; }
 
     /* Tabs */
     .tabs {
@@ -819,6 +833,7 @@
       <a href="mailto:hello@caselynx.co">hello@caselynx.co</a>
       <span class="sep">·</span>
       <a href="tel:+14073749080">(407) 374-9080</a>
+      <a class="submit-case-btn" href="mailto:hello@caselynx.co?subject=Case%20Request&body=Hi%20CaseLynx%20team%2C%0D%0A%0D%0APlease%20find%20my%20case%20request%20details%20below%3A%0D%0A%0D%0APlaintiff%20Name%3A%0D%0ADate%20of%20Birth%3A%0D%0ADate%20of%20Loss%3A%0D%0AService%20Requested%20(IME%20%2F%20CME%20%2F%20Record%20Review)%3A%0D%0AMedical%20Specialty%3A%0D%0AExam%20Location%20(if%20applicable)%3A%0D%0ATimeline%3A%0D%0AAdditional%20Details%20(e.g.%20specific%20bodily%20injuries%2C%20other%20considerations)%3A%0D%0A%0D%0AThanks%2C">Submit a case</a>
     </div>
   </header>
 
@@ -964,6 +979,8 @@
     <a href="mailto:hello@caselynx.co">hello@caselynx.co</a>
     <span class="sep">·</span>
     <a href="tel:+14073749080">(407) 374-9080</a>
+    <span class="sep">·</span>
+    <a href="mailto:hello@caselynx.co?subject=Case%20Request&body=Hi%20CaseLynx%20team%2C%0D%0A%0D%0APlease%20find%20my%20case%20request%20details%20below%3A%0D%0A%0D%0APlaintiff%20Name%3A%0D%0ADate%20of%20Birth%3A%0D%0ADate%20of%20Loss%3A%0D%0AService%20Requested%20(IME%20%2F%20CME%20%2F%20Record%20Review)%3A%0D%0AMedical%20Specialty%3A%0D%0AExam%20Location%20(if%20applicable)%3A%0D%0ATimeline%3A%0D%0AAdditional%20Details%20(e.g.%20specific%20bodily%20injuries%2C%20other%20considerations)%3A%0D%0A%0D%0AThanks%2C" style="color:var(--blue);font-weight:500">Submit a case →</a>
   </div>
 
 </div><!-- /#app -->
