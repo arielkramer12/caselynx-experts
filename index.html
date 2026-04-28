@@ -606,6 +606,41 @@
     }
     .leaflet-popup-content { margin: 10px 14px; }
 
+    /* Map legend */
+    .map-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 16px;
+      padding: 8px 20px 10px;
+      background: var(--wh);
+      border-bottom: 0.5px solid var(--bdr);
+      flex-shrink: 0;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--mid);
+    }
+    .legend-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* Info card dot indicators */
+    .ic-dots { display: flex; gap: 12px; margin-bottom: 10px; }
+    .ic-dot-item { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--muted); }
+
+    /* Roster row flash */
+    @keyframes rowFlash {
+      0%   { background: var(--wh); }
+      30%  { background: #EEF2FD; }
+      100% { background: var(--wh); }
+    }
+    .row-flash { animation: rowFlash 1s ease forwards; }
+
     /* ════════════════════════════════════════════════
        FEE SCHEDULE TAB
     ════════════════════════════════════════════════ */
@@ -848,6 +883,7 @@
       </select>
       <span class="map-toolbar-count" id="map-count"></span>
     </div>
+    <div class="map-legend" id="map-legend"></div>
     <div class="map-body">
       <div class="map-list-panel" id="map-list"></div>
       <div class="map-wrap">
@@ -857,7 +893,8 @@
           <div class="info-card-name" id="ic-name"></div>
           <div class="info-card-specialty" id="ic-specialty"></div>
           <div class="info-card-city" id="ic-city"></div>
-          <a class="info-card-link" id="ic-roster-link">View on roster →</a>
+          <div class="ic-dots" id="ic-dots"></div>
+          <a class="info-card-link" id="ic-roster-link">View full profile →</a>
         </div>
       </div>
     </div>
@@ -1171,18 +1208,42 @@ function renderRoster(doctors) {
 }
 
 // ── MAP ───────────────────────────────────────────────────────────
-let mapInstance  = null;
-let mapMarkerMap = {};   // id → { marker, doctor }
+const SPECIALTY_PIN_COLORS = {
+  'ORTHOPEDICS':    '#1a56db',
+  'NEUROSURGERY':   '#1a56db',
+  'NEUROLOGY':      '#0F6E56',
+  'CARDIOLOGY':     '#993556',
+  'DENTAL_SURGERY': '#5F5E5A',
+};
+function pinColor(rel) { return SPECIALTY_PIN_COLORS[rel] || '#5F5E5A'; }
+
+function makePinIcon(color, selected) {
+  const size = selected ? 16 : 12;
+  const ring = selected ? `box-shadow:0 0 0 3px #fff,0 0 0 5px ${color};` : 'box-shadow:0 1px 4px rgba(0,0,0,.35);';
+  return L.divIcon({
+    className: '',
+    html: `<div style="width:${size}px;height:${size}px;background:${color};border:2px solid rgba(255,255,255,0.9);border-radius:50%;${ring}"></div>`,
+    iconSize:    [size, size],
+    iconAnchor:  [size / 2, size / 2],
+    popupAnchor: [0, -size],
+  });
+}
+
+let mapInstance   = null;
+let mapMarkerMap  = {};   // id → { marker, doctor, color }
 let selectedMapId = null;
 
 function initMap(doctors) {
   mapInstance = L.map('map', { zoomControl: true }).setView([27.8, -83.5], 6.8);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    maxZoom: 18,
+
+  // CartoDB Positron tiles
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+    subdomains: 'abcd',
+    maxZoom: 19,
   }).addTo(mapInstance);
 
-  // Populate map specialty dropdown
+  // Specialty dropdown
   const sel = document.getElementById('map-specialty-filter');
   const sps = [...new Set(doctors.map(d => d.relationship).filter(Boolean))].sort();
   sps.forEach(s => {
@@ -1192,7 +1253,36 @@ function initMap(doctors) {
   });
   sel.addEventListener('change', () => renderMapView(allDoctors, sel.value));
 
-  // Info card close button
+  // Build legend (only specialties present in active doctors)
+  const legendEl = document.getElementById('map-legend');
+  const presentRels = [...new Set(doctors.map(d => d.relationship).filter(Boolean))];
+  // Merge ORTHOPEDICS + NEUROSURGERY under one blue entry
+  const legendEntries = [];
+  if (presentRels.includes('ORTHOPEDICS') || presentRels.includes('NEUROSURGERY')) {
+    legendEntries.push({ color: '#1a56db', label: 'Orthopedics / Neurosurgery' });
+  }
+  ['NEUROLOGY','CARDIOLOGY','DENTAL_SURGERY'].forEach(r => {
+    if (presentRels.includes(r)) legendEntries.push({ color: pinColor(r), label: specialtyLabel(r) });
+  });
+  const otherRels = presentRels.filter(r => !SPECIALTY_PIN_COLORS[r]);
+  if (otherRels.length) legendEntries.push({ color: '#5F5E5A', label: 'Other' });
+  legendEl.innerHTML = legendEntries.map(e =>
+    `<div class="legend-item"><span class="legend-dot" style="background:${e.color}"></span>${e.label}</div>`
+  ).join('');
+
+  // Close info card on map click
+  mapInstance.on('click', () => {
+    document.getElementById('map-info-card').classList.remove('visible');
+    if (selectedMapId !== null) {
+      const prev = document.querySelector(`#map-list .map-list-item[data-id="${selectedMapId}"]`);
+      if (prev) prev.classList.remove('selected');
+      const entry = mapMarkerMap[selectedMapId];
+      if (entry) entry.marker.setIcon(makePinIcon(entry.color, false));
+      selectedMapId = null;
+    }
+  });
+
+  // Close button
   document.getElementById('info-card-close').addEventListener('click', () => {
     document.getElementById('map-info-card').classList.remove('visible');
   });
@@ -1201,9 +1291,10 @@ function initMap(doctors) {
 }
 
 function renderMapView(doctors, specialtyFilter) {
-  // Clear old markers
   Object.values(mapMarkerMap).forEach(({ marker }) => marker.remove());
   mapMarkerMap = {};
+  selectedMapId = null;
+  document.getElementById('map-info-card').classList.remove('visible');
 
   const listEl = document.getElementById('map-list');
   listEl.innerHTML = '';
@@ -1217,75 +1308,84 @@ function renderMapView(doctors, specialtyFilter) {
     const hasCoords = !isNaN(lat) && !isNaN(lng) && (lat !== 0 || lng !== 0);
     const specL = specialtyLabel(d.relationship);
     const city  = d.city ? `${d.city}, FL` : '';
+    const color = pinColor(d.relationship);
 
     // List item
     const item = document.createElement('div');
     item.className = 'map-list-item';
     item.dataset.id = d.id;
-
     const headshotUrl = d.headshot?.url;
     const ava = headshotUrl
       ? `<div class="map-list-avatar"><img src="${headshotUrl}" alt="${d.name}" loading="lazy"></div>`
       : `<div class="map-list-avatar">${initials(d.name)}</div>`;
-
     item.innerHTML = `${ava}<div class="map-list-info">
       <div class="map-list-name">${d.name || '—'}</div>
       <div class="map-list-meta">${[specL, city].filter(Boolean).join(' · ')}</div>
     </div>`;
 
+    // List click — no zoom change
     item.addEventListener('click', () => {
       selectMapDoctor(d, item);
-      if (hasCoords) mapInstance.flyTo([lat, lng], 12, { animate: true, duration: 0.5 });
     });
 
     listEl.appendChild(item);
 
     if (!hasCoords) return;
 
-    // Pin
-    const marker = L.circleMarker([lat, lng], {
-      radius: 7,
-      fillColor: '#1a56db',
-      color: '#fff',
-      weight: 2,
-      fillOpacity: 1,
-    }).addTo(mapInstance);
+    const marker = L.marker([lat, lng], { icon: makePinIcon(color, false) }).addTo(mapInstance);
 
-    marker.on('click', () => {
+    // Pin click — no zoom change
+    marker.on('click', e => {
+      L.DomEvent.stopPropagation(e);
       selectMapDoctor(d, item);
       item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     });
 
-    mapMarkerMap[d.id] = { marker, doctor: d };
+    mapMarkerMap[d.id] = { marker, doctor: d, color };
   });
 }
 
 function selectMapDoctor(d, listItem) {
-  // Deselect previous
+  // Restore previous
   if (selectedMapId !== null) {
     const prev = document.querySelector(`#map-list .map-list-item[data-id="${selectedMapId}"]`);
     if (prev) prev.classList.remove('selected');
-    mapMarkerMap[selectedMapId]?.marker.setStyle({ fillColor: '#1a56db', weight: 2 });
+    const prevEntry = mapMarkerMap[selectedMapId];
+    if (prevEntry) prevEntry.marker.setIcon(makePinIcon(prevEntry.color, false));
   }
+
   selectedMapId = d.id;
   listItem.classList.add('selected');
-  mapMarkerMap[d.id]?.marker.setStyle({ fillColor: '#0d3fa8', weight: 3 });
+  const entry = mapMarkerMap[d.id];
+  if (entry) entry.marker.setIcon(makePinIcon(entry.color, true));
 
-  // Show floating info card
-  const card = document.getElementById('map-info-card');
-  document.getElementById('ic-name').textContent = d.name || '—';
+  // Populate info card
+  const trav = isYes(d.willingnessToTravel);
+  const min  = isYes(d.willingnessToCommentOnMinors);
+  document.getElementById('ic-name').textContent      = d.name || '—';
   document.getElementById('ic-specialty').textContent = specialtyLabel(d.relationship);
-  document.getElementById('ic-city').textContent = d.city ? `${d.city}, FL` : '';
+  document.getElementById('ic-city').textContent      = d.city ? `${d.city}, FL` : '';
+  document.getElementById('ic-dots').innerHTML =
+    `<span class="ic-dot-item"><span class="dot ${trav?'yes':'no'}"></span>Travels</span>` +
+    `<span class="ic-dot-item"><span class="dot ${min?'yes':'no'}"></span>Comments on minors</span>`;
+
   const rosterLink = document.getElementById('ic-roster-link');
   rosterLink.onclick = () => {
-    // Switch to Roster tab and scroll to row
+    document.getElementById('map-info-card').classList.remove('visible');
     document.querySelector('[data-tab="roster"]').click();
     setTimeout(() => {
       const row = document.querySelector(`.doctor-row[data-id="${d.id}"]`);
-      if (row) row.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 100);
+      if (row) {
+        row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        row.classList.remove('row-flash');
+        void row.offsetWidth; // force reflow to restart animation
+        row.classList.add('row-flash');
+        setTimeout(() => row.classList.remove('row-flash'), 1200);
+      }
+    }, 150);
   };
-  card.classList.add('visible');
+
+  document.getElementById('map-info-card').classList.add('visible');
 }
 </script>
 </body>
