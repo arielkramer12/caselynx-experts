@@ -724,18 +724,139 @@
     .contact-bar .sep { margin: 0 6px; opacity: .4; }
 
     /* ════════════════════════════════════════════════
-       MOBILE
+       MOBILE FILTER BUTTON + DRAWER
     ════════════════════════════════════════════════ */
-    @media (max-width: 700px) {
+    .mobile-filter-bar { display: none; }
+
+    .mobile-filter-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--bdr);
+      border-radius: 20px;
+      padding: 7px 14px;
+      font-size: 13px;
+      font-family: 'Open Sans', sans-serif;
+      background: var(--wh);
+      color: var(--black);
+      cursor: pointer;
+    }
+    .filter-badge { color: var(--blue); font-weight: 600; }
+
+    /* Overlay */
+    .drawer-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.3);
+      z-index: 2000;
+    }
+    .drawer-overlay.visible { display: block; }
+
+    /* Drawer */
+    .filter-drawer {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--wh);
+      border-radius: 16px 16px 0 0;
+      z-index: 2001;
+      transform: translateY(100%);
+      transition: transform .28s cubic-bezier(.32,0,.67,0);
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .filter-drawer.open { transform: translateY(0); }
+    .drawer-handle-bar {
+      width: 36px; height: 4px;
+      background: var(--bdr);
+      border-radius: 2px;
+      margin: 12px auto 0;
+      flex-shrink: 0;
+    }
+    .drawer-title {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      padding: 14px 20px 10px;
+      border-bottom: 0.5px solid var(--bdr);
+      flex-shrink: 0;
+    }
+    .drawer-scroll {
+      overflow-y: auto;
+      flex: 1;
+      padding: 16px 20px;
+    }
+    .drawer-section { margin-bottom: 20px; }
+    .drawer-section:last-child { margin-bottom: 0; }
+    .drawer-section-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 10px;
+    }
+    .drawer-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 20px;
+      border-top: 0.5px solid var(--bdr);
+      flex-shrink: 0;
+    }
+    .drawer-apply-btn {
+      flex: 1;
+      padding: 11px;
+      background: var(--blue);
+      color: #fff;
+      font-family: 'Open Sans', sans-serif;
+      font-weight: 600;
+      font-size: 13px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .drawer-clear-btn {
+      font-size: 13px;
+      color: var(--muted);
+      text-decoration: none;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .drawer-clear-btn:hover { color: var(--black); }
+
+    /* ════════════════════════════════════════════════
+       RESPONSIVE
+    ════════════════════════════════════════════════ */
+    @media (max-width: 768px) {
+      /* Gate */
       #gate { flex-direction: column; }
       .gate-left { width: 100%; min-width: 0; padding: 36px 24px; }
       .gate-right { display: none; }
-      #tab-roster { flex-direction: column !important; }
-      .roster-sidebar { width: 100%; min-height: auto; position: static; max-height: none; border-right: none; border-bottom: 0.5px solid var(--bdr); }
-      .map-body { flex-direction: column; height: auto; }
-      .map-list-panel { width: 100%; height: 200px; border-right: none; border-bottom: 0.5px solid var(--bdr); }
-      #map { height: 360px; }
+
+      /* Header */
       .header-contact { display: none; }
+
+      /* Roster — hide sidebar, show mobile filter bar */
+      #tab-roster { flex-direction: column !important; }
+      .roster-sidebar { display: none !important; }
+      .mobile-filter-bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 16px;
+        background: var(--wh);
+        border-bottom: 0.5px solid var(--bdr);
+      }
+      .doctor-row { padding: 16px; }
+
+      /* Map — full width, no list panel */
+      .map-list-panel { display: none !important; }
+      .map-body { height: calc(100vh - 200px); }
+      #map { height: 100% !important; }
+
+      /* Fees */
       #tab-fees { padding: 20px 16px; }
     }
   </style>
@@ -880,6 +1001,12 @@
 
     <!-- Main roster -->
     <div class="roster-main">
+      <!-- Mobile filter bar (hidden on desktop) -->
+      <div class="mobile-filter-bar" id="mobile-filter-bar">
+        <button class="mobile-filter-btn" id="mobile-filter-btn">
+          Filters <span class="filter-badge" id="filter-badge" style="display:none"></span>
+        </button>
+      </div>
       <div class="roster-header" id="roster-count-bar">Loading…</div>
       <div id="roster-list">
         <div class="loading">
@@ -985,6 +1112,38 @@
   </div>
 
 </div><!-- /#app -->
+
+<!-- Mobile drawer overlay + drawer -->
+<div class="drawer-overlay" id="drawer-overlay"></div>
+<div class="filter-drawer" id="filter-drawer">
+  <div class="drawer-handle-bar"></div>
+  <div class="drawer-title">Filters</div>
+  <div class="drawer-scroll">
+    <div class="drawer-section">
+      <div class="drawer-section-label">Specialty</div>
+      <div id="drawer-specialties"></div>
+    </div>
+    <div class="drawer-section">
+      <div class="drawer-section-label">County</div>
+      <div id="drawer-counties"></div>
+    </div>
+    <div class="drawer-section">
+      <div class="drawer-section-label">Availability</div>
+      <div class="toggle-row">
+        <span class="toggle-label">Travels</span>
+        <label class="toggle"><input type="checkbox" id="drawer-toggle-travels"><span class="toggle-track"></span></label>
+      </div>
+      <div class="toggle-row" style="margin-top:8px">
+        <span class="toggle-label">Comments on minors</span>
+        <label class="toggle"><input type="checkbox" id="drawer-toggle-minors"><span class="toggle-track"></span></label>
+      </div>
+    </div>
+  </div>
+  <div class="drawer-actions">
+    <button class="drawer-apply-btn" id="drawer-apply">Apply</button>
+    <a class="drawer-clear-btn" id="drawer-clear">Clear all</a>
+  </div>
+</div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
@@ -1135,6 +1294,7 @@ function buildSidebar(doctors) {
   const specialties = [...new Set(doctors.map(d => d.relationship).filter(Boolean))].sort();
   const counties    = [...new Set(doctors.flatMap(d => Array.isArray(d.flCounty) ? d.flCounty : []).filter(Boolean))].sort();
 
+  // ── Desktop sidebar ──
   const spEl = document.getElementById('sidebar-specialties');
   spEl.innerHTML = '';
   specialties.forEach(s => {
@@ -1143,7 +1303,7 @@ function buildSidebar(doctors) {
     lbl.innerHTML = `<input type="checkbox" value="${s}"><span>${specialtyLabel(s)}</span>`;
     lbl.querySelector('input').addEventListener('change', e => {
       if (e.target.checked) selSpecialties.add(s); else selSpecialties.delete(s);
-      applyFilters();
+      applyFilters(); updateFilterBadge();
     });
     spEl.appendChild(lbl);
   });
@@ -1156,13 +1316,32 @@ function buildSidebar(doctors) {
     lbl.innerHTML = `<input type="checkbox" value="${c}"><span>${formatCounty(c)}</span>`;
     lbl.querySelector('input').addEventListener('change', e => {
       if (e.target.checked) selCounties.add(c); else selCounties.delete(c);
-      applyFilters();
+      applyFilters(); updateFilterBadge();
     });
     coEl.appendChild(lbl);
   });
 
-  document.getElementById('toggle-travels').addEventListener('change', e => { filterTravels = e.target.checked; applyFilters(); });
-  document.getElementById('toggle-minors').addEventListener('change',  e => { filterMinors  = e.target.checked; applyFilters(); });
+  document.getElementById('toggle-travels').addEventListener('change', e => { filterTravels = e.target.checked; applyFilters(); updateFilterBadge(); });
+  document.getElementById('toggle-minors').addEventListener('change',  e => { filterMinors  = e.target.checked; applyFilters(); updateFilterBadge(); });
+
+  // ── Mobile drawer ──
+  const drSpEl = document.getElementById('drawer-specialties');
+  drSpEl.innerHTML = '';
+  specialties.forEach(s => {
+    const lbl = document.createElement('label');
+    lbl.className = 'sidebar-option';
+    lbl.innerHTML = `<input type="checkbox" value="${s}"><span>${specialtyLabel(s)}</span>`;
+    drSpEl.appendChild(lbl);
+  });
+
+  const drCoEl = document.getElementById('drawer-counties');
+  drCoEl.innerHTML = '';
+  counties.forEach(c => {
+    const lbl = document.createElement('label');
+    lbl.className = 'sidebar-option';
+    lbl.innerHTML = `<input type="checkbox" value="${c}"><span>${formatCounty(c)}</span>`;
+    drCoEl.appendChild(lbl);
+  });
 }
 
 function applyFilters() {
@@ -1235,26 +1414,9 @@ const SPECIALTY_PIN_COLORS = {
 };
 function pinColor(rel) { return SPECIALTY_PIN_COLORS[rel] || '#5F5E5A'; }
 
-function makePinIcon(color, selected) {
-  const viz  = selected ? 16 : 12;
-  const hit  = 28; // invisible hit area — much easier to click
-  const off  = (hit - viz) / 2;
-  const ring = selected
-    ? `box-shadow:0 0 0 3px #fff,0 0 0 5px ${color};`
-    : 'box-shadow:0 1px 4px rgba(0,0,0,.35);';
-  return L.divIcon({
-    className: 'cl-pin',
-    html: `<div style="position:absolute;width:${viz}px;height:${viz}px;top:${off}px;left:${off}px;background:${color};border:2px solid rgba(255,255,255,0.9);border-radius:50%;${ring};pointer-events:none"></div>`,
-    iconSize:    [hit, hit],
-    iconAnchor:  [hit / 2, hit / 2],
-    popupAnchor: [0, -(viz / 2 + off)],
-  });
-}
-
-let mapInstance      = null;
-let mapMarkerMap     = {};   // id → { marker, doctor, color }
-let selectedMapId    = null;
-let suppressMapClick = false;
+let mapInstance   = null;
+let mapMarkerMap  = {};   // id → { marker, doctor, color }
+let selectedMapId = null;
 
 function initMap(doctors) {
   mapInstance = L.map('map', { zoomControl: true }).setView([27.8, -83.5], 6.8);
@@ -1301,7 +1463,7 @@ function initMap(doctors) {
       const prev = document.querySelector(`#map-list .map-list-item[data-id="${selectedMapId}"]`);
       if (prev) prev.classList.remove('selected');
       const entry = mapMarkerMap[selectedMapId];
-      if (entry) entry.marker.setIcon(makePinIcon(entry.color, false));
+      if (entry) { entry.marker.setRadius(7); entry.marker.setStyle({ weight: 2, color: '#fff' }); }
       selectedMapId = null;
     }
   });
@@ -1356,9 +1518,17 @@ function renderMapView(doctors, specialtyFilter) {
 
     if (!hasCoords) return;
 
-    const marker = L.marker([lat, lng], { icon: makePinIcon(color, false) }).addTo(mapInstance);
+    const marker = L.circleMarker([lat, lng], {
+      radius:      7,
+      fillColor:   color,
+      color:       '#fff',
+      weight:      2,
+      opacity:     1,
+      fillOpacity: 1,
+      className:   'cl-pin',
+    }).addTo(mapInstance);
 
-    // Pin click — no zoom change
+    // Pin click
     marker.on('click', () => {
       selectMapDoctor(d, item);
       item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
@@ -1374,13 +1544,13 @@ function selectMapDoctor(d, listItem) {
     const prev = document.querySelector(`#map-list .map-list-item[data-id="${selectedMapId}"]`);
     if (prev) prev.classList.remove('selected');
     const prevEntry = mapMarkerMap[selectedMapId];
-    if (prevEntry) prevEntry.marker.setIcon(makePinIcon(prevEntry.color, false));
+    if (prevEntry) { prevEntry.marker.setRadius(7); prevEntry.marker.setStyle({ weight: 2, color: '#fff' }); }
   }
 
   selectedMapId = d.id;
   listItem.classList.add('selected');
   const entry = mapMarkerMap[d.id];
-  if (entry) entry.marker.setIcon(makePinIcon(entry.color, true));
+  if (entry) { entry.marker.setRadius(10); entry.marker.setStyle({ weight: 3, color: '#fff' }); }
 
   // Populate info card
   const trav = isYes(d.willingnessToTravel);
@@ -1410,6 +1580,82 @@ function selectMapDoctor(d, listItem) {
 
   document.getElementById('map-info-card').classList.add('visible');
 }
+
+// ── MOBILE FILTER DRAWER ──────────────────────────────────────────
+function filterActiveCount() {
+  return selSpecialties.size + selCounties.size + (filterTravels ? 1 : 0) + (filterMinors ? 1 : 0);
+}
+
+function updateFilterBadge() {
+  const n = filterActiveCount();
+  const badge = document.getElementById('filter-badge');
+  if (!badge) return;
+  if (n > 0) { badge.textContent = `· ${n}`; badge.style.display = ''; }
+  else badge.style.display = 'none';
+}
+
+function openDrawer() {
+  // Sync drawer checkboxes to current filter state before showing
+  document.querySelectorAll('#drawer-specialties input[type="checkbox"]').forEach(cb => {
+    cb.checked = selSpecialties.has(cb.value);
+  });
+  document.querySelectorAll('#drawer-counties input[type="checkbox"]').forEach(cb => {
+    cb.checked = selCounties.has(cb.value);
+  });
+  document.getElementById('drawer-toggle-travels').checked = filterTravels;
+  document.getElementById('drawer-toggle-minors').checked  = filterMinors;
+  document.getElementById('drawer-overlay').classList.add('visible');
+  document.getElementById('filter-drawer').classList.add('open');
+}
+
+function closeDrawer() {
+  document.getElementById('drawer-overlay').classList.remove('visible');
+  document.getElementById('filter-drawer').classList.remove('open');
+}
+
+document.getElementById('mobile-filter-btn').addEventListener('click', openDrawer);
+document.getElementById('drawer-overlay').addEventListener('click', closeDrawer);
+
+document.getElementById('drawer-apply').addEventListener('click', () => {
+  // Read drawer state → commit to filter vars
+  selSpecialties = new Set();
+  document.querySelectorAll('#drawer-specialties input[type="checkbox"]:checked').forEach(cb => selSpecialties.add(cb.value));
+  selCounties = new Set();
+  document.querySelectorAll('#drawer-counties input[type="checkbox"]:checked').forEach(cb => selCounties.add(cb.value));
+  filterTravels = document.getElementById('drawer-toggle-travels').checked;
+  filterMinors  = document.getElementById('drawer-toggle-minors').checked;
+
+  // Keep desktop sidebar in sync
+  document.querySelectorAll('#sidebar-specialties input[type="checkbox"]').forEach(cb => { cb.checked = selSpecialties.has(cb.value); });
+  document.querySelectorAll('#sidebar-counties input[type="checkbox"]').forEach(cb => { cb.checked = selCounties.has(cb.value); });
+  document.getElementById('toggle-travels').checked = filterTravels;
+  document.getElementById('toggle-minors').checked  = filterMinors;
+
+  applyFilters();
+  updateFilterBadge();
+  closeDrawer();
+});
+
+document.getElementById('drawer-clear').addEventListener('click', () => {
+  selSpecialties = new Set();
+  selCounties    = new Set();
+  filterTravels  = false;
+  filterMinors   = false;
+
+  // Clear desktop sidebar
+  document.querySelectorAll('#sidebar-specialties input, #sidebar-counties input').forEach(cb => cb.checked = false);
+  document.getElementById('toggle-travels').checked = false;
+  document.getElementById('toggle-minors').checked  = false;
+
+  // Clear drawer
+  document.querySelectorAll('#drawer-specialties input, #drawer-counties input').forEach(cb => cb.checked = false);
+  document.getElementById('drawer-toggle-travels').checked = false;
+  document.getElementById('drawer-toggle-minors').checked  = false;
+
+  applyFilters();
+  updateFilterBadge();
+  closeDrawer();
+});
 </script>
 </body>
 </html>
