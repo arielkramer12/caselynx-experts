@@ -1246,9 +1246,10 @@ function makePinIcon(color, selected) {
   });
 }
 
-let mapInstance   = null;
-let mapMarkerMap  = {};   // id → { marker, doctor, color }
-let selectedMapId = null;
+let mapInstance      = null;
+let mapMarkerMap     = {};   // id → { marker, doctor, color }
+let selectedMapId    = null;
+let suppressMapClick = false;
 
 function initMap(doctors) {
   mapInstance = L.map('map', { zoomControl: true }).setView([27.8, -83.5], 6.8);
@@ -1287,8 +1288,9 @@ function initMap(doctors) {
     `<div class="legend-item"><span class="legend-dot" style="background:${e.color}"></span>${e.label}</div>`
   ).join('');
 
-  // Close info card on map click
+  // Close info card on map click (suppressed when a pin was just clicked)
   mapInstance.on('click', () => {
+    if (suppressMapClick) return;
     document.getElementById('map-info-card').classList.remove('visible');
     if (selectedMapId !== null) {
       const prev = document.querySelector(`#map-list .map-list-item[data-id="${selectedMapId}"]`);
@@ -1351,9 +1353,10 @@ function renderMapView(doctors, specialtyFilter) {
 
     const marker = L.marker([lat, lng], { icon: makePinIcon(color, false) }).addTo(mapInstance);
 
-    // Pin click — no zoom change
-    marker.on('click', e => {
-      L.DomEvent.stopPropagation(e);
+    // Pin click — suppress map click handler, no zoom change
+    marker.on('click', () => {
+      suppressMapClick = true;
+      setTimeout(() => { suppressMapClick = false; }, 50);
       selectMapDoctor(d, item);
       item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     });
