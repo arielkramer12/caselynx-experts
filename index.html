@@ -572,8 +572,8 @@
     #map-info-card {
       display: none;
       position: absolute;
-      top: 16px;
-      left: 16px;
+      top: 0;
+      left: 0;
       z-index: 1000;
       background: var(--wh);
       border-radius: 10px;
@@ -1582,7 +1582,42 @@ function selectMapDoctor(d, listItem) {
     }, 150);
   };
 
+  positionInfoCard(d);
   document.getElementById('map-info-card').classList.add('visible');
+}
+
+function positionInfoCard(d) {
+  const lat = parseFloat(d.lattitude);
+  const lng = parseFloat(d.longitude);
+  if (!mapInstance || isNaN(lat) || isNaN(lng)) return;
+
+  const card    = document.getElementById('map-info-card');
+  const mapWrap = document.querySelector('.map-wrap');
+  const pt      = mapInstance.latLngToContainerPoint(L.latLng(lat, lng));
+
+  const PAD    = 10;   // min gap from map edge
+  const OFFSET = 14;   // gap between pin and card edge
+  const W      = 272;  // approx card width  (max-width 280 minus scrollbar)
+  const H      = 152;  // approx card height
+
+  const mapW = mapWrap.offsetWidth;
+  const mapH = mapWrap.offsetHeight;
+
+  // Default: right of pin, above centre
+  let left = pt.x + OFFSET;
+  let top  = pt.y - H / 2;
+
+  // Flip to left if card would overflow right edge
+  if (left + W > mapW - PAD) left = pt.x - W - OFFSET;
+  // Clamp horizontally
+  if (left < PAD) left = PAD;
+
+  // Clamp vertically
+  if (top < PAD) top = PAD;
+  if (top + H > mapH - PAD) top = mapH - H - PAD;
+
+  card.style.left = left + 'px';
+  card.style.top  = top  + 'px';
 }
 
 // ── MOBILE FILTER DRAWER ──────────────────────────────────────────
