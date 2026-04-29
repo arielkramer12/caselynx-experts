@@ -386,6 +386,7 @@
       border-bottom: 0.5px solid var(--bdr);
       background: var(--wh);
       transition: background .1s;
+      cursor: pointer;
     }
     .doctor-row:last-child { border-bottom: none; }
     .doctor-row:hover { background: var(--page); }
@@ -722,6 +723,167 @@
     .contact-bar a { color: var(--muted); text-decoration: none; }
     .contact-bar a:hover { color: var(--blue); }
     .contact-bar .sep { margin: 0 6px; opacity: .4; }
+
+    /* ════════════════════════════════════════════════
+       PROFILE DRAWER
+    ════════════════════════════════════════════════ */
+    .profile-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.2);
+      z-index: 2999;
+    }
+    .profile-overlay.visible { display: block; }
+
+    .profile-drawer {
+      position: fixed;
+      top: 0; right: 0; bottom: 0;
+      width: 400px;
+      background: var(--wh);
+      z-index: 3000;
+      transform: translateX(110%);
+      transition: transform .2s ease;
+      box-shadow: -4px 0 24px rgba(0,0,0,.1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .profile-drawer.open { transform: translateX(0); }
+
+    .pd-close-btn {
+      position: absolute;
+      top: 14px; right: 16px;
+      font-size: 18px;
+      color: #888;
+      background: none;
+      border: none;
+      cursor: pointer;
+      line-height: 1;
+      padding: 4px 6px;
+      z-index: 1;
+    }
+    .pd-close-btn:hover { color: var(--black); }
+
+    .pd-drag-handle { display: none; }  /* desktop: hidden */
+
+    .pd-scroll {
+      overflow-y: auto;
+      flex: 1;
+      padding-bottom: 32px;
+    }
+    .pd-top {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 28px 24px 20px;
+      text-align: center;
+    }
+    .pd-avatar {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: var(--blue-av);
+      color: var(--blue-avt);
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.5rem;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      margin-bottom: 14px;
+      flex-shrink: 0;
+    }
+    .pd-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .pd-name {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-weight: 500;
+      font-size: 18px;
+      color: var(--black);
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+    .pd-specialty-tag {
+      background: var(--blue-lt);
+      color: var(--blue);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 999px;
+      margin-bottom: 8px;
+    }
+    .pd-location {
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .pd-divider {
+      height: 0.5px;
+      background: var(--bdr);
+      margin: 20px 24px;
+    }
+    .pd-bio {
+      font-size: 13px;
+      line-height: 1.7;
+      color: #555;
+      padding: 0 24px;
+      margin-bottom: 20px;
+    }
+    .pd-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      padding: 0 24px;
+      margin-bottom: 20px;
+    }
+    .pd-dots {
+      display: flex;
+      gap: 20px;
+      padding: 0 24px;
+      margin-bottom: 24px;
+    }
+    .pd-dot-item { display: flex; align-items: center; gap: 6px; font-size: 13px; }
+    .pd-dot-item.yes { color: var(--mid); }
+    .pd-dot-item.no  { color: #bbb; }
+    .pd-cv-btn {
+      display: block;
+      margin: 0 24px;
+      padding: 10px;
+      border: 1px solid var(--blue);
+      color: var(--blue);
+      background: var(--wh);
+      border-radius: 8px;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      text-align: center;
+      text-decoration: none;
+      transition: background .15s, color .15s;
+    }
+    .pd-cv-btn:hover { background: var(--blue); color: #fff; }
+
+    @media (max-width: 768px) {
+      .profile-drawer {
+        top: auto;
+        width: 100%;
+        max-height: 90vh;
+        border-radius: 16px 16px 0 0;
+        transform: translateY(110%);
+        box-shadow: 0 -4px 24px rgba(0,0,0,.12);
+      }
+      .profile-drawer.open { transform: translateY(0); }
+      .pd-drag-handle {
+        display: flex;
+        justify-content: center;
+        padding: 10px 0 6px;
+        flex-shrink: 0;
+        cursor: grab;
+      }
+      .pd-drag-handle::before {
+        content: '';
+        display: block;
+        width: 32px; height: 4px;
+        background: #D1D1CE;
+        border-radius: 2px;
+      }
+    }
 
     /* ════════════════════════════════════════════════
        MOBILE FILTER BUTTON + DRAWER
@@ -1112,6 +1274,14 @@
   </div>
 
 </div><!-- /#app -->
+
+<!-- Profile drawer -->
+<div class="profile-overlay" id="profile-overlay"></div>
+<div class="profile-drawer" id="profile-drawer">
+  <div class="pd-drag-handle" id="pd-drag-handle"></div>
+  <button class="pd-close-btn" id="pd-close-btn" aria-label="Close">×</button>
+  <div class="pd-scroll" id="pd-scroll"></div>
+</div>
 
 <!-- Mobile drawer overlay + drawer -->
 <div class="drawer-overlay" id="drawer-overlay"></div>
@@ -1619,6 +1789,70 @@ function positionInfoCard(d) {
   card.style.left = left + 'px';
   card.style.top  = top  + 'px';
 }
+
+// ── PROFILE DRAWER ───────────────────────────────────────────────
+function openProfileDrawer(doctor) {
+  const kws      = Array.isArray(doctor.subSpecialtyKeywords) ? doctor.subSpecialtyKeywords : [];
+  const counties = Array.isArray(doctor.flCounty) ? doctor.flCounty : [];
+  const showChips = SURGICAL_RELS.has(doctor.relationship) && kws.length > 0;
+  const trav = isYes(doctor.willingnessToTravel);
+  const min  = isYes(doctor.willingnessToCommentOnMinors);
+  const location = [
+    doctor.city ? `${doctor.city}, FL` : null,
+    counties.map(formatCounty).join(' · ') || null,
+  ].filter(Boolean).join(' · ');
+
+  const headshotUrl = doctor.headshot?.url;
+  const ava = headshotUrl
+    ? `<div class="pd-avatar"><img src="${headshotUrl}" alt="${doctor.name}" loading="lazy"></div>`
+    : `<div class="pd-avatar">${initials(doctor.name)}</div>`;
+
+  document.getElementById('pd-scroll').innerHTML = `
+    <div class="pd-top">
+      ${ava}
+      <div class="pd-name">${doctor.name || '—'}</div>
+      <span class="pd-specialty-tag">${specialtyLabel(doctor.relationship)}</span>
+      ${location ? `<div class="pd-location">${location}</div>` : ''}
+    </div>
+    <div class="pd-divider"></div>
+    ${doctor.bio ? `<div class="pd-bio">${doctor.bio}</div>` : ''}
+    ${showChips ? `<div class="pd-chips">${kws.map(k => `<span class="sub-chip">${formatKw(k)}</span>`).join('')}</div>` : ''}
+    <div class="pd-dots">
+      <span class="pd-dot-item ${trav ? 'yes' : 'no'}"><span class="dot ${trav ? 'yes' : 'no'}"></span>Travels</span>
+      <span class="pd-dot-item ${min  ? 'yes' : 'no'}"><span class="dot ${min  ? 'yes' : 'no'}"></span>Comments on minors</span>
+    </div>
+    <a class="pd-cv-btn" href="${cvMailto(doctor.name)}">Request CV →</a>
+  `;
+  document.getElementById('pd-scroll').scrollTop = 0;
+  document.getElementById('profile-overlay').classList.add('visible');
+  document.getElementById('profile-drawer').classList.add('open');
+}
+
+function closeProfileDrawer() {
+  document.getElementById('profile-overlay').classList.remove('visible');
+  document.getElementById('profile-drawer').classList.remove('open');
+}
+
+document.getElementById('profile-overlay').addEventListener('click', closeProfileDrawer);
+document.getElementById('pd-close-btn').addEventListener('click', closeProfileDrawer);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeProfileDrawer(); });
+
+// Row click — delegate from roster list, ignore CV link clicks
+document.getElementById('roster-list').addEventListener('click', e => {
+  if (e.target.closest('.cv-link')) return;
+  const row = e.target.closest('.doctor-row');
+  if (!row) return;
+  const doctor = allDoctors.find(d => String(d.id) === String(row.dataset.id));
+  if (doctor) openProfileDrawer(doctor);
+});
+
+// Mobile swipe-down to close
+;(function () {
+  let startY = 0;
+  const drawer = document.getElementById('profile-drawer');
+  drawer.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, { passive: true });
+  drawer.addEventListener('touchend',   e => { if (e.changedTouches[0].clientY - startY > 60) closeProfileDrawer(); }, { passive: true });
+})();
 
 // ── MOBILE FILTER DRAWER ──────────────────────────────────────────
 function filterActiveCount() {
