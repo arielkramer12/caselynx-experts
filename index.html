@@ -1,1039 +1,956 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CaseLynx Expert Network</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,500;0,600&display=swap" rel="stylesheet">
-  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CaseLynx Expert Network</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@400,500,600,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root {
+    --blue: #1a56db;
+    --blue-lt: #EEF2FD;
+    --blue-av: #E6F1FB;
+    --blue-avt: #0C447C;
+    --page: #fafaf8;
+    --wh: #fff;
+    --black: #1a1a1a;
+    --mid: #555;
+    --muted: #888;
+    --bdr: #e5e5e0;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Open Sans', sans-serif; background: var(--page); color: var(--black); font-size: 14px; }
+  a { color: inherit; text-decoration: none; }
+  button { cursor: pointer; font-family: inherit; }
 
-    :root {
-      --blue:     #1a56db;
-      --blue-lt:  #EEF2FD;
-      --blue-av:  #E6F1FB;
-      --blue-avt: #0C447C;
-      --page:     #fafaf8;
-      --wh:       #fff;
-      --black:    #1a1a1a;
-      --mid:      #555;
-      --muted:    #888;
-      --bdr:      #e5e5e0;
-    }
+  /* ===== GATE ===== */
+  #gate {
+    display: flex;
+    min-height: 100vh;
+  }
+  .gate-left {
+    width: 50%;
+    min-width: 360px;
+    background: var(--wh);
+    padding: 48px 44px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .gate-logo-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 32px;
+  }
+  .gate-logo-name {
+    font-family: 'Cabinet Grotesk', sans-serif;
+    font-size: 19px;
+    font-weight: 500;
+    color: var(--blue);
+  }
+  .gate-headline {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 10px;
+    font-family: 'Cabinet Grotesk', sans-serif;
+    color: var(--black);
+  }
+  .gate-subline {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.65;
+    margin-bottom: 28px;
+  }
+  .gate-form { display: flex; flex-direction: column; gap: 12px; }
+  .gate-form input {
+    width: 100%;
+    height: 40px;
+    border: 1px solid var(--bdr);
+    border-radius: 8px;
+    padding: 0 14px;
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--black);
+    background: var(--wh);
+    outline: none;
+    transition: border-color .15s;
+  }
+  .gate-form input:focus { border-color: var(--blue); }
+  .gate-attest {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--mid);
+    line-height: 1.5;
+    margin-top: 4px;
+  }
+  .gate-attest input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    accent-color: var(--blue);
+    cursor: pointer;
+  }
+  #unlock-btn {
+    width: 100%;
+    height: 42px;
+    background: var(--blue);
+    color: var(--wh);
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Cabinet Grotesk', sans-serif;
+    transition: opacity .15s;
+    margin-top: 4px;
+  }
+  #unlock-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  #unlock-btn:not(:disabled):hover { opacity: 0.9; }
+  .gate-fine {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 10px;
+    text-align: center;
+  }
+  #gate-error {
+    display: none;
+    color: #c0392b;
+    font-size: 12px;
+    margin-top: 6px;
+    background: #fdf0ee;
+    border-radius: 6px;
+    padding: 8px 12px;
+  }
+  .gate-right {
+    flex: 1;
+    background: var(--blue) url('assets/15.jpg') center/cover no-repeat;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    padding: 36px;
+    overflow: hidden;
+  }
+  .gate-right::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(26,86,219,0.82);
+    z-index: 0;
+  }
+  .gate-right-content {
+    position: relative;
+    z-index: 1;
+  }
+  .gate-ghost {
+    font-size: 64px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.1);
+    letter-spacing: -2px;
+    font-family: 'Cabinet Grotesk', sans-serif;
+    line-height: 1;
+    margin-bottom: 16px;
+  }
+  .gate-right-headline {
+    color: #fff;
+    font-size: 20px;
+    font-weight: 500;
+    font-family: 'Cabinet Grotesk', sans-serif;
+    margin-bottom: 8px;
+  }
+  .gate-right-sub {
+    color: rgba(255,255,255,0.7);
+    font-size: 13px;
+    line-height: 1.6;
+  }
 
-    body {
-      font-family: 'Open Sans', sans-serif;
-      font-size: 14px;
-      background: var(--page);
-      color: var(--black);
-      min-height: 100vh;
-    }
+  /* ===== APP ===== */
+  #app {
+    display: none;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  #app.visible { display: flex; }
 
-    /* ════════════════════════════════════════════════
-       GATE — split layout
-    ════════════════════════════════════════════════ */
-    #gate {
-      display: flex;
-      min-height: 100vh;
-    }
+  /* Header */
+  .app-header {
+    height: 56px;
+    background: var(--wh);
+    border-bottom: 0.5px solid var(--bdr);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 12px;
+    flex-shrink: 0;
+    z-index: 100;
+  }
+  .header-logo-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  .header-network-label {
+    font-size: 13px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .header-contact {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .header-contact a:hover { color: var(--blue); }
+  .header-submit-btn {
+    margin-left: 16px;
+    border: 1px solid var(--blue);
+    color: var(--blue);
+    border-radius: 20px;
+    padding: 7px 16px;
+    font-size: 13px;
+    font-family: inherit;
+    background: transparent;
+    white-space: nowrap;
+    transition: background .15s;
+  }
+  .header-submit-btn:hover { background: var(--blue-lt); }
 
-    /* Left panel */
-    .gate-left {
-      width: 50%;
-      min-width: 360px;
-      background: var(--wh);
-      padding: 48px 44px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-    .gate-logo-wrap {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      margin-bottom: 36px;
-    }
-    .gate-logo-wrap svg { display: block; }
-    .gate-logo-name {
-      font-family: 'Cabinet Grotesk', sans-serif;
-      font-weight: 500;
-      font-size: 19px;
-      color: var(--blue);
-      line-height: 1;
-    }
-    .gate-headline {
-      font-family: 'Open Sans', sans-serif;
-      font-weight: 500;
-      font-size: 18px;
-      color: var(--black);
-      line-height: 1.35;
-      margin-bottom: 10px;
-    }
-    .gate-subline {
-      font-size: 13px;
-      color: var(--muted);
-      line-height: 1.65;
-      margin-bottom: 28px;
-    }
+  /* Nav */
+  .app-nav {
+    background: var(--wh);
+    border-bottom: 0.5px solid var(--bdr);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 0;
+    flex-shrink: 0;
+    overflow-x: auto;
+  }
+  .nav-tab {
+    padding: 14px 16px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    font-family: inherit;
+    transition: color .15s;
+  }
+  .nav-tab:hover { color: var(--black); }
+  .nav-tab.active { color: var(--blue); border-bottom-color: var(--blue); }
 
-    .field { margin-bottom: 12px; }
-    .field label {
-      display: block;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: .4px;
-      margin-bottom: 5px;
-    }
-    .field input {
-      width: 100%;
-      padding: 9px 12px;
-      border: 1px solid var(--bdr);
-      border-radius: 7px;
-      font-family: 'Open Sans', sans-serif;
-      font-size: 13px;
-      color: var(--black);
-      background: var(--page);
-      outline: none;
-      transition: border-color .15s;
-    }
-    .field input:focus { border-color: var(--blue); background: var(--wh); }
-    .field input::placeholder { color: #c8c8c4; }
+  /* Tab content */
+  .tab-content { display: none; flex: 1; flex-direction: column; min-height: 0; }
+  .tab-content.active { display: flex; }
 
-    .attest-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 9px;
-      margin: 16px 0 14px;
-      cursor: pointer;
-    }
-    .attest-row input[type="checkbox"] {
-      width: 16px; height: 16px;
-      flex-shrink: 0;
-      margin-top: 1px;
-      accent-color: var(--blue);
-      cursor: pointer;
-    }
-    .attest-row span { font-size: 12px; color: var(--mid); line-height: 1.5; }
+  /* ===== MAP TAB ===== */
+  #tab-map { flex-direction: column; }
+  .map-toolbar {
+    background: var(--wh);
+    border-bottom: 0.5px solid var(--bdr);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .map-toolbar select {
+    height: 36px;
+    border: 1px solid var(--bdr);
+    border-radius: 8px;
+    padding: 0 12px;
+    font-size: 13px;
+    font-family: inherit;
+    background: var(--wh);
+    color: var(--black);
+    outline: none;
+    cursor: pointer;
+  }
+  .map-toolbar select:focus { border-color: var(--blue); }
+  #map-count { margin-left: auto; font-size: 12px; color: var(--muted); }
+  .map-legend {
+    background: var(--wh);
+    border-bottom: 0.5px solid var(--bdr);
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--mid);
+  }
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .map-body {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+  }
+  .map-list-panel {
+    width: 280px;
+    flex-shrink: 0;
+    overflow-y: auto;
+    border-right: 0.5px solid var(--bdr);
+    background: var(--wh);
+  }
+  .map-list-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-bottom: 0.5px solid var(--bdr);
+    cursor: pointer;
+    transition: background .1s;
+  }
+  .map-list-item:hover, .map-list-item.active { background: var(--blue-lt); }
+  .map-list-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--blue-av);
+    color: var(--blue-avt);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+  .map-list-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .map-list-name { font-size: 13px; font-weight: 500; color: var(--black); }
+  .map-list-meta { font-size: 11px; color: var(--muted); margin-top: 1px; }
+  .map-wrap { flex: 1; position: relative; }
+  #map { width: 100%; height: 100%; }
+  #map-info-card {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 24px rgba(0,0,0,.14);
+    padding: 14px 16px;
+    min-width: 220px;
+    max-width: 280px;
+  }
+  .map-info-close {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 16px;
+    color: var(--muted);
+    cursor: pointer;
+    line-height: 1;
+    padding: 2px 4px;
+  }
+  .map-info-close:hover { color: var(--black); }
+  .map-info-name { font-size: 14px; font-weight: 600; margin-bottom: 2px; padding-right: 20px; }
+  .map-info-meta { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+  .map-info-dots { display: flex; gap: 10px; font-size: 11px; color: var(--mid); margin-bottom: 10px; }
+  .map-info-link { font-size: 12px; color: var(--blue); cursor: pointer; font-weight: 500; }
+  .map-info-link:hover { text-decoration: underline; }
+  .map-help-callout {
+    background: var(--wh);
+    border-top: 0.5px solid var(--bdr);
+    padding: 14px 20px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+  .map-help-callout a { color: var(--blue); }
 
-    #unlock-btn {
-      width: 100%;
-      padding: 11px;
-      background: var(--blue);
-      color: #fff;
-      font-family: 'Open Sans', sans-serif;
-      font-weight: 600;
-      font-size: 13px;
-      border: none;
-      border-radius: 7px;
-      cursor: pointer;
-      transition: background .15s, opacity .15s;
-    }
-    #unlock-btn:disabled { opacity: .38; cursor: not-allowed; }
-    #unlock-btn:not(:disabled):hover { background: #1644bb; }
+  /* ===== ABOUT TAB ===== */
+  #tab-about { padding: 40px 32px; overflow-y: auto; }
+  .about-inner { max-width: 680px; margin: 0 auto; }
+  .about-heading {
+    font-size: 22px;
+    font-weight: 500;
+    font-family: 'Cabinet Grotesk', sans-serif;
+    margin-bottom: 24px;
+    color: var(--black);
+  }
+  .about-section { margin-bottom: 20px; }
+  .about-section-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--black);
+    margin-bottom: 6px;
+    font-family: 'Cabinet Grotesk', sans-serif;
+  }
+  .about-section p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--mid);
+  }
+  .about-contact {
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 28px;
+  }
+  .about-contact a { color: var(--blue); }
 
-    #gate-error {
-      display: none;
-      background: #fef2f2;
-      border: 1px solid #fca5a5;
-      color: #b91c1c;
-      border-radius: 6px;
-      padding: 8px 12px;
-      font-size: 12px;
-      margin-top: 10px;
-    }
-    .gate-fine { font-size: 11px; color: #bbb; text-align: center; margin-top: 14px; }
+  /* ===== ROSTER TAB ===== */
+  #tab-roster { overflow: hidden; }
+  @media (min-width: 769px) {
+    #tab-roster { flex-direction: row !important; }
+  }
+  .roster-sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    background: var(--wh);
+    border-right: 0.5px solid var(--bdr);
+    padding: 24px 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .sidebar-section-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin-bottom: 8px;
+  }
+  .sidebar-check-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--mid);
+    margin-bottom: 6px;
+    cursor: pointer;
+  }
+  .sidebar-check-row input[type="checkbox"] { accent-color: var(--blue); cursor: pointer; }
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--mid);
+    margin-bottom: 8px;
+  }
+  .toggle-switch {
+    position: relative;
+    width: 36px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+  .toggle-switch input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: #ccc;
+    border-radius: 20px;
+    transition: background .2s;
+  }
+  .toggle-slider:before {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    left: 3px;
+    top: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: transform .2s;
+  }
+  .toggle-switch input:checked + .toggle-slider { background: var(--blue); }
+  .toggle-switch input:checked + .toggle-slider:before { transform: translateX(16px); }
+  .sidebar-help {
+    background: var(--blue-lt);
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 12px;
+    color: var(--mid);
+    line-height: 1.5;
+    margin-top: auto;
+  }
+  .sidebar-help a { color: var(--blue); }
+  .roster-main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; min-width: 0; }
+  #mobile-filter-bar {
+    display: none;
+    padding: 10px 16px;
+    border-bottom: 0.5px solid var(--bdr);
+    background: var(--wh);
+  }
+  .filter-pill-btn {
+    border: 1px solid var(--bdr);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-family: inherit;
+    background: var(--wh);
+    color: var(--black);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .filter-badge { color: var(--blue); font-weight: 600; }
+  #roster-count-bar {
+    padding: 12px 24px;
+    font-size: 13px;
+    color: var(--muted);
+    border-bottom: 0.5px solid var(--bdr);
+    background: var(--wh);
+    flex-shrink: 0;
+  }
+  #roster-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    padding: 20px 24px;
+    align-content: start;
+  }
+  .roster-help-callout {
+    padding: 20px 24px 24px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+    border-top: 0.5px solid var(--bdr);
+  }
+  .roster-help-callout a { color: var(--blue); }
 
-    /* Right panel */
-    .gate-right {
-      flex: 1;
-      position: relative;
-      background: var(--blue) url('assets/15.jpg') center/cover no-repeat;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      overflow: hidden;
-    }
-    .gate-right::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: rgba(26, 86, 219, 0.82);
-    }
-    .gate-right-content {
-      position: relative;
-      z-index: 1;
-      padding: 36px;
-    }
-    .gate-ghost {
-      font-family: 'Cabinet Grotesk', sans-serif;
-      font-weight: 500;
-      font-size: 64px;
-      color: rgba(255,255,255,0.1);
-      letter-spacing: -2px;
-      line-height: 1;
-      margin-bottom: 20px;
-    }
-    .gate-right-headline {
-      font-family: 'Open Sans', sans-serif;
-      font-weight: 500;
-      font-size: 20px;
-      color: #fff;
-      margin-bottom: 10px;
-      line-height: 1.3;
-    }
-    .gate-right-sub {
-      font-size: 13px;
-      color: rgba(255,255,255,0.7);
-      line-height: 1.6;
-    }
+  /* Doctor card */
+  .doctor-card {
+    border-radius: 12px;
+    border: 0.5px solid var(--bdr);
+    padding: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+    cursor: pointer;
+    background: var(--wh);
+    transition: box-shadow .15s, border-color .15s;
+  }
+  .doctor-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,.1);
+    border-color: #c5d5f5;
+  }
+  .card-top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .card-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--blue-av);
+    color: var(--blue-avt);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 600;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+  .card-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .card-name { font-size: 14px; font-weight: 500; color: var(--black); margin-bottom: 2px; }
+  .card-meta { font-size: 12px; color: var(--muted); }
+  .card-divider { border: none; border-top: 0.5px solid var(--bdr); margin: 0 0 10px; }
+  .card-bio {
+    font-size: 12px;
+    color: var(--mid);
+    line-height: 1.55;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    margin-bottom: 10px;
+  }
+  .card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .specialty-pill {
+    background: var(--blue-lt);
+    color: var(--blue);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .sub-chip {
+    background: var(--page);
+    color: var(--mid);
+    border: 0.5px solid var(--bdr);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 11px;
+  }
+  .card-footer { display: flex; align-items: center; justify-content: space-between; }
+  .card-dots { display: flex; gap: 10px; }
+  .dot-item { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--mid); }
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+  }
+  .dot.yes { background: #22c55e; }
+  .dot.no { background: #e5e5e0; }
+  .cv-link {
+    font-size: 12px;
+    color: var(--blue);
+    font-weight: 500;
+  }
+  .cv-link:hover { text-decoration: underline; }
 
-    /* ════════════════════════════════════════════════
-       APP SHELL
-    ════════════════════════════════════════════════ */
-    #app { display: none; flex-direction: column; min-height: 100vh; }
-    #app.visible { display: flex; }
+  /* ===== PROFILE DRAWER ===== */
+  #drawer-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.2);
+    z-index: 2999;
+  }
+  #profile-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 400px;
+    background: var(--wh);
+    z-index: 3000;
+    box-shadow: -4px 0 24px rgba(0,0,0,.1);
+    transform: translateX(110%);
+    transition: transform .2s ease;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  #profile-drawer.open { transform: translateX(0); }
+  .drawer-close {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: var(--muted);
+    cursor: pointer;
+    z-index: 1;
+    padding: 4px;
+  }
+  .drawer-close:hover { color: var(--black); }
+  .drawer-drag-handle { display: none; }
+  .drawer-top {
+    padding-top: 28px;
+    padding-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .drawer-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--blue-av);
+    color: var(--blue-avt);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 600;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .drawer-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .drawer-name { font-size: 18px; font-weight: 500; font-family: 'Cabinet Grotesk', sans-serif; text-align: center; }
+  .drawer-specialty-pill {
+    background: var(--blue-lt);
+    color: var(--blue);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .drawer-location { font-size: 13px; color: var(--muted); }
+  .drawer-divider { border: none; border-top: 0.5px solid var(--bdr); margin: 0; }
+  .drawer-bio {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--mid);
+    padding: 16px 24px;
+  }
+  .drawer-sub-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0 24px 16px;
+  }
+  .drawer-dots {
+    display: flex;
+    gap: 16px;
+    padding: 0 24px 16px;
+  }
+  .drawer-cv-btn {
+    margin: 0 24px 24px;
+    border: 1px solid var(--blue);
+    color: var(--blue);
+    background: white;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: inherit;
+    width: calc(100% - 48px);
+    text-align: center;
+    display: block;
+  }
+  .drawer-cv-btn:hover { background: var(--blue-lt); }
 
-    /* Header */
-    .app-header {
-      background: var(--wh);
-      border-bottom: 0.5px solid var(--bdr);
-      height: 56px;
-      padding: 0 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-shrink: 0;
-    }
-    .header-brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
-    }
-    .header-logo-name {
-      font-family: 'Cabinet Grotesk', sans-serif;
-      font-weight: 500;
-      font-size: 16px;
-      color: var(--blue);
-      line-height: 1;
-    }
-    .header-tag {
-      font-size: 11px;
-      color: var(--muted);
-      font-weight: 400;
-      margin-left: 2px;
-    }
-    .header-contact {
-      font-size: 12px;
-      color: var(--muted);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .header-contact a { color: var(--muted); text-decoration: none; }
-    .header-contact a:hover { color: var(--blue); }
-    .header-contact .sep { opacity: .4; }
-    .submit-case-btn {
-      border: 1px solid var(--blue);
-      color: var(--blue);
-      background: var(--wh);
-      border-radius: 20px;
-      padding: 7px 16px;
-      font-size: 13px;
-      font-family: 'Open Sans', sans-serif;
-      font-weight: 500;
-      text-decoration: none;
-      white-space: nowrap;
-      transition: background .15s, color .15s;
-    }
-    .submit-case-btn:hover { background: var(--blue); color: #fff; }
+  /* ===== MOBILE FILTER DRAWER ===== */
+  #filter-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.3);
+    z-index: 2000;
+  }
+  #filter-drawer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--wh);
+    border-radius: 16px 16px 0 0;
+    z-index: 2001;
+    padding: 20px 20px 32px;
+    transform: translateY(100%);
+    transition: transform .25s ease;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  #filter-drawer.open { transform: translateY(0); }
+  .filter-drawer-handle {
+    width: 32px;
+    height: 4px;
+    background: #D1D1CE;
+    border-radius: 2px;
+    margin: 0 auto 16px;
+  }
+  .filter-drawer-title {
+    font-size: 16px;
+    font-weight: 600;
+    font-family: 'Cabinet Grotesk', sans-serif;
+    margin-bottom: 16px;
+  }
+  .filter-section-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin-bottom: 8px;
+    margin-top: 16px;
+  }
+  .filter-check-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--mid);
+    margin-bottom: 6px;
+  }
+  .filter-check-row input[type="checkbox"] { accent-color: var(--blue); }
+  .filter-apply-btn {
+    width: 100%;
+    height: 42px;
+    background: var(--blue);
+    color: var(--wh);
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    margin-top: 20px;
+  }
+  .filter-clear-link {
+    display: block;
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 10px;
+    cursor: pointer;
+  }
+  .filter-clear-link:hover { color: var(--black); }
 
-    /* Tabs */
-    .tabs {
-      background: var(--wh);
-      border-bottom: 0.5px solid var(--bdr);
-      padding: 0 24px;
-      display: flex;
-      overflow-x: auto;
-      scrollbar-width: none;
-      flex-shrink: 0;
-    }
-    .tabs::-webkit-scrollbar { display: none; }
-    .tab-btn {
-      padding: 11px 14px;
-      font-family: 'Open Sans', sans-serif;
-      font-weight: 500;
-      font-size: 13px;
-      color: var(--muted);
-      background: none;
-      border: none;
-      border-bottom: 2px solid transparent;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: color .15s, border-color .15s;
-      margin-bottom: -1px;
-    }
-    .tab-btn:hover { color: var(--black); }
-    .tab-btn.active { color: var(--blue); border-bottom-color: var(--blue); }
+  /* ===== FEE SCHEDULE TAB ===== */
+  #tab-fees {
+    padding: 32px 28px;
+    overflow-y: auto;
+  }
+  .fees-inner { max-width: 860px; margin: 0 auto; }
+  .fee-group {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 0.5px solid var(--bdr);
+    margin-bottom: 40px;
+  }
+  .fee-group-header {
+    padding: 16px 20px;
+  }
+  .fee-group-title {
+    font-family: 'Cabinet Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    margin-bottom: 2px;
+  }
+  .fee-group-sub { font-size: 12px; opacity: .7; }
+  .fee-group-body { background: white; padding: 20px; }
+  .fee-section-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin-bottom: 8px;
+    margin-top: 16px;
+  }
+  .fee-section-label:first-child { margin-top: 0; }
+  .fee-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 0; }
+  .fee-table th {
+    background: var(--page);
+    font-weight: 600;
+    font-size: 11px;
+    padding: 9px 16px;
+    text-align: left;
+    border-bottom: 0.5px solid var(--bdr);
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .3px;
+  }
+  .fee-table td {
+    padding: 10px 16px;
+    border-top: 0.5px solid var(--bdr);
+    vertical-align: top;
+  }
+  .fee-table td:first-child { font-weight: 500; white-space: nowrap; }
+  .fee-table td:last-child { font-weight: 600; color: var(--blue); white-space: nowrap; }
+  .fee-table tr:nth-child(even) td { background: var(--page); }
+  .fees-help {
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 8px;
+    margin-bottom: 20px;
+  }
+  .fees-help a { color: var(--blue); }
 
-    /* Tab panels */
-    .tab-panel { display: none; flex: 1; }
-    .tab-panel.active { display: flex; flex-direction: column; }
+  /* ===== ESTIMATOR TAB ===== */
+  #tab-estimator { overflow: hidden; }
 
-    /* ════════════════════════════════════════════════
-       ROSTER TAB — sidebar layout
-    ════════════════════════════════════════════════ */
-    #tab-roster { flex-direction: row !important; align-items: flex-start; }
+  /* ===== CONTACT BAR ===== */
+  .contact-bar {
+    border-top: 0.5px solid var(--bdr);
+    padding: 20px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+    background: var(--wh);
+    flex-shrink: 0;
+  }
+  .contact-bar a { color: var(--blue); }
+  .contact-bar a:hover { text-decoration: underline; }
 
-    /* Sidebar */
-    .roster-sidebar {
-      width: 220px;
-      flex-shrink: 0;
-      border-right: 0.5px solid var(--bdr);
-      padding: 24px 20px;
-      background: var(--wh);
-      min-height: calc(100vh - 120px);
-      position: sticky;
-      top: 0;
-      overflow-y: auto;
-      max-height: calc(100vh - 120px);
-    }
-    .sidebar-section { margin-bottom: 24px; }
-    .sidebar-section:last-child { margin-bottom: 0; }
-    .sidebar-label {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: .5px;
-      margin-bottom: 10px;
-    }
-    .sidebar-option {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 4px 0;
-      cursor: pointer;
-    }
-    .sidebar-option input[type="checkbox"] {
-      width: 14px; height: 14px;
-      accent-color: var(--blue);
-      flex-shrink: 0;
-      cursor: pointer;
-    }
-    .sidebar-option span { font-size: 13px; color: var(--black); line-height: 1.3; }
+  /* ===== STICKY HELP BAR ===== */
+  #sticky-help-bar {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--blue);
+    color: white;
+    font-size: 12px;
+    padding: 10px 40px 10px 16px;
+    text-align: center;
+    z-index: 100;
+  }
+  #sticky-help-bar a { color: white; text-decoration: underline; }
+  #sticky-dismiss {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 2px 4px;
+  }
 
-    /* Toggle switch */
-    .toggle-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 5px 0;
-    }
-    .toggle-label { font-size: 13px; color: var(--black); }
-    .toggle {
-      position: relative;
-      width: 32px;
-      height: 18px;
-      flex-shrink: 0;
-    }
-    .toggle input { opacity: 0; width: 0; height: 0; }
-    .toggle-track {
-      position: absolute;
-      inset: 0;
-      background: #ddd;
-      border-radius: 999px;
-      transition: background .2s;
-      cursor: pointer;
-    }
-    .toggle-track::before {
-      content: '';
-      position: absolute;
-      width: 14px; height: 14px;
-      left: 2px; top: 2px;
-      background: #fff;
-      border-radius: 50%;
-      transition: transform .2s;
-      box-shadow: 0 1px 3px rgba(0,0,0,.2);
-    }
-    .toggle input:checked + .toggle-track { background: var(--blue); }
-    .toggle input:checked + .toggle-track::before { transform: translateX(14px); }
-
-    /* Roster main area */
-    .roster-main { flex: 1; min-width: 0; background: var(--wh); }
-
-    .roster-header {
-      padding: 14px 28px;
-      border-bottom: 0.5px solid var(--bdr);
-      font-size: 13px;
-      color: var(--muted);
-      background: var(--wh);
-    }
-    .roster-header strong { color: var(--black); font-weight: 600; }
-
-    /* Doctor rows */
-    .doctor-row {
-      display: flex;
-      gap: 16px;
-      align-items: flex-start;
-      padding: 22px 28px;
-      border-bottom: 0.5px solid var(--bdr);
-      background: var(--wh);
-      transition: background .1s;
-      cursor: pointer;
-    }
-    .doctor-row:last-child { border-bottom: none; }
-    .doctor-row:hover { background: var(--page); }
-
-    .doctor-avatar {
-      width: 40px; height: 40px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      background: var(--blue-av);
-      color: var(--blue-avt);
-      font-family: 'Cabinet Grotesk', sans-serif;
-      font-weight: 700;
-      font-size: .82rem;
-      display: flex; align-items: center; justify-content: center;
-      overflow: hidden;
-    }
-    .doctor-avatar img { width: 100%; height: 100%; object-fit: cover; }
-
-    .doctor-body { flex: 1; min-width: 0; }
-
-    .doctor-name-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 3px;
-    }
-    .doctor-name {
-      font-family: 'Cabinet Grotesk', sans-serif;
-      font-weight: 500;
-      font-size: 15px;
-      color: var(--black);
-    }
-    .specialty-pill {
-      background: var(--blue-lt);
-      color: var(--blue);
-      font-size: 11px;
-      font-weight: 600;
-      padding: 2px 9px;
-      border-radius: 999px;
-    }
-    .doctor-meta { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
-    .doctor-bio {
-      font-size: 13px;
-      color: var(--mid);
-      line-height: 1.6;
-      margin-bottom: 8px;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    /* Sub-specialty chips — orthopedic/surgical only */
-    .sub-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
-    .sub-chip {
-      border: 1px solid var(--bdr);
-      border-radius: 5px;
-      padding: 2px 8px;
-      font-size: 11px;
-      color: var(--mid);
-    }
-
-    /* Footer row */
-    .doctor-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    .doctor-dots { display: flex; align-items: center; gap: 12px; }
-    .dot-item { display: flex; align-items: center; gap: 5px; font-size: 12px; }
-    .dot-item.yes { color: var(--mid); }
-    .dot-item.no  { color: #bbb; }
-    .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-    .dot.yes { background: #16a34a; }
-    .dot.no  { background: #d1d5db; }
-    .cv-link { font-size: 13px; color: var(--blue); text-decoration: none; white-space: nowrap; }
-    .cv-link:hover { text-decoration: underline; }
-
-    .roster-empty, .loading {
-      padding: 64px 28px;
-      text-align: center;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.6;
-    }
-    .loading-spinner {
-      width: 30px; height: 30px;
-      border: 2.5px solid var(--bdr);
-      border-top-color: var(--blue);
-      border-radius: 50%;
-      animation: spin .65s linear infinite;
-      margin: 0 auto 12px;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ════════════════════════════════════════════════
-       MAP TAB
-    ════════════════════════════════════════════════ */
-    .map-toolbar {
-      background: var(--wh);
-      border-bottom: 0.5px solid var(--bdr);
-      padding: 10px 20px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-shrink: 0;
-    }
-    .map-toolbar select {
-      height: 36px;
-      padding: 0 12px;
-      border: 1px solid var(--bdr);
-      border-radius: 8px;
-      font-family: 'Open Sans', sans-serif;
-      font-size: 13px;
-      color: var(--black);
-      background: var(--wh);
-      outline: none;
-      cursor: pointer;
-      min-width: 160px;
-    }
-    .map-toolbar select:focus { border-color: var(--blue); }
-    .map-toolbar-count { font-size: 12px; color: var(--muted); margin-left: auto; }
-
-    .map-body {
-      display: flex;
-      flex: 1;
-      min-height: 0;
-      height: calc(100vh - 175px);
-    }
-
-    .map-list-panel {
-      width: 280px;
-      flex-shrink: 0;
-      overflow-y: auto;
-      border-right: 0.5px solid var(--bdr);
-      background: var(--wh);
-    }
-    .map-list-item {
-      display: flex;
-      align-items: center;
-      gap: 11px;
-      padding: 12px 14px;
-      border-bottom: 0.5px solid var(--bdr);
-      cursor: pointer;
-      transition: background .1s;
-    }
-    .map-list-item:last-child { border-bottom: none; }
-    .map-list-item:hover { background: var(--page); }
-    .map-list-item.selected { background: var(--blue-lt); }
-    .map-list-avatar {
-      width: 32px; height: 32px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      background: var(--blue-av);
-      color: var(--blue-avt);
-      font-family: 'Cabinet Grotesk', sans-serif;
-      font-weight: 700;
-      font-size: 11px;
-      display: flex; align-items: center; justify-content: center;
-      overflow: hidden;
-    }
-    .map-list-avatar img { width: 100%; height: 100%; object-fit: cover; }
-    .map-list-info { min-width: 0; }
-    .map-list-name {
-      font-family: 'Cabinet Grotesk', sans-serif;
-      font-weight: 700;
-      font-size: 13px;
-      color: var(--black);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .map-list-meta { font-size: 11px; color: var(--muted); }
-
-    /* Map itself */
-    .map-wrap { flex: 1; position: relative; }
-    #map { width: 100%; height: 100%; }
-    .cl-pin { cursor: pointer; background: transparent !important; border: none !important; }
-
-    /* Floating info card */
-    #map-info-card {
-      display: none;
-      position: absolute;
-      top: 0;
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    #gate { flex-direction: column; }
+    .gate-left { width: 100%; min-width: 0; padding: 36px 24px; }
+    .gate-right { display: none; }
+    .header-contact { display: none !important; }
+    .roster-sidebar { display: none !important; }
+    #mobile-filter-bar { display: block; }
+    #roster-grid { grid-template-columns: 1fr; padding: 16px; }
+    .map-list-panel { display: none !important; }
+    .map-body { height: calc(100vh - 220px); }
+    #tab-fees { padding: 20px 16px; }
+    #sticky-help-bar { display: block; }
+    #profile-drawer {
+      top: auto;
+      bottom: 0;
       left: 0;
-      z-index: 1000;
-      background: var(--wh);
-      border-radius: 10px;
-      box-shadow: 0 4px 24px rgba(0,0,0,.14);
-      padding: 14px 16px;
-      min-width: 220px;
-      max-width: 280px;
-    }
-    #map-info-card.visible { display: block; }
-    .info-card-name {
-      font-family: 'Cabinet Grotesk', sans-serif;
-      font-weight: 700;
-      font-size: 14px;
-      color: var(--black);
-      margin-bottom: 3px;
-    }
-    .info-card-specialty { font-size: 12px; color: var(--muted); margin-bottom: 2px; }
-    .info-card-city { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
-    .info-card-link {
-      font-size: 12px;
-      color: var(--blue);
-      text-decoration: none;
-      font-weight: 500;
-      cursor: pointer;
-    }
-    .info-card-link:hover { text-decoration: underline; }
-    .info-card-close {
-      position: absolute;
-      top: 8px; right: 10px;
-      font-size: 16px;
-      color: #bbb;
-      cursor: pointer;
-      line-height: 1;
-      background: none;
-      border: none;
-      padding: 0;
-    }
-    .info-card-close:hover { color: var(--black); }
-
-    .leaflet-popup-content-wrapper {
-      border-radius: 8px;
-      box-shadow: 0 4px 20px rgba(0,0,0,.12);
-      font-family: 'Open Sans', sans-serif;
-      font-size: 13px;
-    }
-    .leaflet-popup-content { margin: 10px 14px; }
-
-    /* Map legend */
-    .map-legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px 16px;
-      padding: 8px 20px 10px;
-      background: var(--wh);
-      border-bottom: 0.5px solid var(--bdr);
-      flex-shrink: 0;
-    }
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      color: var(--mid);
-    }
-    .legend-dot {
-      width: 10px; height: 10px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    /* Info card dot indicators */
-    .ic-dots { display: flex; gap: 12px; margin-bottom: 10px; }
-    .ic-dot-item { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--muted); }
-
-    /* Roster row flash */
-    @keyframes rowFlash {
-      0%   { background: var(--wh); }
-      30%  { background: #EEF2FD; }
-      100% { background: var(--wh); }
-    }
-    .row-flash { animation: rowFlash 1s ease forwards; }
-
-    /* ════════════════════════════════════════════════
-       FEE SCHEDULE TAB
-    ════════════════════════════════════════════════ */
-    #tab-fees { padding: 32px 28px; flex-direction: column !important; }
-    #tab-fees .inner { max-width: 800px; width: 100%; margin: 0 auto; }
-
-    .fee-section { margin-bottom: 36px; }
-    .fee-group-title {
-      font-family: 'Cabinet Grotesk', sans-serif;
-      font-weight: 700;
-      font-size: 15px;
-      color: var(--black);
-      margin-bottom: 3px;
-    }
-    .fee-group-sub { font-size: 12px; color: var(--muted); margin-bottom: 12px; line-height: 1.5; }
-    .fee-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    .fee-table {
+      right: 0;
       width: 100%;
-      min-width: 360px;
-      border-collapse: collapse;
-      background: var(--wh);
-      border-radius: 8px;
-      overflow: hidden;
-      border: 0.5px solid var(--bdr);
-    }
-    .fee-table th {
-      background: var(--blue);
-      color: #fff;
-      font-size: 12px;
-      font-weight: 600;
-      padding: 10px 18px;
-      text-align: left;
-      letter-spacing: .1px;
-    }
-    .fee-table td {
-      padding: 10px 18px;
-      font-size: 13px;
-      border-top: 0.5px solid var(--bdr);
-      color: var(--black);
-    }
-    .fee-table tr:nth-child(even) td { background: var(--page); }
-    .fee-table td:last-child { font-weight: 600; color: var(--blue); }
-    .fee-note { font-size: 12px; color: var(--muted); margin-top: 6px; font-style: italic; }
-
-    /* ════════════════════════════════════════════════
-       FEE ESTIMATOR TAB
-    ════════════════════════════════════════════════ */
-    #tab-estimator { flex-direction: column !important; }
-    #estimator-frame { width: 100%; height: 600px; border: none; display: block; flex-shrink: 0; }
-
-    /* ════════════════════════════════════════════════
-       CONTACT BAR (bottom)
-    ════════════════════════════════════════════════ */
-    .contact-bar {
-      border-top: 0.5px solid var(--bdr);
-      padding: 20px;
-      text-align: center;
-      font-size: 13px;
-      color: var(--muted);
-      background: var(--wh);
-      margin-top: auto;
-      flex-shrink: 0;
-    }
-    .contact-bar a { color: var(--muted); text-decoration: none; }
-    .contact-bar a:hover { color: var(--blue); }
-    .contact-bar .sep { margin: 0 6px; opacity: .4; }
-
-    /* ════════════════════════════════════════════════
-       PROFILE DRAWER
-    ════════════════════════════════════════════════ */
-    .profile-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.2);
-      z-index: 2999;
-    }
-    .profile-overlay.visible { display: block; }
-
-    .profile-drawer {
-      position: fixed;
-      top: 0; right: 0; bottom: 0;
-      width: 400px;
-      background: var(--wh);
-      z-index: 3000;
-      transform: translateX(110%);
-      transition: transform .2s ease;
-      box-shadow: -4px 0 24px rgba(0,0,0,.1);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-    .profile-drawer.open { transform: translateX(0); }
-
-    .pd-close-btn {
-      position: absolute;
-      top: 14px; right: 16px;
-      font-size: 18px;
-      color: #888;
-      background: none;
-      border: none;
-      cursor: pointer;
-      line-height: 1;
-      padding: 4px 6px;
-      z-index: 1;
-    }
-    .pd-close-btn:hover { color: var(--black); }
-
-    .pd-drag-handle { display: none; }  /* desktop: hidden */
-
-    .pd-scroll {
-      overflow-y: auto;
-      flex: 1;
-      padding-bottom: 32px;
-    }
-    .pd-top {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 28px 24px 20px;
-      text-align: center;
-    }
-    .pd-avatar {
-      width: 80px; height: 80px;
-      border-radius: 50%;
-      background: var(--blue-av);
-      color: var(--blue-avt);
-      font-family: 'Cabinet Grotesk', sans-serif;
-      font-weight: 700;
-      font-size: 1.5rem;
-      display: flex; align-items: center; justify-content: center;
-      overflow: hidden;
-      margin-bottom: 14px;
-      flex-shrink: 0;
-    }
-    .pd-avatar img { width: 100%; height: 100%; object-fit: cover; }
-    .pd-name {
-      font-family: 'Cabinet Grotesk', sans-serif;
-      font-weight: 500;
-      font-size: 18px;
-      color: var(--black);
-      margin-bottom: 8px;
-      line-height: 1.2;
-    }
-    .pd-specialty-tag {
-      background: var(--blue-lt);
-      color: var(--blue);
-      font-size: 11px;
-      font-weight: 600;
-      padding: 3px 10px;
-      border-radius: 999px;
-      margin-bottom: 8px;
-    }
-    .pd-location {
-      font-size: 13px;
-      color: var(--muted);
-    }
-    .pd-divider {
-      height: 0.5px;
-      background: var(--bdr);
-      margin: 20px 24px;
-    }
-    .pd-bio {
-      font-size: 13px;
-      line-height: 1.7;
-      color: #555;
-      padding: 0 24px;
-      margin-bottom: 20px;
-    }
-    .pd-chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
-      padding: 0 24px;
-      margin-bottom: 20px;
-    }
-    .pd-dots {
-      display: flex;
-      gap: 20px;
-      padding: 0 24px;
-      margin-bottom: 24px;
-    }
-    .pd-dot-item { display: flex; align-items: center; gap: 6px; font-size: 13px; }
-    .pd-dot-item.yes { color: var(--mid); }
-    .pd-dot-item.no  { color: #bbb; }
-    .pd-cv-btn {
-      display: block;
-      margin: 0 24px;
-      padding: 10px;
-      border: 1px solid var(--blue);
-      color: var(--blue);
-      background: var(--wh);
-      border-radius: 8px;
-      font-family: 'Open Sans', sans-serif;
-      font-size: 13px;
-      font-weight: 500;
-      text-align: center;
-      text-decoration: none;
-      transition: background .15s, color .15s;
-    }
-    .pd-cv-btn:hover { background: var(--blue); color: #fff; }
-
-    @media (max-width: 768px) {
-      .profile-drawer {
-        top: auto;
-        width: 100%;
-        max-height: 90vh;
-        border-radius: 16px 16px 0 0;
-        transform: translateY(110%);
-        box-shadow: 0 -4px 24px rgba(0,0,0,.12);
-      }
-      .profile-drawer.open { transform: translateY(0); }
-      .pd-drag-handle {
-        display: flex;
-        justify-content: center;
-        padding: 10px 0 6px;
-        flex-shrink: 0;
-        cursor: grab;
-      }
-      .pd-drag-handle::before {
-        content: '';
-        display: block;
-        width: 32px; height: 4px;
-        background: #D1D1CE;
-        border-radius: 2px;
-      }
-    }
-
-    /* ════════════════════════════════════════════════
-       MOBILE FILTER BUTTON + DRAWER
-    ════════════════════════════════════════════════ */
-    .mobile-filter-bar { display: none; }
-
-    .mobile-filter-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border: 1px solid var(--bdr);
-      border-radius: 20px;
-      padding: 7px 14px;
-      font-size: 13px;
-      font-family: 'Open Sans', sans-serif;
-      background: var(--wh);
-      color: var(--black);
-      cursor: pointer;
-    }
-    .filter-badge { color: var(--blue); font-weight: 600; }
-
-    /* Overlay */
-    .drawer-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.3);
-      z-index: 2000;
-    }
-    .drawer-overlay.visible { display: block; }
-
-    /* Drawer */
-    .filter-drawer {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      background: var(--wh);
+      max-height: 90vh;
       border-radius: 16px 16px 0 0;
-      z-index: 2001;
-      transform: translateY(100%);
-      transition: transform .28s cubic-bezier(.32,0,.67,0);
-      max-height: 80vh;
-      display: flex;
-      flex-direction: column;
+      transform: translateY(110%);
     }
-    .filter-drawer.open { transform: translateY(0); }
-    .drawer-handle-bar {
-      width: 36px; height: 4px;
-      background: var(--bdr);
+    #profile-drawer.open { transform: translateY(0); }
+    .drawer-drag-handle {
+      display: block;
+      width: 32px;
+      height: 4px;
+      background: #D1D1CE;
       border-radius: 2px;
-      margin: 12px auto 0;
-      flex-shrink: 0;
+      margin: 12px auto 4px;
     }
-    .drawer-title {
-      font-family: 'Cabinet Grotesk', sans-serif;
-      font-weight: 700;
-      font-size: 15px;
-      padding: 14px 20px 10px;
-      border-bottom: 0.5px solid var(--bdr);
-      flex-shrink: 0;
-    }
-    .drawer-scroll {
-      overflow-y: auto;
-      flex: 1;
-      padding: 16px 20px;
-    }
-    .drawer-section { margin-bottom: 20px; }
-    .drawer-section:last-child { margin-bottom: 0; }
-    .drawer-section-label {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: .5px;
-      margin-bottom: 10px;
-    }
-    .drawer-actions {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 14px 20px;
-      border-top: 0.5px solid var(--bdr);
-      flex-shrink: 0;
-    }
-    .drawer-apply-btn {
-      flex: 1;
-      padding: 11px;
-      background: var(--blue);
-      color: #fff;
-      font-family: 'Open Sans', sans-serif;
-      font-weight: 600;
-      font-size: 13px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    .drawer-clear-btn {
-      font-size: 13px;
-      color: var(--muted);
-      text-decoration: none;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-    .drawer-clear-btn:hover { color: var(--black); }
-
-    /* ════════════════════════════════════════════════
-       RESPONSIVE
-    ════════════════════════════════════════════════ */
-    @media (max-width: 768px) {
-      /* Gate */
-      #gate { flex-direction: column; }
-      .gate-left { width: 100%; min-width: 0; padding: 36px 24px; }
-      .gate-right { display: none; }
-
-      /* Header */
-      .header-contact { display: none; }
-
-      /* Roster — hide sidebar, show mobile filter bar */
-      #tab-roster { flex-direction: column !important; }
-      .roster-sidebar { display: none !important; }
-      .mobile-filter-bar {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 10px 16px;
-        background: var(--wh);
-        border-bottom: 0.5px solid var(--bdr);
-      }
-      .doctor-row { padding: 16px; }
-
-      /* Map — full width, no list panel */
-      .map-list-panel { display: none !important; }
-      .map-body { height: calc(100vh - 200px); }
-      #map { height: 100% !important; }
-
-      /* Fees */
-      #tab-fees { padding: 20px 16px; }
-    }
-  </style>
+    .nav-tab { padding: 12px 10px 10px; font-size: 12px; }
+  }
+</style>
 </head>
 <body>
 
-<!-- ══════════════════════════════════════════════════════
-     GATE
-═══════════════════════════════════════════════════════ -->
+<!-- ===== GATE ===== -->
 <div id="gate">
-
-  <!-- Left: form -->
   <div class="gate-left">
-    <div class="gate-logo-wrap">
-      <svg width="148" height="26" viewBox="0 0 1920 330" xmlns="http://www.w3.org/2000/svg" aria-label="CaseLynx">
+    <div class="gate-logo-row">
+      <svg width="148" height="26" viewBox="0 0 1920 330" xmlns="http://www.w3.org/2000/svg">
         <defs><style>.g1{fill:#1a56db}.g2{fill:#6e80ff}</style></defs>
         <g fill="#1a1a1a">
           <path d="M427.5,145.1c0-69.19,41.58-123.32,115.43-123.32,53.06,0,89.62,27.25,106.47,74.21l-35.13,25.81c-7.53-36.21-29.76-61.66-70.98-61.66-49.47,0-72.77,35.13-72.77,84.96s23.3,84.96,72.77,84.96c41.23,0,63.45-25.81,70.98-61.66l35.13,25.81c-16.85,46.6-53.42,74.21-106.47,74.21-73.85,0-115.43-54.13-115.43-123.32Z"/>
@@ -1048,36 +965,23 @@
         <polygon class="g1" points="366.39 153.64 240.67 265.55 1.73 265.55 127.45 153.64 366.39 153.64"/>
         <polygon class="g2" points="240 4.58 240 134.01 119.93 134.01 0 240.82 0 4.58 120.02 93.46 240 4.58"/>
       </svg>
+      <span class="gate-logo-name">CaseLynx</span>
     </div>
-
-    <h1 class="gate-headline">High-quality medical expert testimony, effortlessly.</h1>
-    <p class="gate-subline">We connect law firms &amp; carriers with highly vetted doctors to deliver better expert testimony with a hands-on, partner-first approach.</p>
-
-    <form id="gate-form" novalidate>
-      <div class="field">
-        <label for="g-name">Your name</label>
-        <input id="g-name" type="text" placeholder="Jane Smith" autocomplete="name" required>
-      </div>
-      <div class="field">
-        <label for="g-firm">Firm or company name</label>
-        <input id="g-firm" type="text" placeholder="Smith &amp; Associates" autocomplete="organization" required>
-      </div>
-      <div class="field">
-        <label for="g-email">Work email</label>
-        <input id="g-email" type="email" placeholder="jane@smithlaw.com" autocomplete="email" required>
-      </div>
-      <label class="attest-row">
-        <input type="checkbox" id="g-attest">
+    <div class="gate-headline">High-quality medical expert testimony, effortlessly.</div>
+    <div class="gate-subline">We connect law firms &amp; carriers with highly vetted doctors to deliver better expert testimony with a hands-on, partner-first approach.</div>
+    <div class="gate-form">
+      <input type="text" id="gate-name" placeholder="Your name" autocomplete="name">
+      <input type="text" id="gate-firm" placeholder="Firm or company name" autocomplete="organization">
+      <input type="email" id="gate-email" placeholder="Work email" autocomplete="email">
+      <label class="gate-attest">
+        <input type="checkbox" id="gate-attest-check">
         <span>I confirm I am accessing this on behalf of a law firm, insurance carrier, or claims organization.</span>
       </label>
-      <button type="submit" id="unlock-btn" disabled>View our experts →</button>
+      <button id="unlock-btn" disabled>View our experts →</button>
       <div id="gate-error"></div>
-    </form>
-
-    <p class="gate-fine">For law firms, insurers, and claims professionals only.</p>
+      <div class="gate-fine">For law firms, insurers, and claims professionals only.</div>
+    </div>
   </div>
-
-  <!-- Right: image panel -->
   <div class="gate-right">
     <div class="gate-right-content">
       <div class="gate-ghost">IME / CME / Records</div>
@@ -1085,19 +989,15 @@
       <div class="gate-right-sub">Board-certified specialists available for IME, CME, and record review — statewide.</div>
     </div>
   </div>
+</div>
 
-</div><!-- /#gate -->
-
-<!-- ══════════════════════════════════════════════════════
-     APP
-═══════════════════════════════════════════════════════ -->
+<!-- ===== APP ===== -->
 <div id="app">
-
   <!-- Header -->
   <header class="app-header">
-    <a class="header-brand" href="#">
-      <svg width="110" height="19" viewBox="0 0 1920 330" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <defs><style>.h1{fill:#1a56db}.h2{fill:#6e80ff}</style></defs>
+    <div class="header-logo-wrap">
+      <svg width="110" height="19" viewBox="0 0 1920 330" xmlns="http://www.w3.org/2000/svg">
+        <defs><style>.hg1{fill:#1a56db}.hg2{fill:#6e80ff}</style></defs>
         <g fill="#1a1a1a">
           <path d="M427.5,145.1c0-69.19,41.58-123.32,115.43-123.32,53.06,0,89.62,27.25,106.47,74.21l-35.13,25.81c-7.53-36.21-29.76-61.66-70.98-61.66-49.47,0-72.77,35.13-72.77,84.96s23.3,84.96,72.77,84.96c41.23,0,63.45-25.81,70.98-61.66l35.13,25.81c-16.85,46.6-53.42,74.21-106.47,74.21-73.85,0-115.43-54.13-115.43-123.32Z"/>
           <path d="M674.16,227.91c0-24.74,17.21-39.79,45.53-50.91l58.43-24.74c-1.43-17.57-9.32-29.39-33.34-29.39s-41.58,13.62-51.62,31.9l-24.02-28.68c13.62-18.64,40.87-38.72,79.59-38.72,43.38,0,67.75,24.74,67.75,67.75v65.6c0,7.89,2.87,10.4,9.32,10.4h11.11v34.42h-24.74c-18.64,0-33.34-8.61-33.34-33.7v-12.91c-5.38,22.94-22.23,50.19-58.79,50.19-28.68,0-45.89-16.13-45.89-41.23ZM734.39,237.95c26.53,0,44.45-15.77,44.45-39.44v-18.64l-44.81,20.08c-15.06,6.81-21.15,12.91-21.15,21.87,0,10.04,6.81,16.13,21.51,16.13Z"/>
@@ -1108,826 +1008,1038 @@
           <path d="M1575.47,265.55V90.96h40.15v47.68c6.45-27.6,24.38-51.26,59.15-51.26s54.85,20.43,54.85,56.64v121.53h-40.51v-109.34c0-21.51-7.17-36.21-34.06-36.21-29.4,0-39.43,19-39.43,47.68v97.87h-40.15Z"/>
           <path d="M1742.19,265.55l61.66-87.47-58.08-87.11h45.89l25.09,39.44,16.13,27.96,15.42-26.89,25.81-40.51h45.89l-60.59,86.4,58.79,88.19h-45.89l-25.81-40.51-16.49-27.6-16.13,27.25-25.81,40.87h-45.89Z"/>
         </g>
-        <polygon class="h1" points="366.39 153.64 240.67 265.55 1.73 265.55 127.45 153.64 366.39 153.64"/>
-        <polygon class="h2" points="240 4.58 240 134.01 119.93 134.01 0 240.82 0 4.58 120.02 93.46 240 4.58"/>
+        <polygon class="hg1" points="366.39 153.64 240.67 265.55 1.73 265.55 127.45 153.64 366.39 153.64"/>
+        <polygon class="hg2" points="240 4.58 240 134.01 119.93 134.01 0 240.82 0 4.58 120.02 93.46 240 4.58"/>
       </svg>
-      <span class="header-tag">Expert Network</span>
-    </a>
+      <span class="header-network-label">Expert Network</span>
+    </div>
     <div class="header-contact">
       <a href="mailto:hello@caselynx.co">hello@caselynx.co</a>
-      <span class="sep">·</span>
-      <a href="tel:+14073749080">(407) 374-9080</a>
-      <a class="submit-case-btn" href="mailto:hello@caselynx.co?subject=Case%20Request&body=Hi%20CaseLynx%20team%2C%0D%0A%0D%0APlease%20find%20my%20case%20request%20details%20below%3A%0D%0A%0D%0APlaintiff%20Name%3A%0D%0ADate%20of%20Birth%3A%0D%0ADate%20of%20Loss%3A%0D%0AService%20Requested%20(IME%20%2F%20CME%20%2F%20Record%20Review)%3A%0D%0AMedical%20Specialty%3A%0D%0AExam%20Location%20(if%20applicable)%3A%0D%0ATimeline%3A%0D%0AAdditional%20Details%20(e.g.%20specific%20bodily%20injuries%2C%20other%20considerations)%3A%0D%0A%0D%0AThanks%2C">Submit a case</a>
+      <span>·</span>
+      <a href="tel:4073749080">(407) 374-9080</a>
     </div>
+    <a href="mailto:hello@caselynx.co?subject=Case%20Request&body=Hi%20CaseLynx%20team%2C%0D%0A%0D%0APlease%20find%20my%20case%20request%20details%20below%3A%0D%0A%0D%0APlaintiff%20Name%3A%0D%0ADate%20of%20Birth%3A%0D%0ADate%20of%20Loss%3A%0D%0AService%20Requested%20(IME%20%2F%20CME%20%2F%20Record%20Review)%3A%0D%0AMedical%20Specialty%3A%0D%0AExam%20Location%20(if%20applicable)%3A%0D%0ATimeline%3A%0D%0AAdditional%20Details%20(e.g.%20specific%20bodily%20injuries%2C%20other%20considerations)%3A%0D%0A%0D%0AThanks%2C" class="header-submit-btn">Submit a case</a>
   </header>
 
-  <!-- Tabs -->
-  <div class="tabs" role="tablist">
-    <button class="tab-btn active" data-tab="roster"     role="tab" aria-selected="true">Roster</button>
-    <button class="tab-btn"        data-tab="map"        role="tab" aria-selected="false">Map</button>
-    <button class="tab-btn"        data-tab="fees"       role="tab" aria-selected="false">Fee Schedule</button>
-    <button class="tab-btn"        data-tab="estimator"  role="tab" aria-selected="false">Fee Estimator</button>
-  </div>
+  <!-- Nav -->
+  <nav class="app-nav">
+    <button class="nav-tab active" data-tab="map">Map</button>
+    <button class="nav-tab" data-tab="about">About</button>
+    <button class="nav-tab" data-tab="roster">Roster</button>
+    <button class="nav-tab" data-tab="fees">Fee Schedule</button>
+    <button class="nav-tab" data-tab="estimator">Fee Estimator</button>
+  </nav>
 
-  <!-- ── ROSTER ────────────────────────────────────── -->
-  <div id="tab-roster" class="tab-panel active">
-
-    <!-- Sidebar -->
-    <aside class="roster-sidebar" id="sidebar">
-      <div class="sidebar-section">
-        <div class="sidebar-label">Specialty</div>
-        <div id="sidebar-specialties"></div>
-      </div>
-      <div class="sidebar-section">
-        <div class="sidebar-label">County</div>
-        <div id="sidebar-counties"></div>
-      </div>
-      <div class="sidebar-section">
-        <div class="sidebar-label">Availability</div>
-        <div class="toggle-row">
-          <span class="toggle-label">Travels</span>
-          <label class="toggle">
-            <input type="checkbox" id="toggle-travels">
-            <span class="toggle-track"></span>
-          </label>
-        </div>
-        <div class="toggle-row" style="margin-top:8px">
-          <span class="toggle-label">Comments on minors</span>
-          <label class="toggle">
-            <input type="checkbox" id="toggle-minors">
-            <span class="toggle-track"></span>
-          </label>
-        </div>
-      </div>
-    </aside>
-
-    <!-- Main roster -->
-    <div class="roster-main">
-      <!-- Mobile filter bar (hidden on desktop) -->
-      <div class="mobile-filter-bar" id="mobile-filter-bar">
-        <button class="mobile-filter-btn" id="mobile-filter-btn">
-          Filters <span class="filter-badge" id="filter-badge" style="display:none"></span>
-        </button>
-      </div>
-      <div class="roster-header" id="roster-count-bar">Loading…</div>
-      <div id="roster-list">
-        <div class="loading">
-          <div class="loading-spinner"></div>
-          Loading experts…
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- ── MAP ──────────────────────────────────────── -->
-  <div id="tab-map" class="tab-panel">
+  <!-- Map Tab -->
+  <div id="tab-map" class="tab-content active" data-tab="map">
     <div class="map-toolbar">
       <select id="map-specialty-filter">
         <option value="">All Specialties</option>
       </select>
-      <span class="map-toolbar-count" id="map-count"></span>
+      <span id="map-count"></span>
     </div>
     <div class="map-legend" id="map-legend"></div>
     <div class="map-body">
-      <div class="map-list-panel" id="map-list"></div>
+      <div class="map-list-panel" id="map-list-panel"></div>
       <div class="map-wrap">
         <div id="map"></div>
         <div id="map-info-card">
-          <button class="info-card-close" id="info-card-close">×</button>
-          <div class="info-card-name" id="ic-name"></div>
-          <div class="info-card-specialty" id="ic-specialty"></div>
-          <div class="info-card-city" id="ic-city"></div>
-          <div class="ic-dots" id="ic-dots"></div>
-          <a class="info-card-link" id="ic-roster-link">View full profile →</a>
+          <button class="map-info-close" id="map-info-close">&times;</button>
+          <div class="map-info-name" id="map-info-name"></div>
+          <div class="map-info-meta" id="map-info-meta"></div>
+          <div class="map-info-dots" id="map-info-dots"></div>
+          <span class="map-info-link" id="map-info-profile">View full profile →</span>
         </div>
+      </div>
+    </div>
+    <div class="map-help-callout">
+      Not finding the right expert for your case? We can help. &nbsp;
+      <a href="mailto:hello@caselynx.co">hello@caselynx.co</a> &nbsp;·&nbsp;
+      <a href="tel:4073749080">(407) 374-9080</a>
+    </div>
+  </div>
+
+  <!-- About Tab -->
+  <div id="tab-about" class="tab-content" data-tab="about">
+    <div class="about-inner">
+      <div class="about-heading">About CaseLynx</div>
+      <div class="about-section">
+        <div class="about-section-label">Who we are</div>
+        <p>CaseLynx was founded by physicians and operators with firsthand experience coordinating IMEs, CMEs, and medical record reviews for law firms and insurance carriers. After working with hundreds of doctors and firms, we built a better way — with fewer delays, less administrative burden, and more predictable outcomes.</p>
+      </div>
+      <div class="about-section">
+        <div class="about-section-label">What we do</div>
+        <p>We connect Florida defense firms and carriers with a tightly vetted network of board-certified specialists for Independent Medical Examinations, Compulsory Medical Examinations, and medical record reviews. Our doctors deliver direct, clear, high-quality findings — no surprises. When your case requires it, our experts are also available for depositions and trial testimony.</p>
+      </div>
+      <div class="about-section">
+        <div class="about-section-label">How we work</div>
+        <p>Every case is managed through our purpose-built platform, MyCaseLynx — keeping scheduling, records, billing, and communication organized in one place. You'll have a dedicated point of contact and clear, proactive updates at every step. We hold ourselves to being the best partner you've ever worked with, and take medical expert testimony completely off your stress list.</p>
+      </div>
+      <div class="about-contact">
+        To submit a case or learn more, reach us at <a href="mailto:hello@caselynx.co">hello@caselynx.co</a> or <a href="tel:4073749080">(407) 374-9080</a>.
       </div>
     </div>
   </div>
 
-  <!-- ── FEE SCHEDULE ─────────────────────────────── -->
-  <div id="tab-fees" class="tab-panel">
-    <div class="inner">
-      <div class="fee-section">
-        <div class="fee-group-title">Group 1 — Surgical Specialists</div>
-        <div class="fee-group-sub">Orthopedic Surgery · Neurosurgery</div>
-        <div class="fee-table-wrap">
-          <table class="fee-table">
-            <thead><tr><th>Service</th><th>Fee</th></tr></thead>
-            <tbody>
-              <tr><td>IME / CME</td><td>$5,750</td></tr>
-              <tr><td>Record Review Only</td><td>$3,500</td></tr>
-              <tr><td>Exam Only</td><td>$2,250</td></tr>
-            </tbody>
-          </table>
+  <!-- Roster Tab -->
+  <div id="tab-roster" class="tab-content" data-tab="roster">
+    <aside class="roster-sidebar" id="roster-sidebar">
+      <div>
+        <div class="sidebar-section-label">Specialty</div>
+        <div id="sidebar-specialty-filters"></div>
+      </div>
+      <div>
+        <div class="sidebar-section-label">County</div>
+        <div id="sidebar-county-filters"></div>
+      </div>
+      <div>
+        <div class="sidebar-section-label">Availability</div>
+        <div class="toggle-row">
+          <span>Travels</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="filter-travels">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="toggle-row">
+          <span>Comments on minors</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="filter-minors">
+            <span class="toggle-slider"></span>
+          </label>
         </div>
       </div>
-      <div class="fee-section">
-        <div class="fee-group-title">Group 2 — Non-Surgical Specialists</div>
-        <div class="fee-group-sub">Physiatry · Neurology · Pain Management · Cardiology · Psychiatry · Podiatry · Urology</div>
-        <div class="fee-table-wrap">
-          <table class="fee-table">
-            <thead><tr><th>Service</th><th>Fee</th></tr></thead>
-            <tbody>
-              <tr><td>IME / CME</td><td>$4,600</td></tr>
-              <tr><td>Record Review Only</td><td>$2,800</td></tr>
-              <tr><td>Exam Only</td><td>$1,800</td></tr>
-            </tbody>
-          </table>
-        </div>
+      <div class="sidebar-help">
+        Not sure which expert fits your case? We can help.<br>
+        <a href="mailto:hello@caselynx.co">hello@caselynx.co</a> · <a href="tel:4073749080">(407) 374-9080</a>
       </div>
-      <div class="fee-section">
-        <div class="fee-group-title">Group 3 — General Practice</div>
-        <div class="fee-group-sub">Dentistry / Oral Surgery · Chiropractic · Family Medicine / Internal Medicine</div>
-        <div class="fee-table-wrap">
-          <table class="fee-table">
-            <thead><tr><th>Service</th><th>Fee</th></tr></thead>
-            <tbody>
-              <tr><td>IME / CME</td><td>$3,750</td></tr>
-              <tr><td>Record Review Only</td><td>$2,275</td></tr>
-              <tr><td>Exam Only</td><td>$1,475</td></tr>
-            </tbody>
-          </table>
-        </div>
+    </aside>
+    <div class="roster-main">
+      <div id="mobile-filter-bar">
+        <button class="filter-pill-btn" id="mobile-filter-btn">
+          Filters<span class="filter-badge" id="filter-badge"></span>
+        </button>
       </div>
-      <p class="fee-note">Other fees (e.g. travel, teleconference calls, imaging) billed separately.</p>
+      <div id="roster-count-bar">Loading specialists...</div>
+      <div id="roster-grid"></div>
+      <div class="roster-help-callout">
+        Not finding the right expert for your case? We can help match you with the right specialist.<br>
+        <a href="mailto:hello@caselynx.co">hello@caselynx.co</a> · <a href="tel:4073749080">(407) 374-9080</a>
+      </div>
     </div>
   </div>
 
-  <!-- ── FEE ESTIMATOR ─────────────────────────────── -->
-  <div id="tab-estimator" class="tab-panel">
-    <iframe
-      id="estimator-frame"
-      src="https://arielkramer12.github.io/caselynx-fee-estimator/"
-      title="CaseLynx Fee Estimator"
-      allowfullscreen
-    ></iframe>
+  <!-- Fee Schedule Tab -->
+  <div id="tab-fees" class="tab-content" data-tab="fees">
+    <div class="fees-inner">
+
+      <!-- Group 1: Surgical Specialists -->
+      <div class="fee-group">
+        <div class="fee-group-header" style="background:#faeeda;color:#633806">
+          <div class="fee-group-title">Surgical Specialists</div>
+          <div class="fee-group-sub">Orthopedic Surgery · Neurosurgery</div>
+        </div>
+        <div class="fee-group-body">
+          <div class="fee-section-label">Core Services</div>
+          <table class="fee-table">
+            <thead><tr><th>Service</th><th>Description</th><th>Fee</th></tr></thead>
+            <tbody>
+              <tr><td>IME / CME</td><td>Record review up to 600 pages, physical exam, and written expert report</td><td>$5,750</td></tr>
+              <tr><td>Record Review Only</td><td>Record review up to 600 pages and case preparation (no physical exam)</td><td>$3,500</td></tr>
+              <tr><td>Exam Only</td><td>Physical exam if added after record review</td><td>$2,250</td></tr>
+              <tr><td>Page Overage</td><td>Additional records pages in excess of 600</td><td>600–1,000: $6.00/pg · 1,000–5,000: $3.75/pg · 5,000+: $1.25/pg</td></tr>
+              <tr><td>Imaging Review</td><td>Per imaging study reviewed</td><td>X-ray/standard: $150/study · MRI/CT: $300/study</td></tr>
+              <tr><td>Addendum Review &amp; Report</td><td>Up to 200 pages or 6 imaging studies</td><td>$1,000 flat; additional pages at $6.00/pg</td></tr>
+              <tr><td>Teleconference</td><td>Phone meeting with attorney (non-testimony)</td><td>$1,000/hour (1-hour minimum)</td></tr>
+              <tr><td>Travel Time</td><td>Based on distance from doctor home to exam location</td><td>$1,000/hour</td></tr>
+              <tr><td>Expedite Fee</td><td>Records uploaded less than 21 days before exam or report due date</td><td>$1,500</td></tr>
+              <tr><td>Room Reservation Fee</td><td>CaseLynx books exam location</td><td>$150</td></tr>
+            </tbody>
+          </table>
+          <div class="fee-section-label">Court-Related Services</div>
+          <table class="fee-table">
+            <thead><tr><th>Service</th><th>Description</th><th>Fee</th></tr></thead>
+            <tbody>
+              <tr><td>Deposition</td><td>Expert participation including sworn testimony</td><td>$3,500 for first 2 hours; then $1,000/hour (2-hour minimum)</td></tr>
+              <tr><td>Court Testimony</td><td>In-person or virtual testimony or appearance</td><td>$14,500/day</td></tr>
+              <tr><td>Preparation for Testimony</td><td>Report/case review and supporting materials prior to deposition or trial</td><td>$1,000/hour</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Group 2: Non-Surgical Specialists -->
+      <div class="fee-group">
+        <div class="fee-group-header" style="background:#e6f1fb;color:#0c447c">
+          <div class="fee-group-title">Non-Surgical Specialists</div>
+          <div class="fee-group-sub">Physiatry · Neurology · Pain Management · Cardiology · Psychiatry · Podiatry · Urology</div>
+        </div>
+        <div class="fee-group-body">
+          <div class="fee-section-label">Core Services</div>
+          <table class="fee-table">
+            <thead><tr><th>Service</th><th>Description</th><th>Fee</th></tr></thead>
+            <tbody>
+              <tr><td>IME / CME</td><td>Record review up to 600 pages, physical exam, and written expert report</td><td>$4,600</td></tr>
+              <tr><td>Record Review Only</td><td>Record review up to 600 pages and case preparation (no physical exam)</td><td>$2,800</td></tr>
+              <tr><td>Exam Only</td><td>Physical exam if added after record review</td><td>$1,800</td></tr>
+              <tr><td>Page Overage</td><td>Additional records pages in excess of 600</td><td>600–1,000: $4.80/pg · 1,000–5,000: $3.00/pg · 5,000+: $1.00/pg</td></tr>
+              <tr><td>Imaging Review</td><td>Per imaging study reviewed</td><td>X-ray/standard: $120/study · MRI/CT: $240/study</td></tr>
+              <tr><td>Addendum Review &amp; Report</td><td>Up to 200 pages or 6 imaging studies</td><td>$800 flat; additional pages at $4.80/pg</td></tr>
+              <tr><td>Teleconference</td><td>Phone meeting with attorney (non-testimony)</td><td>$800/hour (1-hour minimum)</td></tr>
+              <tr><td>Travel Time</td><td>Based on distance from doctor home to exam location</td><td>$800/hour</td></tr>
+              <tr><td>Expedite Fee</td><td>Records uploaded less than 21 days before exam or report due date</td><td>$1,500</td></tr>
+              <tr><td>Room Reservation Fee</td><td>CaseLynx books exam location</td><td>$150</td></tr>
+            </tbody>
+          </table>
+          <div class="fee-section-label">Court-Related Services</div>
+          <table class="fee-table">
+            <thead><tr><th>Service</th><th>Description</th><th>Fee</th></tr></thead>
+            <tbody>
+              <tr><td>Deposition</td><td>Expert participation including sworn testimony</td><td>$2,800 for first 2 hours; then $800/hour (2-hour minimum)</td></tr>
+              <tr><td>Court Testimony</td><td>In-person or virtual testimony or appearance</td><td>$11,600/day</td></tr>
+              <tr><td>Preparation for Testimony</td><td>Report/case review and supporting materials prior to deposition or trial</td><td>$800/hour</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Group 3: General Practice -->
+      <div class="fee-group">
+        <div class="fee-group-header" style="background:#eaf3de;color:#173404">
+          <div class="fee-group-title">General Practice</div>
+          <div class="fee-group-sub">Dentistry / Oral Surgery · Chiropractic · Family Medicine / Internal Medicine</div>
+        </div>
+        <div class="fee-group-body">
+          <div class="fee-section-label">Core Services</div>
+          <table class="fee-table">
+            <thead><tr><th>Service</th><th>Description</th><th>Fee</th></tr></thead>
+            <tbody>
+              <tr><td>IME / CME</td><td>Record review up to 600 pages, physical exam, and written expert report</td><td>$3,750</td></tr>
+              <tr><td>Record Review Only</td><td>Record review up to 600 pages and case preparation (no physical exam)</td><td>$2,275</td></tr>
+              <tr><td>Exam Only</td><td>Physical exam if added after record review</td><td>$1,475</td></tr>
+              <tr><td>Page Overage</td><td>Additional records pages in excess of 600</td><td>600–1,000: $3.90/pg · 1,000–5,000: $2.45/pg · 5,000+: $0.80/pg</td></tr>
+              <tr><td>Imaging Review</td><td>Per imaging study reviewed</td><td>X-ray/standard: $100/study · MRI/CT: $200/study</td></tr>
+              <tr><td>Addendum Review &amp; Report</td><td>Up to 200 pages or 6 imaging studies</td><td>$650 flat; additional pages at $3.90/pg</td></tr>
+              <tr><td>Teleconference</td><td>Phone meeting with attorney (non-testimony)</td><td>$650/hour (1-hour minimum)</td></tr>
+              <tr><td>Travel Time</td><td>Based on distance from doctor home to exam location</td><td>$650/hour</td></tr>
+              <tr><td>Expedite Fee</td><td>Records uploaded less than 21 days before exam or report due date</td><td>$1,500</td></tr>
+              <tr><td>Room Reservation Fee</td><td>CaseLynx books exam location</td><td>$150</td></tr>
+            </tbody>
+          </table>
+          <div class="fee-section-label">Court-Related Services</div>
+          <table class="fee-table">
+            <thead><tr><th>Service</th><th>Description</th><th>Fee</th></tr></thead>
+            <tbody>
+              <tr><td>Deposition</td><td>Expert participation including sworn testimony</td><td>$2,275 for first 2 hours; then $650/hour (2-hour minimum)</td></tr>
+              <tr><td>Court Testimony</td><td>In-person or virtual testimony or appearance</td><td>$9,425/day</td></tr>
+              <tr><td>Preparation for Testimony</td><td>Report/case review and supporting materials prior to deposition or trial</td><td>$650/hour</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Payment Terms -->
+      <div class="fee-group">
+        <div class="fee-group-header" style="background:#f5f5f3;color:#333">
+          <div class="fee-group-title">Payment Terms &amp; Policies</div>
+        </div>
+        <div class="fee-group-body">
+          <table class="fee-table">
+            <thead><tr><th>Term</th><th>Details</th></tr></thead>
+            <tbody>
+              <tr><td>Retainer</td><td style="font-weight:normal;white-space:normal">Base fee plus applicable travel fee due within 14 days of scheduling to confirm exam date</td></tr>
+              <tr><td>Medical Records</td><td style="font-weight:normal;white-space:normal">All records must be shared at least 21 days in advance; otherwise subject to Expedite Fee</td></tr>
+              <tr><td>Final Report Release</td><td style="font-weight:normal;white-space:normal">All outstanding balances must be paid before delivery of final report</td></tr>
+              <tr><td>Cancellations / Refunds</td><td style="font-weight:normal;white-space:normal">Full refund if canceled ≥4 weeks before exam; non-refundable within 4 weeks</td></tr>
+              <tr><td>Late Payments</td><td style="font-weight:normal;white-space:normal">Invoices unpaid after 30 days accrue 1.5% monthly interest; services may be suspended</td></tr>
+              <tr><td>Accepted Payment Methods</td><td style="font-weight:normal;white-space:normal">Secure online payment (ACH or wire) strongly preferred; checks payable to CaseLynx, Inc. also accepted</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="fees-help">
+        Have questions about fees or need a custom quote?
+        <a href="mailto:hello@caselynx.co">hello@caselynx.co</a> · <a href="tel:4073749080">(407) 374-9080</a>
+      </div>
+    </div>
   </div>
 
-  <!-- Contact bar -->
-  <div class="contact-bar">
-    <a href="mailto:hello@caselynx.co">hello@caselynx.co</a>
-    <span class="sep">·</span>
-    <a href="tel:+14073749080">(407) 374-9080</a>
-    <span class="sep">·</span>
-    <a href="mailto:hello@caselynx.co?subject=Case%20Request&body=Hi%20CaseLynx%20team%2C%0D%0A%0D%0APlease%20find%20my%20case%20request%20details%20below%3A%0D%0A%0D%0APlaintiff%20Name%3A%0D%0ADate%20of%20Birth%3A%0D%0ADate%20of%20Loss%3A%0D%0AService%20Requested%20(IME%20%2F%20CME%20%2F%20Record%20Review)%3A%0D%0AMedical%20Specialty%3A%0D%0AExam%20Location%20(if%20applicable)%3A%0D%0ATimeline%3A%0D%0AAdditional%20Details%20(e.g.%20specific%20bodily%20injuries%2C%20other%20considerations)%3A%0D%0A%0D%0AThanks%2C" style="color:var(--blue);font-weight:500">Submit a case →</a>
+  <!-- Fee Estimator Tab -->
+  <div id="tab-estimator" class="tab-content" data-tab="estimator">
+    <iframe src="https://arielkramer12.github.io/caselynx-fee-estimator/" width="100%" height="600px" style="border:none;display:block"></iframe>
   </div>
 
-</div><!-- /#app -->
-
-<!-- Profile drawer -->
-<div class="profile-overlay" id="profile-overlay"></div>
-<div class="profile-drawer" id="profile-drawer">
-  <div class="pd-drag-handle" id="pd-drag-handle"></div>
-  <button class="pd-close-btn" id="pd-close-btn" aria-label="Close">×</button>
-  <div class="pd-scroll" id="pd-scroll"></div>
+  <!-- Contact Bar -->
+  <footer class="contact-bar">
+    <a href="mailto:hello@caselynx.co">hello@caselynx.co</a> &nbsp;·&nbsp;
+    <a href="tel:4073749080">(407) 374-9080</a> &nbsp;·&nbsp;
+    <a href="mailto:hello@caselynx.co?subject=Case%20Request&body=Hi%20CaseLynx%20team%2C%0D%0A%0D%0APlease%20find%20my%20case%20request%20details%20below%3A%0D%0A%0D%0APlaintiff%20Name%3A%0D%0ADate%20of%20Birth%3A%0D%0ADate%20of%20Loss%3A%0D%0AService%20Requested%20(IME%20%2F%20CME%20%2F%20Record%20Review)%3A%0D%0AMedical%20Specialty%3A%0D%0AExam%20Location%20(if%20applicable)%3A%0D%0ATimeline%3A%0D%0AAdditional%20Details%20(e.g.%20specific%20bodily%20injuries%2C%20other%20considerations)%3A%0D%0A%0D%0AThanks%2C" style="color:var(--blue)">Submit a case →</a>
+  </footer>
 </div>
 
-<!-- Mobile drawer overlay + drawer -->
-<div class="drawer-overlay" id="drawer-overlay"></div>
-<div class="filter-drawer" id="filter-drawer">
-  <div class="drawer-handle-bar"></div>
-  <div class="drawer-title">Filters</div>
-  <div class="drawer-scroll">
-    <div class="drawer-section">
-      <div class="drawer-section-label">Specialty</div>
-      <div id="drawer-specialties"></div>
-    </div>
-    <div class="drawer-section">
-      <div class="drawer-section-label">County</div>
-      <div id="drawer-counties"></div>
-    </div>
-    <div class="drawer-section">
-      <div class="drawer-section-label">Availability</div>
-      <div class="toggle-row">
-        <span class="toggle-label">Travels</span>
-        <label class="toggle"><input type="checkbox" id="drawer-toggle-travels"><span class="toggle-track"></span></label>
-      </div>
-      <div class="toggle-row" style="margin-top:8px">
-        <span class="toggle-label">Comments on minors</span>
-        <label class="toggle"><input type="checkbox" id="drawer-toggle-minors"><span class="toggle-track"></span></label>
-      </div>
-    </div>
+<!-- Profile Drawer -->
+<div id="drawer-overlay"></div>
+<div id="profile-drawer">
+  <div class="drawer-drag-handle"></div>
+  <button class="drawer-close" id="drawer-close">&times;</button>
+  <div class="drawer-top">
+    <div class="drawer-avatar" id="drawer-avatar"></div>
+    <div class="drawer-name" id="drawer-name"></div>
+    <div class="drawer-specialty-pill" id="drawer-specialty"></div>
+    <div class="drawer-location" id="drawer-location"></div>
   </div>
-  <div class="drawer-actions">
-    <button class="drawer-apply-btn" id="drawer-apply">Apply</button>
-    <a class="drawer-clear-btn" id="drawer-clear">Clear all</a>
-  </div>
+  <hr class="drawer-divider">
+  <div class="drawer-bio" id="drawer-bio"></div>
+  <div class="drawer-sub-chips" id="drawer-sub-chips"></div>
+  <div class="drawer-dots" id="drawer-dots"></div>
+  <a class="drawer-cv-btn" id="drawer-cv-btn" href="#">Request CV →</a>
 </div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- Mobile Filter Drawer -->
+<div id="filter-overlay"></div>
+<div id="filter-drawer">
+  <div class="filter-drawer-handle"></div>
+  <div class="filter-drawer-title">Filter Experts</div>
+  <div class="filter-section-label">Specialty</div>
+  <div id="mobile-specialty-filters"></div>
+  <div class="filter-section-label">County</div>
+  <div id="mobile-county-filters"></div>
+  <div class="filter-section-label">Availability</div>
+  <div class="toggle-row">
+    <span>Travels</span>
+    <label class="toggle-switch">
+      <input type="checkbox" id="mobile-filter-travels">
+      <span class="toggle-slider"></span>
+    </label>
+  </div>
+  <div class="toggle-row">
+    <span>Comments on minors</span>
+    <label class="toggle-switch">
+      <input type="checkbox" id="mobile-filter-minors">
+      <span class="toggle-slider"></span>
+    </label>
+  </div>
+  <button class="filter-apply-btn" id="filter-apply-btn">Apply Filters</button>
+  <span class="filter-clear-link" id="filter-clear-link">Clear all</span>
+</div>
+
+<!-- Sticky Help Bar -->
+<div id="sticky-help-bar">
+  Need help finding the right expert?
+  <a href="mailto:hello@caselynx.co">hello@caselynx.co</a> ·
+  <a href="tel:4073749080">(407) 374-9080</a>
+  <button id="sticky-dismiss">&times;</button>
+</div>
+
 <script>
-// ── CONFIG ────────────────────────────────────────────────────────
+// ===== CONSTANTS =====
 const API_BASE = 'https://caselynx-email-server-production.up.railway.app';
+const CASE_MAILTO = 'mailto:hello@caselynx.co?subject=Case%20Request&body=Hi%20CaseLynx%20team%2C%0D%0A%0D%0APlease%20find%20my%20case%20request%20details%20below%3A%0D%0A%0D%0APlaintiff%20Name%3A%0D%0ADate%20of%20Birth%3A%0D%0ADate%20of%20Loss%3A%0D%0AService%20Requested%20(IME%20%2F%20CME%20%2F%20Record%20Review)%3A%0D%0AMedical%20Specialty%3A%0D%0AExam%20Location%20(if%20applicable)%3A%0D%0ATimeline%3A%0D%0AAdditional%20Details%20(e.g.%20specific%20bodily%20injuries%2C%20other%20considerations)%3A%0D%0A%0D%0AThanks%2C';
 
 const SPECIALTY_LABELS = {
-  'ORTHOPEDICS':    'Orthopedics',
-  'NEUROSURGERY':   'Neurosurgery',
-  'NEUROLOGY':      'Neurology',
-  'CARDIOLOGY':     'Cardiology',
-  'DENTAL_SURGERY': 'Dental Surgery',
+  'ORTHOPEDICS':     'Orthopedics',
+  'NEUROSURGERY':    'Neurosurgery',
+  'NEUROLOGY':       'Neurology',
+  'PAIN_MANAGEMENT': 'Pain Management',
+  'CARDIOLOGY':      'Cardiology',
+  'DENTAL_SURGERY':  'Dental Surgery',
 };
-
-// Sub-specialty chips only for these
 const SURGICAL_RELS = new Set(['ORTHOPEDICS', 'NEUROSURGERY']);
 
-// ── HELPERS ───────────────────────────────────────────────────────
+const SPECIALTY_PIN_COLORS = {
+  'ORTHOPEDICS':     '#1a56db',
+  'NEUROSURGERY':    '#1a56db',
+  'NEUROLOGY':       '#0F6E56',
+  'PAIN_MANAGEMENT': '#854F0B',
+  'CARDIOLOGY':      '#993556',
+};
+
+// ===== HELPERS =====
 function initials(name) {
   if (!name) return '?';
   const parts = name.trim().split(/\s+/);
-  return parts.length === 1 ? parts[0][0].toUpperCase()
-    : (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  return parts[0][0].toUpperCase();
 }
-
-function specialtyLabel(rel) {
-  return SPECIALTY_LABELS[rel] || rel || 'Specialist';
-}
-
+function specialtyLabel(rel) { return SPECIALTY_LABELS[rel] || (rel ? rel.replace(/_/g, ' ') : 'Specialist'); }
 function formatKw(kw) {
-  return kw.split('_').map(w => w.charAt(0) + w.slice(1).toLowerCase()).join(' ');
+  if (!kw) return '';
+  return kw.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 }
-
 function formatCounty(c) {
-  return c.split('_').map(w => w.charAt(0) + w.slice(1).toLowerCase()).join(' ');
+  if (!c) return '';
+  return c.replace(/_/g, ' ').replace(/\b\w/g, ch => ch.toUpperCase());
 }
-
 function cvMailto(name) {
-  const sub  = encodeURIComponent(`CV Request – ${name}`);
-  const body = encodeURIComponent(`Hi CaseLynx,\n\nI'd like to request the CV for ${name}.\n\nThank you.`);
-  return `mailto:hello@caselynx.co?subject=${sub}&body=${body}`;
+  return 'mailto:hello@caselynx.co?subject=CV%20Request%20%E2%80%93%20' + encodeURIComponent(name || '');
 }
-
 function isYes(v) { return v === 'YES' || v === 'Yes' || v === true; }
-
-function avatarHtml(d, size) {
-  const url = d.headshot?.url;
-  const sz  = size || 40;
-  if (url) return `<div class="doctor-avatar" style="width:${sz}px;height:${sz}px"><img src="${url}" alt="${d.name}" loading="lazy"></div>`;
-  return `<div class="doctor-avatar" style="width:${sz}px;height:${sz}px">${initials(d.name)}</div>`;
-}
-
+function pinColor(rel) { return SPECIALTY_PIN_COLORS[rel] || '#5F5E5A'; }
 function utmParams() {
   const p = new URLSearchParams(window.location.search);
-  return { utm_source: p.get('utm_source')||'', utm_medium: p.get('utm_medium')||'', utm_campaign: p.get('utm_campaign')||'' };
+  return {
+    utm_source: p.get('utm_source') || '',
+    utm_medium: p.get('utm_medium') || '',
+    utm_campaign: p.get('utm_campaign') || '',
+  };
 }
 
-// ── GATE ──────────────────────────────────────────────────────────
-const gateEl    = document.getElementById('gate');
-const appEl     = document.getElementById('app');
-const attestEl  = document.getElementById('g-attest');
-const unlockBtn = document.getElementById('unlock-btn');
-const gateForm  = document.getElementById('gate-form');
-const gateErr   = document.getElementById('gate-error');
+// ===== STATE =====
+let allDoctors = [];
+let filteredDoctors = [];
+let mapInstance = null;
+let mapMarkers = {};
+let activeMapDoctorId = null;
+let pinClickInProgress = false;
 
+let filters = {
+  specialties: new Set(),
+  counties: new Set(),
+  travels: false,
+  minors: false,
+};
+
+// ===== GATE =====
+function showGate() {
+  document.getElementById('gate').style.display = 'flex';
+  document.getElementById('app').classList.remove('visible');
+}
 function showApp() {
-  gateEl.style.display = 'none';
-  appEl.classList.add('visible');
-  loadRoster();
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('app').classList.add('visible');
+  initStickyBar();
+  if (!allDoctors.length) loadRoster();
 }
 
-if (sessionStorage.getItem('caselynx_unlocked') === '1') showApp();
-
-attestEl.addEventListener('change', () => { unlockBtn.disabled = !attestEl.checked; });
-
-gateForm.addEventListener('submit', async e => {
-  e.preventDefault();
-  gateErr.style.display = 'none';
-  const name  = document.getElementById('g-name').value.trim();
-  const firm  = document.getElementById('g-firm').value.trim();
-  const email = document.getElementById('g-email').value.trim();
-  if (!name || !firm || !email) return showGateError('Please complete all fields.');
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showGateError('Please enter a valid work email address.');
-  unlockBtn.disabled = true;
-  unlockBtn.textContent = 'Loading…';
-  const utms = utmParams();
-  const qs = Object.entries(utms).filter(([,v])=>v).map(([k,v])=>`${k}=${encodeURIComponent(v)}`).join('&');
+(function checkGate() {
   try {
-    await fetch(`${API_BASE}/experts-gate${qs?'?'+qs:''}`, {
+    const raw = localStorage.getItem('caselynx_gate');
+    const gate = raw ? JSON.parse(raw) : null;
+    const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+    if (gate && (Date.now() - gate.granted_at) < THIRTY_DAYS) {
+      showApp();
+    } else {
+      showGate();
+    }
+  } catch(e) { showGate(); }
+})();
+
+// Gate form logic
+const attestCheck = document.getElementById('gate-attest-check');
+const unlockBtn = document.getElementById('unlock-btn');
+attestCheck.addEventListener('change', () => {
+  unlockBtn.disabled = !attestCheck.checked;
+});
+
+unlockBtn.addEventListener('click', async () => {
+  const name = document.getElementById('gate-name').value.trim();
+  const firm = document.getElementById('gate-firm').value.trim();
+  const email = document.getElementById('gate-email').value.trim();
+  const errDiv = document.getElementById('gate-error');
+
+  if (!name || !firm || !email) {
+    errDiv.textContent = 'Please fill in all fields.';
+    errDiv.style.display = 'block';
+    return;
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    errDiv.textContent = 'Please enter a valid work email.';
+    errDiv.style.display = 'block';
+    return;
+  }
+  errDiv.style.display = 'none';
+  unlockBtn.disabled = true;
+  unlockBtn.textContent = 'Loading...';
+
+  try {
+    const utm = utmParams();
+    await fetch(API_BASE + '/experts-gate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, firm, email }),
+      body: JSON.stringify({ name, firm, email, ...utm }),
     });
-  } catch(_) {}
-  sessionStorage.setItem('caselynx_unlocked', '1');
+  } catch(e) { /* non-blocking */ }
+
+  localStorage.setItem('caselynx_gate', JSON.stringify({ email, firm, name, granted_at: Date.now() }));
   showApp();
 });
 
-function showGateError(msg) {
-  gateErr.textContent = msg;
-  gateErr.style.display = 'block';
-  unlockBtn.disabled = !attestEl.checked;
-  unlockBtn.textContent = 'View our experts →';
-}
-
-// ── TABS ──────────────────────────────────────────────────────────
-let mapInitialized = false;
-let allDoctors = [];
-
-document.querySelectorAll('.tab-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    btn.classList.add('active');
-    btn.setAttribute('aria-selected','true');
-    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-    if (btn.dataset.tab === 'map' && !mapInitialized) {
-      initMap(allDoctors);
-      mapInitialized = true;
+// ===== TABS =====
+document.querySelectorAll('.nav-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const target = tab.dataset.tab;
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.getElementById('tab-' + target).classList.add('active');
+    if (target === 'map' && mapInstance) {
+      setTimeout(() => mapInstance.invalidateSize(), 50);
     }
   });
 });
 
-// ── ROSTER + SIDEBAR ──────────────────────────────────────────────
-const rosterListEl = document.getElementById('roster-list');
-const countBarEl   = document.getElementById('roster-count-bar');
-
-// Filter state
-let selSpecialties = new Set();
-let selCounties    = new Set();
-let filterTravels  = false;
-let filterMinors   = false;
-
-async function loadRoster() {
-  try {
-    const res = await fetch(`${API_BASE}/doctors`);
-    if (!res.ok) throw new Error(res.status);
-    allDoctors = await res.json();
-    buildSidebar(allDoctors);
-    applyFilters();
-  } catch {
-    rosterListEl.innerHTML = `<div class="roster-empty">Unable to load roster. Contact <a href="mailto:hello@caselynx.co" style="color:var(--blue)">hello@caselynx.co</a>.</div>`;
-    countBarEl.textContent = '';
-  }
-}
-
-function buildSidebar(doctors) {
-  const specialties = [...new Set(doctors.map(d => d.relationship).filter(Boolean))].sort();
-  const counties    = [...new Set(doctors.flatMap(d => Array.isArray(d.flCounty) ? d.flCounty : []).filter(Boolean))].sort();
-
-  // ── Desktop sidebar ──
-  const spEl = document.getElementById('sidebar-specialties');
-  spEl.innerHTML = '';
-  specialties.forEach(s => {
-    const lbl = document.createElement('label');
-    lbl.className = 'sidebar-option';
-    lbl.innerHTML = `<input type="checkbox" value="${s}"><span>${specialtyLabel(s)}</span>`;
-    lbl.querySelector('input').addEventListener('change', e => {
-      if (e.target.checked) selSpecialties.add(s); else selSpecialties.delete(s);
-      applyFilters(); updateFilterBadge();
-    });
-    spEl.appendChild(lbl);
-  });
-
-  const coEl = document.getElementById('sidebar-counties');
-  coEl.innerHTML = '';
-  counties.forEach(c => {
-    const lbl = document.createElement('label');
-    lbl.className = 'sidebar-option';
-    lbl.innerHTML = `<input type="checkbox" value="${c}"><span>${formatCounty(c)}</span>`;
-    lbl.querySelector('input').addEventListener('change', e => {
-      if (e.target.checked) selCounties.add(c); else selCounties.delete(c);
-      applyFilters(); updateFilterBadge();
-    });
-    coEl.appendChild(lbl);
-  });
-
-  document.getElementById('toggle-travels').addEventListener('change', e => { filterTravels = e.target.checked; applyFilters(); updateFilterBadge(); });
-  document.getElementById('toggle-minors').addEventListener('change',  e => { filterMinors  = e.target.checked; applyFilters(); updateFilterBadge(); });
-
-  // ── Mobile drawer ──
-  const drSpEl = document.getElementById('drawer-specialties');
-  drSpEl.innerHTML = '';
-  specialties.forEach(s => {
-    const lbl = document.createElement('label');
-    lbl.className = 'sidebar-option';
-    lbl.innerHTML = `<input type="checkbox" value="${s}"><span>${specialtyLabel(s)}</span>`;
-    drSpEl.appendChild(lbl);
-  });
-
-  const drCoEl = document.getElementById('drawer-counties');
-  drCoEl.innerHTML = '';
-  counties.forEach(c => {
-    const lbl = document.createElement('label');
-    lbl.className = 'sidebar-option';
-    lbl.innerHTML = `<input type="checkbox" value="${c}"><span>${formatCounty(c)}</span>`;
-    drCoEl.appendChild(lbl);
-  });
-}
-
-function applyFilters() {
-  const filtered = allDoctors.filter(d => {
-    if (selSpecialties.size > 0 && !selSpecialties.has(d.relationship)) return false;
-    if (selCounties.size > 0) {
-      const dc = Array.isArray(d.flCounty) ? d.flCounty : [];
-      if (!dc.some(c => selCounties.has(c))) return false;
-    }
-    if (filterTravels && !isYes(d.willingnessToTravel)) return false;
-    if (filterMinors  && !isYes(d.willingnessToCommentOnMinors)) return false;
-    return true;
-  });
-  renderRoster(filtered);
-}
-
-function renderRoster(doctors) {
-  const n = doctors.length;
-  countBarEl.innerHTML = `<strong>${n}</strong> specialist${n !== 1 ? 's' : ''}`;
-
-  if (!n) {
-    rosterListEl.innerHTML = '<div class="roster-empty">No specialists match the selected filters.</div>';
-    return;
-  }
-
-  const rows = doctors.map(d => {
-    const kws      = Array.isArray(d.subSpecialtyKeywords) ? d.subSpecialtyKeywords : [];
-    const counties = Array.isArray(d.flCounty) ? d.flCounty : [];
-    const showChips = SURGICAL_RELS.has(d.relationship) && kws.length > 0;
-    const meta     = [d.city ? d.city + ', FL' : null, counties.map(formatCounty).join(' · ') || null].filter(Boolean).join(' · ');
-    const trav     = isYes(d.willingnessToTravel);
-    const min      = isYes(d.willingnessToCommentOnMinors);
-
-    const headshotUrl = d.headshot?.url;
-    const ava = headshotUrl
-      ? `<div class="doctor-avatar"><img src="${headshotUrl}" alt="${d.name}" loading="lazy"></div>`
-      : `<div class="doctor-avatar">${initials(d.name)}</div>`;
-
-    return `<div class="doctor-row" data-id="${d.id}">
-      ${ava}
-      <div class="doctor-body">
-        <div class="doctor-name-row">
-          <span class="doctor-name">${d.name || '—'}</span>
-          <span class="specialty-pill">${specialtyLabel(d.relationship)}</span>
-        </div>
-        ${meta ? `<div class="doctor-meta">${meta}</div>` : ''}
-        ${d.bio ? `<div class="doctor-bio">${d.bio}</div>` : ''}
-        ${showChips ? `<div class="sub-chips">${kws.map(k=>`<span class="sub-chip">${formatKw(k)}</span>`).join('')}</div>` : ''}
-        <div class="doctor-footer">
-          <div class="doctor-dots">
-            <span class="dot-item ${trav?'yes':'no'}"><span class="dot ${trav?'yes':'no'}"></span>Travels</span>
-            <span class="dot-item ${min?'yes':'no'}"><span class="dot ${min?'yes':'no'}"></span>Comments on minors</span>
-          </div>
-          <a class="cv-link" href="${cvMailto(d.name)}">Request CV →</a>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
-
-  rosterListEl.innerHTML = rows;
-}
-
-// ── MAP ───────────────────────────────────────────────────────────
-const SPECIALTY_PIN_COLORS = {
-  'ORTHOPEDICS':    '#1a56db',
-  'NEUROSURGERY':   '#1a56db',
-  'NEUROLOGY':      '#0F6E56',
-  'CARDIOLOGY':     '#993556',
-  'DENTAL_SURGERY': '#5F5E5A',
-};
-function pinColor(rel) { return SPECIALTY_PIN_COLORS[rel] || '#5F5E5A'; }
-
-let mapInstance        = null;
-let mapMarkerMap       = {};   // id → { marker, doctor, color }
-let selectedMapId      = null;
-let pinClickInProgress = false; // prevents map background-click from dismissing a just-opened card
-
-function initMap(doctors) {
+// ===== MAP =====
+function initMap() {
+  if (mapInstance) return;
   mapInstance = L.map('map', { zoomControl: true }).setView([27.8, -83.5], 6.8);
-
-  // CartoDB Positron tiles
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
     subdomains: 'abcd',
     maxZoom: 19,
   }).addTo(mapInstance);
 
-  // Specialty dropdown
-  const sel = document.getElementById('map-specialty-filter');
-  const sps = [...new Set(doctors.map(d => d.relationship).filter(Boolean))].sort();
-  sps.forEach(s => {
-    const o = document.createElement('option');
-    o.value = s; o.textContent = specialtyLabel(s);
-    sel.appendChild(o);
-  });
-  sel.addEventListener('change', () => renderMapView(allDoctors, sel.value));
-
-  // Build legend (only specialties present in active doctors)
-  const legendEl = document.getElementById('map-legend');
-  const presentRels = [...new Set(doctors.map(d => d.relationship).filter(Boolean))];
-  // Merge ORTHOPEDICS + NEUROSURGERY under one blue entry
-  const legendEntries = [];
-  if (presentRels.includes('ORTHOPEDICS') || presentRels.includes('NEUROSURGERY')) {
-    legendEntries.push({ color: '#1a56db', label: 'Orthopedics / Neurosurgery' });
-  }
-  ['NEUROLOGY','CARDIOLOGY','DENTAL_SURGERY'].forEach(r => {
-    if (presentRels.includes(r)) legendEntries.push({ color: pinColor(r), label: specialtyLabel(r) });
-  });
-  const otherRels = presentRels.filter(r => !SPECIALTY_PIN_COLORS[r]);
-  if (otherRels.length) legendEntries.push({ color: '#5F5E5A', label: 'Other' });
-  legendEl.innerHTML = legendEntries.map(e =>
-    `<div class="legend-item"><span class="legend-dot" style="background:${e.color}"></span>${e.label}</div>`
-  ).join('');
-
-  // Dismiss info card on background map click.
-  // pinClickInProgress flag guards against the case where circleMarker clicks
-  // also bubble up to the map's click event (vector layers don't always stop propagation).
   mapInstance.on('click', () => {
     if (pinClickInProgress) { pinClickInProgress = false; return; }
-    document.getElementById('map-info-card').classList.remove('visible');
-    if (selectedMapId !== null) {
-      const prev = document.querySelector(`#map-list .map-list-item[data-id="${selectedMapId}"]`);
-      if (prev) prev.classList.remove('selected');
-      const entry = mapMarkerMap[selectedMapId];
-      if (entry) { entry.marker.setRadius(7); entry.marker.setStyle({ weight: 2, color: '#fff' }); }
-      selectedMapId = null;
-    }
+    closeMapInfoCard();
   });
-
-  // Close button
-  document.getElementById('info-card-close').addEventListener('click', () => {
-    document.getElementById('map-info-card').classList.remove('visible');
-  });
-
-  renderMapView(doctors, '');
 }
 
-function renderMapView(doctors, specialtyFilter) {
-  Object.values(mapMarkerMap).forEach(({ marker }) => marker.remove());
-  mapMarkerMap = {};
-  selectedMapId = null;
-  document.getElementById('map-info-card').classList.remove('visible');
+function renderMap(doctors) {
+  if (!mapInstance) return;
+  // Clear existing
+  Object.values(mapMarkers).forEach(m => m.remove());
+  mapMarkers = {};
 
-  const listEl = document.getElementById('map-list');
-  listEl.innerHTML = '';
-
-  const filtered = specialtyFilter ? doctors.filter(d => d.relationship === specialtyFilter) : doctors;
-  document.getElementById('map-count').textContent = `${filtered.length} specialist${filtered.length !== 1 ? 's' : ''}`;
-
-  filtered.forEach(d => {
-    const lat = parseFloat(d.lattitude);
-    const lng = parseFloat(d.longitude);
-    const hasCoords = !isNaN(lat) && !isNaN(lng) && (lat !== 0 || lng !== 0);
-    const specL = specialtyLabel(d.relationship);
-    const city  = d.city ? `${d.city}, FL` : '';
+  doctors.forEach(d => {
+    const lat = parseFloat(d.lattitude), lng = parseFloat(d.longitude);
+    if (isNaN(lat) || isNaN(lng)) return;
     const color = pinColor(d.relationship);
+    const marker = L.circleMarker([lat, lng], {
+      radius: 7,
+      fillColor: color,
+      color: '#fff',
+      weight: 2,
+      fillOpacity: 1,
+      className: 'cl-pin',
+    }).addTo(mapInstance);
 
-    // List item
+    marker.on('click', (e) => {
+      L.DomEvent.stopPropagation(e);
+      pinClickInProgress = true;
+      selectMapDoctor(d, marker);
+    });
+    mapMarkers[d.id] = marker;
+  });
+
+  renderMapList(doctors);
+  updateMapCount(doctors);
+  updateMapLegend(doctors);
+}
+
+function selectMapDoctor(d, marker) {
+  // Reset previous
+  if (activeMapDoctorId && mapMarkers[activeMapDoctorId]) {
+    const prev = mapMarkers[activeMapDoctorId];
+    prev.setRadius(7);
+    prev.setStyle({ weight: 2 });
+  }
+  activeMapDoctorId = d.id;
+  if (marker) { marker.setRadius(10); marker.setStyle({ weight: 3 }); }
+
+  // Update list
+  document.querySelectorAll('.map-list-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.id === String(d.id));
+  });
+
+  // Info card
+  showMapInfoCard(d);
+}
+
+function showMapInfoCard(d) {
+  const card = document.getElementById('map-info-card');
+  document.getElementById('map-info-name').textContent = d.name || '';
+  document.getElementById('map-info-meta').textContent = specialtyLabel(d.relationship) + (d.city ? ' · ' + d.city : '');
+  const travels = isYes(d.willingnessToTravel);
+  const minors = isYes(d.willingnessToCommentOnMinors);
+  document.getElementById('map-info-dots').innerHTML =
+    `<span><span class="dot ${travels ? 'yes' : 'no'}" style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${travels ? '#22c55e' : '#e5e5e0'};margin-right:4px"></span>Travels</span>` +
+    `<span><span class="dot ${minors ? 'yes' : 'no'}" style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${minors ? '#22c55e' : '#e5e5e0'};margin-right:4px"></span>Minors</span>`;
+  document.getElementById('map-info-profile').onclick = () => {
+    switchToRosterAndHighlight(d.id);
+  };
+  card.style.display = 'block';
+  positionInfoCard(d);
+}
+
+function closeMapInfoCard() {
+  document.getElementById('map-info-card').style.display = 'none';
+  if (activeMapDoctorId && mapMarkers[activeMapDoctorId]) {
+    mapMarkers[activeMapDoctorId].setRadius(7);
+    mapMarkers[activeMapDoctorId].setStyle({ weight: 2 });
+  }
+  activeMapDoctorId = null;
+  document.querySelectorAll('.map-list-item').forEach(el => el.classList.remove('active'));
+}
+
+document.getElementById('map-info-close').addEventListener('click', () => {
+  pinClickInProgress = false;
+  closeMapInfoCard();
+});
+
+function positionInfoCard(d) {
+  const lat = parseFloat(d.lattitude), lng = parseFloat(d.longitude);
+  if (!mapInstance || isNaN(lat) || isNaN(lng)) return;
+  const card = document.getElementById('map-info-card');
+  const mapWrap = document.querySelector('.map-wrap');
+  const pt = mapInstance.latLngToContainerPoint(L.latLng(lat, lng));
+  const PAD = 10, OFFSET = 14, W = 272, H = 152;
+  const mapW = mapWrap.offsetWidth, mapH = mapWrap.offsetHeight;
+  let left = pt.x + OFFSET, top = pt.y - H / 2;
+  if (left + W > mapW - PAD) left = pt.x - W - OFFSET;
+  if (left < PAD) left = PAD;
+  if (top < PAD) top = PAD;
+  if (top + H > mapH - PAD) top = mapH - H - PAD;
+  card.style.left = left + 'px';
+  card.style.top = top + 'px';
+}
+
+function renderMapList(doctors) {
+  const panel = document.getElementById('map-list-panel');
+  panel.innerHTML = '';
+  doctors.forEach(d => {
     const item = document.createElement('div');
     item.className = 'map-list-item';
     item.dataset.id = d.id;
-    const headshotUrl = d.headshot?.url;
-    const ava = headshotUrl
-      ? `<div class="map-list-avatar"><img src="${headshotUrl}" alt="${d.name}" loading="lazy"></div>`
-      : `<div class="map-list-avatar">${initials(d.name)}</div>`;
-    item.innerHTML = `${ava}<div class="map-list-info">
-      <div class="map-list-name">${d.name || '—'}</div>
-      <div class="map-list-meta">${[specL, city].filter(Boolean).join(' · ')}</div>
-    </div>`;
-
-    // List click — no zoom change
+    const avatarHtml = d.headshot && d.headshot.url
+      ? `<img src="${d.headshot.url}" alt="${d.name}">`
+      : initials(d.name);
+    item.innerHTML = `
+      <div class="map-list-avatar">${avatarHtml}</div>
+      <div>
+        <div class="map-list-name">${d.name || ''}</div>
+        <div class="map-list-meta">${specialtyLabel(d.relationship)}${d.city ? ' · ' + d.city : ''}</div>
+      </div>`;
     item.addEventListener('click', () => {
-      selectMapDoctor(d, item);
+      const marker = mapMarkers[d.id];
+      selectMapDoctor(d, marker);
     });
-
-    listEl.appendChild(item);
-
-    if (!hasCoords) return;
-
-    const marker = L.circleMarker([lat, lng], {
-      radius:      7,
-      fillColor:   color,
-      color:       '#fff',
-      weight:      2,
-      opacity:     1,
-      fillOpacity: 1,
-      className:   'cl-pin',
-    }).addTo(mapInstance);
-
-    // Pin click — set flag so the map background-click handler doesn't dismiss the card
-    marker.on('click', () => {
-      pinClickInProgress = true;
-      selectMapDoctor(d, item);
-      item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-    });
-
-    mapMarkerMap[d.id] = { marker, doctor: d, color };
+    panel.appendChild(item);
   });
 }
 
-function selectMapDoctor(d, listItem) {
-  // Restore previous
-  if (selectedMapId !== null) {
-    const prev = document.querySelector(`#map-list .map-list-item[data-id="${selectedMapId}"]`);
-    if (prev) prev.classList.remove('selected');
-    const prevEntry = mapMarkerMap[selectedMapId];
-    if (prevEntry) { prevEntry.marker.setRadius(7); prevEntry.marker.setStyle({ weight: 2, color: '#fff' }); }
-  }
-
-  selectedMapId = d.id;
-  listItem.classList.add('selected');
-  const entry = mapMarkerMap[d.id];
-  if (entry) { entry.marker.setRadius(10); entry.marker.setStyle({ weight: 3, color: '#fff' }); }
-
-  // Populate info card
-  const trav = isYes(d.willingnessToTravel);
-  const min  = isYes(d.willingnessToCommentOnMinors);
-  document.getElementById('ic-name').textContent      = d.name || '—';
-  document.getElementById('ic-specialty').textContent = specialtyLabel(d.relationship);
-  document.getElementById('ic-city').textContent      = d.city ? `${d.city}, FL` : '';
-  document.getElementById('ic-dots').innerHTML =
-    `<span class="ic-dot-item"><span class="dot ${trav?'yes':'no'}"></span>Travels</span>` +
-    `<span class="ic-dot-item"><span class="dot ${min?'yes':'no'}"></span>Comments on minors</span>`;
-
-  const rosterLink = document.getElementById('ic-roster-link');
-  rosterLink.onclick = () => {
-    document.getElementById('map-info-card').classList.remove('visible');
-    document.querySelector('[data-tab="roster"]').click();
-    setTimeout(() => {
-      const row = document.querySelector(`.doctor-row[data-id="${d.id}"]`);
-      if (row) {
-        row.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        row.classList.remove('row-flash');
-        void row.offsetWidth; // force reflow to restart animation
-        row.classList.add('row-flash');
-        setTimeout(() => row.classList.remove('row-flash'), 1200);
-      }
-    }, 150);
-  };
-
-  positionInfoCard(d);
-  document.getElementById('map-info-card').classList.add('visible');
+function updateMapCount(doctors) {
+  document.getElementById('map-count').textContent = doctors.length + ' specialist' + (doctors.length !== 1 ? 's' : '');
 }
 
-function positionInfoCard(d) {
-  const lat = parseFloat(d.lattitude);
-  const lng = parseFloat(d.longitude);
-  if (!mapInstance || isNaN(lat) || isNaN(lng)) return;
-
-  const card    = document.getElementById('map-info-card');
-  const mapWrap = document.querySelector('.map-wrap');
-  const pt      = mapInstance.latLngToContainerPoint(L.latLng(lat, lng));
-
-  const PAD    = 10;   // min gap from map edge
-  const OFFSET = 14;   // gap between pin and card edge
-  const W      = 272;  // approx card width  (max-width 280 minus scrollbar)
-  const H      = 152;  // approx card height
-
-  const mapW = mapWrap.offsetWidth;
-  const mapH = mapWrap.offsetHeight;
-
-  // Default: right of pin, above centre
-  let left = pt.x + OFFSET;
-  let top  = pt.y - H / 2;
-
-  // Flip to left if card would overflow right edge
-  if (left + W > mapW - PAD) left = pt.x - W - OFFSET;
-  // Clamp horizontally
-  if (left < PAD) left = PAD;
-
-  // Clamp vertically
-  if (top < PAD) top = PAD;
-  if (top + H > mapH - PAD) top = mapH - H - PAD;
-
-  card.style.left = left + 'px';
-  card.style.top  = top  + 'px';
+function updateMapLegend(doctors) {
+  const legend = document.getElementById('map-legend');
+  legend.innerHTML = '';
+  const seen = new Map();
+  doctors.forEach(d => {
+    const rel = d.relationship;
+    // Merge Orthopedics + Neurosurgery
+    const key = (rel === 'ORTHOPEDICS' || rel === 'NEUROSURGERY') ? 'ORTHO_NEURO' : rel;
+    if (!seen.has(key)) {
+      const label = key === 'ORTHO_NEURO' ? 'Orthopedics / Neurosurgery' : specialtyLabel(rel);
+      const color = pinColor(rel);
+      seen.set(key, { label, color });
+    }
+  });
+  seen.forEach(({ label, color }) => {
+    const item = document.createElement('div');
+    item.className = 'legend-item';
+    item.innerHTML = `<span class="legend-dot" style="background:${color}"></span><span>${label}</span>`;
+    legend.appendChild(item);
+  });
 }
 
-// ── PROFILE DRAWER ───────────────────────────────────────────────
-function openProfileDrawer(doctor) {
-  const kws      = Array.isArray(doctor.subSpecialtyKeywords) ? doctor.subSpecialtyKeywords : [];
-  const counties = Array.isArray(doctor.flCounty) ? doctor.flCounty : [];
-  const showChips = SURGICAL_RELS.has(doctor.relationship) && kws.length > 0;
-  const trav = isYes(doctor.willingnessToTravel);
-  const min  = isYes(doctor.willingnessToCommentOnMinors);
-  const location = [
-    doctor.city ? `${doctor.city}, FL` : null,
-    counties.map(formatCounty).join(' · ') || null,
-  ].filter(Boolean).join(' · ');
-
-  const headshotUrl = doctor.headshot?.url;
-  const ava = headshotUrl
-    ? `<div class="pd-avatar"><img src="${headshotUrl}" alt="${doctor.name}" loading="lazy"></div>`
-    : `<div class="pd-avatar">${initials(doctor.name)}</div>`;
-
-  document.getElementById('pd-scroll').innerHTML = `
-    <div class="pd-top">
-      ${ava}
-      <div class="pd-name">${doctor.name || '—'}</div>
-      <span class="pd-specialty-tag">${specialtyLabel(doctor.relationship)}</span>
-      ${location ? `<div class="pd-location">${location}</div>` : ''}
-    </div>
-    <div class="pd-divider"></div>
-    ${doctor.bio ? `<div class="pd-bio">${doctor.bio}</div>` : ''}
-    ${showChips ? `<div class="pd-chips">${kws.map(k => `<span class="sub-chip">${formatKw(k)}</span>`).join('')}</div>` : ''}
-    <div class="pd-dots">
-      <span class="pd-dot-item ${trav ? 'yes' : 'no'}"><span class="dot ${trav ? 'yes' : 'no'}"></span>Travels</span>
-      <span class="pd-dot-item ${min  ? 'yes' : 'no'}"><span class="dot ${min  ? 'yes' : 'no'}"></span>Comments on minors</span>
-    </div>
-    <a class="pd-cv-btn" href="${cvMailto(doctor.name)}">Request CV →</a>
-  `;
-  document.getElementById('pd-scroll').scrollTop = 0;
-  document.getElementById('profile-overlay').classList.add('visible');
-  document.getElementById('profile-drawer').classList.add('open');
-}
-
-function closeProfileDrawer() {
-  document.getElementById('profile-overlay').classList.remove('visible');
-  document.getElementById('profile-drawer').classList.remove('open');
-}
-
-document.getElementById('profile-overlay').addEventListener('click', closeProfileDrawer);
-document.getElementById('pd-close-btn').addEventListener('click', closeProfileDrawer);
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeProfileDrawer(); });
-
-// Row click — delegate from roster list, ignore CV link clicks
-document.getElementById('roster-list').addEventListener('click', e => {
-  if (e.target.closest('.cv-link')) return;
-  const row = e.target.closest('.doctor-row');
-  if (!row) return;
-  const doctor = allDoctors.find(d => String(d.id) === String(row.dataset.id));
-  if (doctor) openProfileDrawer(doctor);
+// Map specialty filter
+document.getElementById('map-specialty-filter').addEventListener('change', function() {
+  const val = this.value;
+  const filtered = val ? allDoctors.filter(d => d.isDoctorActive && d.relationship === val) : allDoctors.filter(d => d.isDoctorActive);
+  renderMap(filtered);
 });
 
-// Mobile swipe-down to close
-;(function () {
-  let startY = 0;
-  const drawer = document.getElementById('profile-drawer');
-  drawer.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, { passive: true });
-  drawer.addEventListener('touchend',   e => { if (e.changedTouches[0].clientY - startY > 60) closeProfileDrawer(); }, { passive: true });
-})();
+// ===== ROSTER =====
+async function loadRoster() {
+  document.getElementById('roster-grid').innerHTML = '<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--muted)">Loading specialists...</div>';
+  try {
+    const res = await fetch(API_BASE + '/doctors');
+    const data = await res.json();
+    allDoctors = (data.doctors || data || []).filter(d => d.isDoctorActive);
+    buildSidebar();
+    applyFilters();
+    // Init map after data loaded (map tab is default active)
+    initMap();
+    renderMap(allDoctors);
+    populateMapFilter();
+  } catch(e) {
+    document.getElementById('roster-grid').innerHTML = '<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--muted)">Failed to load specialists. Please refresh.</div>';
+  }
+}
 
-// ── MOBILE FILTER DRAWER ──────────────────────────────────────────
-function filterActiveCount() {
-  return selSpecialties.size + selCounties.size + (filterTravels ? 1 : 0) + (filterMinors ? 1 : 0);
+function populateMapFilter() {
+  const sel = document.getElementById('map-specialty-filter');
+  const rels = [...new Set(allDoctors.map(d => d.relationship).filter(Boolean))];
+  rels.forEach(rel => {
+    const opt = document.createElement('option');
+    opt.value = rel;
+    opt.textContent = specialtyLabel(rel);
+    sel.appendChild(opt);
+  });
+}
+
+function buildSidebar() {
+  const specialties = [...new Set(allDoctors.map(d => d.relationship).filter(Boolean))].sort();
+  const counties = [...new Set(allDoctors.flatMap(d => Array.isArray(d.flCounty) ? d.flCounty : (d.flCounty ? [d.flCounty] : [])).filter(Boolean))].sort();
+
+  // Desktop sidebar
+  const specContainer = document.getElementById('sidebar-specialty-filters');
+  specContainer.innerHTML = '';
+  specialties.forEach(rel => {
+    const label = document.createElement('label');
+    label.className = 'sidebar-check-row';
+    label.innerHTML = `<input type="checkbox" value="${rel}" data-filter="specialty"> ${specialtyLabel(rel)}`;
+    specContainer.appendChild(label);
+  });
+
+  const countyContainer = document.getElementById('sidebar-county-filters');
+  countyContainer.innerHTML = '';
+  counties.forEach(c => {
+    const label = document.createElement('label');
+    label.className = 'sidebar-check-row';
+    label.innerHTML = `<input type="checkbox" value="${c}" data-filter="county"> ${formatCounty(c)}`;
+    countyContainer.appendChild(label);
+  });
+
+  // Mobile drawer mirrors
+  const mSpecContainer = document.getElementById('mobile-specialty-filters');
+  mSpecContainer.innerHTML = '';
+  specialties.forEach(rel => {
+    const row = document.createElement('div');
+    row.className = 'filter-check-row';
+    row.innerHTML = `<input type="checkbox" value="${rel}" data-filter="m-specialty" accent-color="#1a56db"> ${specialtyLabel(rel)}`;
+    mSpecContainer.appendChild(row);
+  });
+
+  const mCountyContainer = document.getElementById('mobile-county-filters');
+  mCountyContainer.innerHTML = '';
+  counties.forEach(c => {
+    const row = document.createElement('div');
+    row.className = 'filter-check-row';
+    row.innerHTML = `<input type="checkbox" value="${c}" data-filter="m-county"> ${formatCounty(c)}`;
+    mCountyContainer.appendChild(row);
+  });
+
+  // Attach desktop sidebar listeners
+  specContainer.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+    cb.addEventListener('change', () => {
+      if (cb.checked) filters.specialties.add(cb.value);
+      else filters.specialties.delete(cb.value);
+      syncMobileFilters();
+      applyFilters();
+      updateFilterBadge();
+    });
+  });
+  countyContainer.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+    cb.addEventListener('change', () => {
+      if (cb.checked) filters.counties.add(cb.value);
+      else filters.counties.delete(cb.value);
+      syncMobileFilters();
+      applyFilters();
+      updateFilterBadge();
+    });
+  });
+
+  document.getElementById('filter-travels').addEventListener('change', function() {
+    filters.travels = this.checked;
+    document.getElementById('mobile-filter-travels').checked = this.checked;
+    applyFilters();
+    updateFilterBadge();
+  });
+  document.getElementById('filter-minors').addEventListener('change', function() {
+    filters.minors = this.checked;
+    document.getElementById('mobile-filter-minors').checked = this.checked;
+    applyFilters();
+    updateFilterBadge();
+  });
+}
+
+function syncMobileFilters() {
+  document.querySelectorAll('[data-filter="m-specialty"]').forEach(cb => {
+    cb.checked = filters.specialties.has(cb.value);
+  });
+  document.querySelectorAll('[data-filter="m-county"]').forEach(cb => {
+    cb.checked = filters.counties.has(cb.value);
+  });
+}
+function syncDesktopFilters() {
+  document.querySelectorAll('[data-filter="specialty"]').forEach(cb => {
+    cb.checked = filters.specialties.has(cb.value);
+  });
+  document.querySelectorAll('[data-filter="county"]').forEach(cb => {
+    cb.checked = filters.counties.has(cb.value);
+  });
+}
+
+function applyFilters() {
+  filteredDoctors = allDoctors.filter(d => {
+    if (!d.isDoctorActive) return false;
+    if (filters.specialties.size && !filters.specialties.has(d.relationship)) return false;
+    if (filters.counties.size) {
+      const dc = Array.isArray(d.flCounty) ? d.flCounty : (d.flCounty ? [d.flCounty] : []);
+      if (!dc.some(c => filters.counties.has(c))) return false;
+    }
+    if (filters.travels && !isYes(d.willingnessToTravel)) return false;
+    if (filters.minors && !isYes(d.willingnessToCommentOnMinors)) return false;
+    return true;
+  });
+  renderRoster(filteredDoctors);
+  updateFilterBadge();
 }
 
 function updateFilterBadge() {
-  const n = filterActiveCount();
+  const count = filters.specialties.size + filters.counties.size + (filters.travels ? 1 : 0) + (filters.minors ? 1 : 0);
   const badge = document.getElementById('filter-badge');
-  if (!badge) return;
-  if (n > 0) { badge.textContent = `· ${n}`; badge.style.display = ''; }
-  else badge.style.display = 'none';
+  badge.textContent = count > 0 ? ' · ' + count : '';
 }
 
-function openDrawer() {
-  // Sync drawer checkboxes to current filter state before showing
-  document.querySelectorAll('#drawer-specialties input[type="checkbox"]').forEach(cb => {
-    cb.checked = selSpecialties.has(cb.value);
+function renderRoster(doctors) {
+  const grid = document.getElementById('roster-grid');
+  const countBar = document.getElementById('roster-count-bar');
+  countBar.textContent = doctors.length + ' specialist' + (doctors.length !== 1 ? 's' : '');
+
+  if (!doctors.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--muted)">No specialists match the current filters.</div>';
+    return;
+  }
+
+  grid.innerHTML = '';
+  doctors.forEach(d => {
+    const card = document.createElement('div');
+    card.className = 'doctor-card';
+    card.dataset.id = d.id;
+
+    const avatarInner = d.headshot && d.headshot.url
+      ? `<img src="${d.headshot.url}" alt="${d.name}">`
+      : initials(d.name);
+
+    const travels = isYes(d.willingnessToTravel);
+    const minors = isYes(d.willingnessToCommentOnMinors);
+
+    // Sub-specialty chips (surgical only)
+    let subChipsHtml = '';
+    if (SURGICAL_RELS.has(d.relationship)) {
+      const kws = Array.isArray(d.subSpecialtyKeywords) ? d.subSpecialtyKeywords : (d.subSpecialtyKeywords ? [d.subSpecialtyKeywords] : []);
+      if (d.leadSubSpecialty && !kws.includes(d.leadSubSpecialty)) kws.unshift(d.leadSubSpecialty);
+      const uniqueKws = [...new Set(kws)].slice(0, 4);
+      subChipsHtml = uniqueKws.map(k => `<span class="sub-chip">${formatKw(k)}</span>`).join('');
+    }
+
+    card.innerHTML = `
+      <div class="card-top">
+        <div class="card-avatar">${avatarInner}</div>
+        <div class="card-info">
+          <div class="card-name">${d.name || ''}</div>
+          <div class="card-meta">${specialtyLabel(d.relationship)}${d.city ? ' · ' + d.city + ', FL' : ''}</div>
+        </div>
+      </div>
+      <hr class="card-divider">
+      <div class="card-bio">${d.bio || ''}</div>
+      <div class="card-tags">
+        <span class="specialty-pill">${specialtyLabel(d.relationship)}</span>
+        ${subChipsHtml}
+      </div>
+      <div class="card-footer">
+        <div class="card-dots">
+          <span class="dot-item"><span class="dot ${travels ? 'yes' : 'no'}"></span>Travels</span>
+          <span class="dot-item"><span class="dot ${minors ? 'yes' : 'no'}"></span>Minors</span>
+        </div>
+        <a class="cv-link" href="${cvMailto(d.name)}">Request CV →</a>
+      </div>`;
+    grid.appendChild(card);
   });
-  document.querySelectorAll('#drawer-counties input[type="checkbox"]').forEach(cb => {
-    cb.checked = selCounties.has(cb.value);
-  });
-  document.getElementById('drawer-toggle-travels').checked = filterTravels;
-  document.getElementById('drawer-toggle-minors').checked  = filterMinors;
-  document.getElementById('drawer-overlay').classList.add('visible');
-  document.getElementById('filter-drawer').classList.add('open');
+}
+
+// Card click delegation
+document.getElementById('roster-grid').addEventListener('click', (e) => {
+  if (e.target.closest('.cv-link')) return;
+  const card = e.target.closest('.doctor-card');
+  if (!card) return;
+  const id = card.dataset.id;
+  const doctor = allDoctors.find(d => String(d.id) === String(id));
+  if (doctor) openDrawer(doctor);
+});
+
+// ===== SWITCH TO ROSTER AND HIGHLIGHT =====
+function switchToRosterAndHighlight(doctorId) {
+  // Switch tab
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.querySelector('[data-tab="roster"]').classList.add('active');
+  document.getElementById('tab-roster').classList.add('active');
+
+  // Ensure the doctor is visible in roster (reset filters if needed)
+  const card = document.querySelector(`.doctor-card[data-id="${doctorId}"]`);
+  if (card) {
+    setTimeout(() => {
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      card.style.transition = 'background 0.1s';
+      card.style.background = '#EEF2FD';
+      setTimeout(() => { card.style.background = ''; }, 1000);
+    }, 100);
+  } else {
+    // Card not rendered; clear filters and re-render
+    filters.specialties.clear();
+    filters.counties.clear();
+    filters.travels = false;
+    filters.minors = false;
+    document.getElementById('filter-travels').checked = false;
+    document.getElementById('filter-minors').checked = false;
+    syncDesktopFilters();
+    syncMobileFilters();
+    applyFilters();
+    setTimeout(() => {
+      const newCard = document.querySelector(`.doctor-card[data-id="${doctorId}"]`);
+      if (newCard) {
+        newCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        newCard.style.transition = 'background 0.1s';
+        newCard.style.background = '#EEF2FD';
+        setTimeout(() => { newCard.style.background = ''; }, 1000);
+      }
+    }, 200);
+  }
+}
+
+// ===== PROFILE DRAWER =====
+function openDrawer(d) {
+  const avatarInner = d.headshot && d.headshot.url
+    ? `<img src="${d.headshot.url}" alt="${d.name}">`
+    : initials(d.name);
+  document.getElementById('drawer-avatar').innerHTML = avatarInner;
+  document.getElementById('drawer-name').textContent = d.name || '';
+  document.getElementById('drawer-specialty').textContent = specialtyLabel(d.relationship);
+  const counties = Array.isArray(d.flCounty) ? d.flCounty : (d.flCounty ? [d.flCounty] : []);
+  document.getElementById('drawer-location').textContent = [d.city ? `${d.city}, FL` : null, counties.map(formatCounty).join(' · ') || null].filter(Boolean).join(' · ') || '';
+  document.getElementById('drawer-bio').textContent = d.bio || '';
+
+  // Sub chips
+  const subChipsEl = document.getElementById('drawer-sub-chips');
+  subChipsEl.innerHTML = '';
+  if (SURGICAL_RELS.has(d.relationship)) {
+    const kws = d.subSpecialtyKeywords ? d.subSpecialtyKeywords.split(',').map(k => k.trim()).filter(Boolean) : [];
+    if (d.leadSubSpecialty) kws.unshift(d.leadSubSpecialty);
+    const unique = [...new Set(kws)].slice(0, 6);
+    unique.forEach(k => {
+      const chip = document.createElement('span');
+      chip.className = 'sub-chip';
+      chip.textContent = formatKw(k);
+      subChipsEl.appendChild(chip);
+    });
+  }
+
+  // Dots
+  const travels = isYes(d.willingnessToTravel);
+  const minors = isYes(d.willingnessToCommentOnMinors);
+  document.getElementById('drawer-dots').innerHTML = `
+    <span class="dot-item"><span class="dot ${travels ? 'yes' : 'no'}"></span>Travels</span>
+    <span class="dot-item"><span class="dot ${minors ? 'yes' : 'no'}"></span>Comments on minors</span>`;
+
+  document.getElementById('drawer-cv-btn').href = cvMailto(d.name);
+
+  document.getElementById('profile-drawer').classList.add('open');
+  document.getElementById('drawer-overlay').style.display = 'block';
 }
 
 function closeDrawer() {
-  document.getElementById('drawer-overlay').classList.remove('visible');
-  document.getElementById('filter-drawer').classList.remove('open');
+  document.getElementById('profile-drawer').classList.remove('open');
+  document.getElementById('drawer-overlay').style.display = 'none';
 }
 
-document.getElementById('mobile-filter-btn').addEventListener('click', openDrawer);
+document.getElementById('drawer-close').addEventListener('click', closeDrawer);
 document.getElementById('drawer-overlay').addEventListener('click', closeDrawer);
-
-document.getElementById('drawer-apply').addEventListener('click', () => {
-  // Read drawer state → commit to filter vars
-  selSpecialties = new Set();
-  document.querySelectorAll('#drawer-specialties input[type="checkbox"]:checked').forEach(cb => selSpecialties.add(cb.value));
-  selCounties = new Set();
-  document.querySelectorAll('#drawer-counties input[type="checkbox"]:checked').forEach(cb => selCounties.add(cb.value));
-  filterTravels = document.getElementById('drawer-toggle-travels').checked;
-  filterMinors  = document.getElementById('drawer-toggle-minors').checked;
-
-  // Keep desktop sidebar in sync
-  document.querySelectorAll('#sidebar-specialties input[type="checkbox"]').forEach(cb => { cb.checked = selSpecialties.has(cb.value); });
-  document.querySelectorAll('#sidebar-counties input[type="checkbox"]').forEach(cb => { cb.checked = selCounties.has(cb.value); });
-  document.getElementById('toggle-travels').checked = filterTravels;
-  document.getElementById('toggle-minors').checked  = filterMinors;
-
-  applyFilters();
-  updateFilterBadge();
-  closeDrawer();
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') { closeDrawer(); closeFilterDrawer(); }
 });
 
-document.getElementById('drawer-clear').addEventListener('click', () => {
-  selSpecialties = new Set();
-  selCounties    = new Set();
-  filterTravels  = false;
-  filterMinors   = false;
+// Mobile swipe-down to close drawer
+(function() {
+  const drawer = document.getElementById('profile-drawer');
+  let startY = 0, currentY = 0, isDragging = false;
+  drawer.addEventListener('touchstart', (e) => {
+    startY = e.touches[0].clientY;
+    isDragging = true;
+  }, { passive: true });
+  drawer.addEventListener('touchmove', (e) => {
+    if (!isDragging) return;
+    currentY = e.touches[0].clientY;
+    const delta = currentY - startY;
+    if (delta > 0) drawer.style.transform = `translateY(${delta}px)`;
+  }, { passive: true });
+  drawer.addEventListener('touchend', () => {
+    const delta = currentY - startY;
+    if (delta >= 60) {
+      closeDrawer();
+    }
+    drawer.style.transform = '';
+    isDragging = false;
+  });
+})();
 
-  // Clear desktop sidebar
-  document.querySelectorAll('#sidebar-specialties input, #sidebar-counties input').forEach(cb => cb.checked = false);
-  document.getElementById('toggle-travels').checked = false;
-  document.getElementById('toggle-minors').checked  = false;
+// ===== MOBILE FILTER DRAWER =====
+function openFilterDrawer() {
+  document.getElementById('filter-drawer').classList.add('open');
+  document.getElementById('filter-overlay').style.display = 'block';
+}
+function closeFilterDrawer() {
+  document.getElementById('filter-drawer').classList.remove('open');
+  document.getElementById('filter-overlay').style.display = 'none';
+}
 
-  // Clear drawer
-  document.querySelectorAll('#drawer-specialties input, #drawer-counties input').forEach(cb => cb.checked = false);
-  document.getElementById('drawer-toggle-travels').checked = false;
-  document.getElementById('drawer-toggle-minors').checked  = false;
+document.getElementById('mobile-filter-btn').addEventListener('click', openFilterDrawer);
+document.getElementById('filter-overlay').addEventListener('click', closeFilterDrawer);
 
+document.getElementById('filter-apply-btn').addEventListener('click', () => {
+  // Read from mobile drawer and apply
+  filters.specialties.clear();
+  document.querySelectorAll('[data-filter="m-specialty"]:checked').forEach(cb => filters.specialties.add(cb.value));
+  filters.counties.clear();
+  document.querySelectorAll('[data-filter="m-county"]:checked').forEach(cb => filters.counties.add(cb.value));
+  filters.travels = document.getElementById('mobile-filter-travels').checked;
+  filters.minors = document.getElementById('mobile-filter-minors').checked;
+
+  document.getElementById('filter-travels').checked = filters.travels;
+  document.getElementById('filter-minors').checked = filters.minors;
+  syncDesktopFilters();
   applyFilters();
   updateFilterBadge();
-  closeDrawer();
+  closeFilterDrawer();
+});
+
+document.getElementById('filter-clear-link').addEventListener('click', () => {
+  filters.specialties.clear();
+  filters.counties.clear();
+  filters.travels = false;
+  filters.minors = false;
+  document.getElementById('mobile-filter-travels').checked = false;
+  document.getElementById('mobile-filter-minors').checked = false;
+  document.getElementById('filter-travels').checked = false;
+  document.getElementById('filter-minors').checked = false;
+  syncDesktopFilters();
+  syncMobileFilters();
+  applyFilters();
+  updateFilterBadge();
+  closeFilterDrawer();
+});
+
+// ===== STICKY BAR =====
+function initStickyBar() {
+  if (sessionStorage.getItem('sticky_dismissed')) return;
+  const bar = document.getElementById('sticky-help-bar');
+  if (window.innerWidth <= 768) bar.style.display = 'block';
+}
+
+document.getElementById('sticky-dismiss').addEventListener('click', () => {
+  document.getElementById('sticky-help-bar').style.display = 'none';
+  sessionStorage.setItem('sticky_dismissed', '1');
+});
+
+window.addEventListener('resize', () => {
+  const bar = document.getElementById('sticky-help-bar');
+  if (!sessionStorage.getItem('sticky_dismissed')) {
+    bar.style.display = window.innerWidth <= 768 ? 'block' : 'none';
+  }
 });
 </script>
 </body>
