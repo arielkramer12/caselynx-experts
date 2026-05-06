@@ -32,15 +32,20 @@
   #gate {
     display: flex;
     min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+    background: var(--page);
   }
   .gate-left {
-    width: 50%;
-    min-width: 360px;
+    width: 100%;
+    max-width: 480px;
     background: var(--wh);
-    padding: 48px 44px;
+    padding: 52px 48px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    border-radius: 16px;
+    box-shadow: 0 4px 32px rgba(0,0,0,.08);
+    margin: 40px 20px;
   }
   .gate-logo-row {
     display: flex;
@@ -128,47 +133,6 @@
     background: #fdf0ee;
     border-radius: 6px;
     padding: 8px 12px;
-  }
-  .gate-right {
-    flex: 1;
-    background: var(--blue) url('assets/15.jpg') center/cover no-repeat;
-    position: relative;
-    display: flex;
-    align-items: flex-end;
-    padding: 36px;
-    overflow: hidden;
-  }
-  .gate-right::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: rgba(26,86,219,0.82);
-    z-index: 0;
-  }
-  .gate-right-content {
-    position: relative;
-    z-index: 1;
-  }
-  .gate-ghost {
-    font-size: 64px;
-    font-weight: 500;
-    color: rgba(255,255,255,0.1);
-    letter-spacing: -2px;
-    font-family: 'Cabinet Grotesk', sans-serif;
-    line-height: 1;
-    margin-bottom: 16px;
-  }
-  .gate-right-headline {
-    color: #fff;
-    font-size: 20px;
-    font-weight: 500;
-    font-family: 'Cabinet Grotesk', sans-serif;
-    margin-bottom: 8px;
-  }
-  .gate-right-sub {
-    color: rgba(255,255,255,0.7);
-    font-size: 13px;
-    line-height: 1.6;
   }
 
   /* ===== APP ===== */
@@ -881,7 +845,41 @@
   }
   .fee-group-header {
     padding: 16px 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    user-select: none;
   }
+  .fee-group-header:hover { filter: brightness(0.97); }
+  .fee-group-header-left { flex: 1; min-width: 0; }
+  .fee-group-header-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .fee-download-btn {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--blue);
+    background: rgba(255,255,255,0.7);
+    border: 1px solid rgba(0,0,0,0.12);
+    border-radius: 6px;
+    padding: 4px 10px;
+    cursor: pointer;
+    font-family: 'Open Sans', sans-serif;
+    white-space: nowrap;
+    transition: background .15s;
+  }
+  .fee-download-btn:hover { background: rgba(255,255,255,0.95); }
+  .fee-toggle-icon {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.5;
+    transition: transform .2s;
+    flex-shrink: 0;
+  }
+  .fee-group.collapsed .fee-toggle-icon { transform: rotate(-90deg); }
   .fee-group-title {
     font-family: 'Cabinet Grotesk', sans-serif;
     font-weight: 700;
@@ -890,6 +888,7 @@
   }
   .fee-group-sub { font-size: 12px; opacity: .7; }
   .fee-group-body { background: white; padding: 20px; }
+  .fee-group.collapsed .fee-group-body { display: none; }
   .fee-section-label {
     font-size: 11px;
     font-weight: 600;
@@ -1030,10 +1029,9 @@
         <polygon class="g1" points="366.39 153.64 240.67 265.55 1.73 265.55 127.45 153.64 366.39 153.64"/>
         <polygon class="g2" points="240 4.58 240 134.01 119.93 134.01 0 240.82 0 4.58 120.02 93.46 240 4.58"/>
       </svg>
-      <span class="gate-logo-name">CaseLynx</span>
     </div>
     <div class="gate-headline">High-quality medical expert testimony, effortlessly.</div>
-    <div class="gate-subline">We connect law firms &amp; carriers with highly vetted doctors to deliver better expert testimony with a hands-on, partner-first approach.</div>
+    <div class="gate-subline">We connect law firms &amp; carriers with highly vetted Florida doctors to deliver better expert testimony with a hands-on, partner-first approach.</div>
     <div class="gate-form">
       <input type="text" id="gate-name" placeholder="Your name" autocomplete="name">
       <input type="text" id="gate-firm" placeholder="Firm or company name" autocomplete="organization">
@@ -1045,13 +1043,6 @@
       <button id="unlock-btn" disabled>View our experts →</button>
       <div id="gate-error"></div>
       <div class="gate-fine">For law firms, insurers, and claims professionals only.</div>
-    </div>
-  </div>
-  <div class="gate-right">
-    <div class="gate-right-content">
-      <div class="gate-ghost">IME / CME / Records</div>
-      <div class="gate-right-headline">Florida's expert testimony network.</div>
-      <div class="gate-right-sub">Board-certified specialists available for IME, CME, and record review — statewide.</div>
     </div>
   </div>
 </div>
@@ -1208,17 +1199,24 @@
   <!-- Fee Schedule Tab -->
   <div id="tab-fees" class="tab-content" data-tab="fees">
     <nav class="fees-jump-nav">
-      <button class="jump-btn" onclick="document.getElementById('fee-group-1').scrollIntoView({behavior:'smooth',block:'start'})">Group 1 — Surgical</button>
-      <button class="jump-btn" onclick="document.getElementById('fee-group-2').scrollIntoView({behavior:'smooth',block:'start'})">Group 2 — Non-Surgical</button>
-      <button class="jump-btn" onclick="document.getElementById('fee-group-3').scrollIntoView({behavior:'smooth',block:'start'})">Group 3 — General Practice</button>
+      <button class="jump-btn" onclick="expandAndScroll('fee-group-1')">Group 1 — Surgical Specialists</button>
+      <button class="jump-btn" onclick="expandAndScroll('fee-group-2')">Group 2 — Non-Surgical Specialists</button>
+      <button class="jump-btn" onclick="expandAndScroll('fee-group-3')">Group 3 — General Practice</button>
+      <button class="jump-btn" onclick="expandAndScroll('fee-group-4')">Payment Terms &amp; Policies</button>
     </nav>
     <div class="fees-inner">
 
       <!-- Group 1: Surgical Specialists -->
       <div class="fee-group" id="fee-group-1">
-        <div class="fee-group-header" style="background:#faeeda;color:#633806">
-          <div class="fee-group-title">Surgical Specialists</div>
-          <div class="fee-group-sub">Orthopedic Surgery · Neurosurgery</div>
+        <div class="fee-group-header" style="background:#faeeda;color:#633806" onclick="toggleFeeGroup(this)">
+          <div class="fee-group-header-left">
+            <div class="fee-group-title">Surgical Specialists</div>
+            <div class="fee-group-sub">Orthopedic Surgery &amp; Neurosurgery</div>
+          </div>
+          <div class="fee-group-header-actions">
+            <button class="fee-download-btn" onclick="event.stopPropagation();downloadFeeGroup('fee-group-1','CaseLynx Fee Schedule — Surgical Specialists')">↓ Download</button>
+            <span class="fee-toggle-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </div>
         </div>
         <div class="fee-group-body">
           <div class="fee-section-label">Core Services</div>
@@ -1251,9 +1249,15 @@
 
       <!-- Group 2: Non-Surgical Specialists -->
       <div class="fee-group" id="fee-group-2">
-        <div class="fee-group-header" style="background:#e6f1fb;color:#0c447c">
-          <div class="fee-group-title">Non-Surgical Specialists</div>
-          <div class="fee-group-sub">Physiatry · Neurology · Pain Management · Cardiology · Psychiatry · Podiatry · Urology</div>
+        <div class="fee-group-header" style="background:#e6f1fb;color:#0c447c" onclick="toggleFeeGroup(this)">
+          <div class="fee-group-header-left">
+            <div class="fee-group-title">Non-Surgical Specialists</div>
+            <div class="fee-group-sub">PM&amp;R (Physiatry), Neurology, Pain Management, Cardiology, Psychiatry, Podiatry &amp; Urology</div>
+          </div>
+          <div class="fee-group-header-actions">
+            <button class="fee-download-btn" onclick="event.stopPropagation();downloadFeeGroup('fee-group-2','CaseLynx Fee Schedule — Non-Surgical Specialists')">↓ Download</button>
+            <span class="fee-toggle-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </div>
         </div>
         <div class="fee-group-body">
           <div class="fee-section-label">Core Services</div>
@@ -1286,9 +1290,15 @@
 
       <!-- Group 3: General Practice -->
       <div class="fee-group" id="fee-group-3">
-        <div class="fee-group-header" style="background:#eaf3de;color:#173404">
-          <div class="fee-group-title">General Practice</div>
-          <div class="fee-group-sub">Dentistry / Oral Surgery · Chiropractic · Family Medicine / Internal Medicine</div>
+        <div class="fee-group-header" style="background:#eaf3de;color:#173404" onclick="toggleFeeGroup(this)">
+          <div class="fee-group-header-left">
+            <div class="fee-group-title">General Practice</div>
+            <div class="fee-group-sub">Dentistry / Oral Surgery, Chiropractic, &amp; Family Medicine / Internal Medicine</div>
+          </div>
+          <div class="fee-group-header-actions">
+            <button class="fee-download-btn" onclick="event.stopPropagation();downloadFeeGroup('fee-group-3','CaseLynx Fee Schedule — General Practice')">↓ Download</button>
+            <span class="fee-toggle-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </div>
         </div>
         <div class="fee-group-body">
           <div class="fee-section-label">Core Services</div>
@@ -1320,9 +1330,14 @@
       </div>
 
       <!-- Payment Terms -->
-      <div class="fee-group">
-        <div class="fee-group-header" style="background:#f5f5f3;color:#333">
-          <div class="fee-group-title">Payment Terms &amp; Policies</div>
+      <div class="fee-group" id="fee-group-4">
+        <div class="fee-group-header" style="background:#f5f5f3;color:#333" onclick="toggleFeeGroup(this)">
+          <div class="fee-group-header-left">
+            <div class="fee-group-title">Payment Terms &amp; Policies</div>
+          </div>
+          <div class="fee-group-header-actions">
+            <span class="fee-toggle-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </div>
         </div>
         <div class="fee-group-body">
           <table class="fee-table">
@@ -1426,7 +1441,7 @@ const SURGICAL_RELS = new Set(['ORTHOPEDICS', 'NEUROSURGERY']);
 
 const SPECIALTY_PIN_COLORS = {
   'ORTHOPEDICS':     '#1a56db',
-  'NEUROSURGERY':    '#1a56db',
+  'NEUROSURGERY':    '#7C3AED',
   'NEUROLOGY':       '#0F6E56',
   'PAIN_MANAGEMENT': '#854F0B',
   'CARDIOLOGY':      '#993556',
@@ -1442,11 +1457,15 @@ function initials(name) {
 function specialtyLabel(rel) { return SPECIALTY_LABELS[rel] || (rel ? rel.replace(/_/g, ' ') : 'Specialist'); }
 function formatKw(kw) {
   if (!kw) return '';
-  return kw.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  return kw.toLowerCase().replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+function normalizeKw(kw) {
+  // Strip non-alphanumeric chars for dedup comparison (so "Foot / Ankle" == "Foot Ankle" == "FOOT_ANKLE")
+  return kw.toLowerCase().replace(/[^a-z0-9]/g, '');
 }
 function formatCounty(c) {
   if (!c) return '';
-  return c.replace(/_/g, ' ').replace(/\b\w/g, ch => ch.toUpperCase());
+  return c.toLowerCase().replace(/_/g, ' ').replace(/\b\w/g, ch => ch.toUpperCase());
 }
 function cvMailto(name) {
   return 'mailto:hello@caselynx.co?subject=CV%20Request%20%E2%80%93%20' + encodeURIComponent(name || '');
@@ -1541,6 +1560,34 @@ unlockBtn.addEventListener('click', async () => {
   localStorage.setItem('caselynx_gate', JSON.stringify({ email, firm, name, granted_at: Date.now() }));
   showApp();
 });
+
+// ===== FEE SCHEDULE =====
+function toggleFeeGroup(header) {
+  header.closest('.fee-group').classList.toggle('collapsed');
+}
+function expandAndScroll(id) {
+  const group = document.getElementById(id);
+  if (!group) return;
+  group.classList.remove('collapsed');
+  setTimeout(() => group.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+}
+function downloadFeeGroup(groupId, filename) {
+  const group = document.getElementById(groupId);
+  if (!group) return;
+  const rows = [];
+  rows.push(['Service', 'Description', 'Fee']);
+  group.querySelectorAll('.fee-table tbody tr').forEach(tr => {
+    const cells = [...tr.querySelectorAll('td')].map(td => `"${td.textContent.replace(/"/g, '""').trim()}"`);
+    if (cells.length) rows.push(cells);
+  });
+  const csv = rows.map(r => r.join(',')).join('\r\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename.replace(/[^a-z0-9 \-]/gi, '') + '.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
 
 // ===== TABS =====
 document.querySelectorAll('.nav-tab').forEach(tab => {
@@ -1705,12 +1752,8 @@ function updateMapLegend(doctors) {
   const seen = new Map();
   doctors.forEach(d => {
     const rel = d.relationship;
-    // Merge Orthopedics + Neurosurgery
-    const key = (rel === 'ORTHOPEDICS' || rel === 'NEUROSURGERY') ? 'ORTHO_NEURO' : rel;
-    if (!seen.has(key)) {
-      const label = key === 'ORTHO_NEURO' ? 'Orthopedics / Neurosurgery' : specialtyLabel(rel);
-      const color = pinColor(rel);
-      seen.set(key, { label, color });
+    if (rel && !seen.has(rel)) {
+      seen.set(rel, { label: specialtyLabel(rel), color: pinColor(rel) });
     }
   });
   seen.forEach(({ label, color }) => {
@@ -1895,13 +1938,14 @@ function renderRoster(doctors) {
     const travels = isYes(d.willingnessToTravel);
     const minors = isYes(d.willingnessToCommentOnMinors);
 
-    // Sub-specialty chips (surgical only) — deduplicate after title-case formatting
+    // Sub-specialty chips (surgical only) — deduplicate using normalized key
     let subChipsHtml = '';
     if (SURGICAL_RELS.has(d.relationship)) {
       const rawKws = Array.isArray(d.subSpecialtyKeywords) ? d.subSpecialtyKeywords : (d.subSpecialtyKeywords ? [d.subSpecialtyKeywords] : []);
       if (d.leadSubSpecialty) rawKws.unshift(d.leadSubSpecialty);
-      const uniqueKws = [...new Map(rawKws.map(k => [formatKw(k), k])).keys()];
-      subChipsHtml = uniqueKws.map(k => `<span class="sub-chip">${k}</span>`).join('');
+      const seen = new Map();
+      for (const k of rawKws) { const norm = normalizeKw(k); if (!seen.has(norm)) seen.set(norm, formatKw(k)); }
+      subChipsHtml = [...seen.values()].map(k => `<span class="sub-chip">${k}</span>`).join('');
     }
 
     card.innerHTML = `
@@ -1997,8 +2041,9 @@ function openDrawer(d) {
   if (SURGICAL_RELS.has(d.relationship)) {
     const rawKws = Array.isArray(d.subSpecialtyKeywords) ? d.subSpecialtyKeywords : (d.subSpecialtyKeywords ? [d.subSpecialtyKeywords] : []);
     if (d.leadSubSpecialty) rawKws.unshift(d.leadSubSpecialty);
-    const unique = [...new Map(rawKws.map(k => [formatKw(k), k])).keys()];
-    unique.forEach(label => {
+    const seenDrawer = new Map();
+    for (const k of rawKws) { const norm = normalizeKw(k); if (!seenDrawer.has(norm)) seenDrawer.set(norm, formatKw(k)); }
+    seenDrawer.forEach(label => {
       const chip = document.createElement('span');
       chip.className = 'sub-chip';
       chip.textContent = label;
