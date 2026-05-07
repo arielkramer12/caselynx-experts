@@ -1246,7 +1246,7 @@
             <div class="fee-group-sub">Orthopedic Surgery &amp; Neurosurgery</div>
           </div>
           <div class="fee-group-header-actions">
-            <a class="fee-download-btn" href="https://raw.githubusercontent.com/arielkramer12/caselynx-fee-schedule-group1-2026/main/fee-schedule-group1.pdf" download target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">↓ PDF</a>
+            <a class="fee-download-btn" href="https://raw.githubusercontent.com/arielkramer12/caselynx-fee-schedule-group1-2026/main/fee-schedule-group1.pdf" download="CaseLynx 2026 Fee Schedule - Group 1 Surgical Specialists.pdf" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">↓ PDF</a>
             <span class="fee-toggle-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
           </div>
         </div>
@@ -1287,7 +1287,7 @@
             <div class="fee-group-sub">PM&amp;R (Physiatry), Neurology, Pain Management, Cardiology, Psychiatry, Podiatry &amp; Urology</div>
           </div>
           <div class="fee-group-header-actions">
-            <a class="fee-download-btn" href="https://raw.githubusercontent.com/arielkramer12/caselynx-fee-schedule-group2-2026/main/fee-schedule-group2.pdf" download target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">↓ PDF</a>
+            <a class="fee-download-btn" href="https://raw.githubusercontent.com/arielkramer12/caselynx-fee-schedule-group2-2026/main/fee-schedule-group2.pdf" download="CaseLynx 2026 Fee Schedule - Group 2 Non-Surgical Specialists.pdf" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">↓ PDF</a>
             <span class="fee-toggle-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
           </div>
         </div>
@@ -1328,7 +1328,7 @@
             <div class="fee-group-sub">Dentistry / Oral Surgery, Chiropractic, &amp; Family Medicine / Internal Medicine</div>
           </div>
           <div class="fee-group-header-actions">
-            <a class="fee-download-btn" href="https://raw.githubusercontent.com/arielkramer12/caselynx-fee-schedule-group3-2026/main/fee-schedule-group3.pdf" download target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">↓ PDF</a>
+            <a class="fee-download-btn" href="https://raw.githubusercontent.com/arielkramer12/caselynx-fee-schedule-group3-2026/main/fee-schedule-group3.pdf" download="CaseLynx 2026 Fee Schedule - Group 3 General Practice.pdf" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">↓ PDF</a>
             <span class="fee-toggle-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
           </div>
         </div>
@@ -1959,8 +1959,8 @@ function renderRoster(doctors) {
     }
 
     // File links (CV + Elkins List)
-    const cvUrl = d.cvFileId && d.cvFileId.url ? d.cvFileId.url : null;
-    const elkinsUrl = d.elkinsListId && d.elkinsListId.url ? d.elkinsListId.url : null;
+    const cvUrl = d.cvFile && d.cvFile.url ? d.cvFile.url : null;
+    const elkinsUrl = d.elkinsList && d.elkinsList.url ? d.elkinsList.url : null;
     const fileLinksHtml = (cvUrl || elkinsUrl) ? `<div class="card-file-links">
         ${cvUrl ? `<a class="cv-link" href="${cvUrl}" target="_blank" rel="noopener noreferrer">View CV →</a>` : ''}
         ${elkinsUrl ? `<a class="cv-link" href="${elkinsUrl}" target="_blank" rel="noopener noreferrer">Trial Testimony List →</a>` : ''}
@@ -2078,8 +2078,8 @@ function openDrawer(d) {
   // File buttons (CV + Elkins List)
   const fileBtns = document.getElementById('drawer-file-btns');
   fileBtns.innerHTML = '';
-  const cvUrl = d.cvFileId && d.cvFileId.url ? d.cvFileId.url : null;
-  const elkinsUrl = d.elkinsListId && d.elkinsListId.url ? d.elkinsListId.url : null;
+  const cvUrl = d.cvFile && d.cvFile.url ? d.cvFile.url : null;
+  const elkinsUrl = d.elkinsList && d.elkinsList.url ? d.elkinsList.url : null;
   if (cvUrl) {
     const a = document.createElement('a');
     a.className = 'drawer-file-btn';
