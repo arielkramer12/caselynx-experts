@@ -344,13 +344,14 @@
   .map-info-link:hover { text-decoration: underline; }
   .map-help-callout {
     background: var(--blue-lt);
-    border-top: 0.5px solid #c7d8f8;
+    border-radius: 12px;
+    margin: 16px 24px;
     padding: 20px 24px;
     text-align: center;
-    font-size: 14px;
-    color: var(--mid);
     flex-shrink: 0;
   }
+  .map-help-callout-heading { font-size: 15px; font-weight: 500; color: var(--black); margin-bottom: 6px; font-family: 'Cabinet Grotesk', sans-serif; }
+  .map-help-callout-body { font-size: 13px; color: #555; margin-bottom: 10px; line-height: 1.6; }
   .map-help-callout a { color: var(--blue); }
 
   /* ===== ABOUT TAB ===== */
@@ -500,13 +501,17 @@
     background: var(--blue-lt);
     border-left: 3px solid var(--blue);
     border-radius: 0 8px 8px 0;
-    padding: 16px;
-    font-size: 13px;
-    color: var(--mid);
-    line-height: 1.5;
-    margin-top: auto;
+    padding: 14px 16px;
+    font-size: 12px;
+    color: #555;
+    line-height: 1.6;
+    margin-top: 24px;
+    flex-shrink: 0;
+    overflow: hidden;
   }
   .sidebar-help a { color: var(--blue); }
+  .sidebar-help-heading { font-weight: 600; margin-bottom: 4px; }
+  .sidebar-help-body { margin-bottom: 8px; }
   .roster-main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; min-width: 0; }
   #mobile-filter-bar {
     display: none;
@@ -543,13 +548,26 @@
     align-content: start;
   }
   .roster-help-callout {
-    padding: 20px 24px;
-    text-align: center;
-    font-size: 14px;
-    color: var(--mid);
+    margin: 24px;
     background: var(--blue-lt);
-    border-top: 0.5px solid #c7d8f8;
+    border-radius: 12px;
+    padding: 24px 28px;
+    text-align: center;
   }
+  .roster-help-callout-heading {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--black);
+    margin-bottom: 8px;
+    font-family: 'Cabinet Grotesk', sans-serif;
+  }
+  .roster-help-callout-body {
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 12px;
+    line-height: 1.6;
+  }
+  .roster-help-callout-contact { font-size: 13px; color: var(--blue); }
   .roster-help-callout a { color: var(--blue); }
 
   /* Doctor card */
@@ -626,8 +644,10 @@
     font-size: 12px;
     color: var(--blue);
     font-weight: 500;
+    text-decoration: none;
   }
   .cv-link:hover { text-decoration: underline; }
+  .card-file-links { display: flex; flex-direction: column; gap: 2px; align-items: flex-end; }
 
   /* ===== PROFILE DRAWER ===== */
   #drawer-overlay {
@@ -718,8 +738,8 @@
     gap: 16px;
     padding: 0 24px 16px;
   }
-  .drawer-cv-btn {
-    margin: 0 24px 24px;
+  .drawer-file-btns { display: flex; flex-direction: column; gap: 10px; padding: 0 24px 24px; }
+  .drawer-file-btn {
     border: 1px solid var(--blue);
     color: var(--blue);
     background: white;
@@ -728,11 +748,12 @@
     font-size: 14px;
     font-weight: 500;
     font-family: inherit;
-    width: calc(100% - 48px);
+    width: 100%;
     text-align: center;
     display: block;
+    text-decoration: none;
   }
-  .drawer-cv-btn:hover { background: var(--blue-lt); }
+  .drawer-file-btn:hover { background: var(--blue-lt); }
 
   /* ===== MOBILE FILTER DRAWER ===== */
   #filter-overlay {
@@ -887,8 +908,14 @@
     margin-bottom: 2px;
   }
   .fee-group-sub { font-size: 12px; opacity: .7; }
-  .fee-group-body { background: white; padding: 20px; }
-  .fee-group.collapsed .fee-group-body { display: none; }
+  .fee-group-body {
+    background: white;
+    padding: 20px;
+    overflow: hidden;
+    max-height: 2000px;
+    transition: max-height 0.25s ease, padding 0.25s ease;
+  }
+  .fee-group.collapsed .fee-group-body { max-height: 0; padding-top: 0; padding-bottom: 0; }
   .fee-section-label {
     font-size: 11px;
     font-weight: 600;
@@ -1109,9 +1136,9 @@
       </div>
     </div>
     <div class="map-help-callout">
-      Need help finding the right expert for your specific case? We can help. &nbsp;
-      <a href="mailto:hello@caselynx.co">hello@caselynx.co</a> &nbsp;·&nbsp;
-      <a href="tel:4073749080">(407) 374-9080</a>
+      <div class="map-help-callout-heading">Not sure which expert is right for your case?</div>
+      <div class="map-help-callout-body">Our team has deep experience matching cases to the right specialist — we're happy to talk it through.</div>
+      <a href="mailto:hello@caselynx.co">hello@caselynx.co</a> &nbsp;·&nbsp; <a href="tel:4073749080">(407) 374-9080</a>
     </div>
   </div>
 
@@ -1141,9 +1168,10 @@
         <p>Every case is managed through our purpose-built platform, MyCaseLynx — keeping scheduling, records, billing, and communication organized in one place. You'll have a dedicated point of contact and clear, proactive updates at every step. We hold ourselves to being the best partner you've ever worked with, and take medical expert testimony completely off your stress list.</p>
       </div>
       <div class="about-cta">
-        <div class="about-cta-heading">Ready to get started?</div>
-        <p>To submit a case or learn more, reach us at <a href="mailto:hello@caselynx.co">hello@caselynx.co</a> or <a href="tel:4073749080">(407) 374-9080</a>.</p>
-        <a class="about-cta-btn" href="mailto:hello@caselynx.co?subject=Case%20Request&body=Hi%20CaseLynx%20team%2C%0D%0A%0D%0APlease%20find%20my%20case%20request%20details%20below%3A%0D%0A%0D%0APlaintiff%20Name%3A%0D%0ADate%20of%20Birth%3A%0D%0ADate%20of%20Loss%3A%0D%0AService%20Requested%20(IME%20%2F%20CME%20%2F%20Record%20Review)%3A%0D%0AMedical%20Specialty%3A%0D%0AExam%20Location%20(if%20applicable)%3A%0D%0ATimeline%3A%0D%0AAdditional%20Details%20(e.g.%20specific%20bodily%20injuries%2C%20other%20considerations)%3A%0D%0A%0D%0AThanks%2C">Submit a case →</a>
+        <div class="about-cta-heading">Not sure which expert is right for your case?</div>
+        <p>Our team has deep experience matching cases to the right specialist — we're happy to talk it through.</p>
+        <p><a href="mailto:hello@caselynx.co">hello@caselynx.co</a> &nbsp;·&nbsp; <a href="tel:4073749080">(407) 374-9080</a></p>
+        <a class="about-cta-btn" href="mailto:hello@caselynx.co" style="margin-top:16px;display:inline-block">Get in touch</a>
       </div>
     </div>
   </div>
@@ -1177,7 +1205,8 @@
         </div>
       </div>
       <div class="sidebar-help">
-        Need help finding the right expert for your specific case? We can help.<br>
+        <div class="sidebar-help-heading">Not sure which expert is right for your case?</div>
+        <div class="sidebar-help-body">Our team has deep experience matching cases to the right specialist — we're happy to talk it through.</div>
         <a href="mailto:hello@caselynx.co">hello@caselynx.co</a> · <a href="tel:4073749080">(407) 374-9080</a>
       </div>
     </aside>
@@ -1190,8 +1219,11 @@
       <div id="roster-count-bar">Loading specialists...</div>
       <div id="roster-grid"></div>
       <div class="roster-help-callout">
-        Need help finding the right expert for your specific case? We can help.<br>
-        <a href="mailto:hello@caselynx.co">hello@caselynx.co</a> · <a href="tel:4073749080">(407) 374-9080</a>
+        <div class="roster-help-callout-heading">Not sure which expert is right for your case?</div>
+        <div class="roster-help-callout-body">Our team has deep experience matching cases to the right specialist — we're happy to talk it through.</div>
+        <div class="roster-help-callout-contact">
+          <a href="mailto:hello@caselynx.co">hello@caselynx.co</a> &nbsp;·&nbsp; <a href="tel:4073749080">(407) 374-9080</a>
+        </div>
       </div>
     </div>
   </div>
@@ -1214,7 +1246,7 @@
             <div class="fee-group-sub">Orthopedic Surgery &amp; Neurosurgery</div>
           </div>
           <div class="fee-group-header-actions">
-            <button class="fee-download-btn" onclick="event.stopPropagation();downloadFeeGroup('fee-group-1','CaseLynx Fee Schedule — Surgical Specialists')">↓ Download</button>
+            <a class="fee-download-btn" href="https://raw.githubusercontent.com/arielkramer12/caselynx-fee-schedule-group1-2026/main/fee-schedule-group1.pdf" download target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">↓ PDF</a>
             <span class="fee-toggle-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
           </div>
         </div>
@@ -1248,14 +1280,14 @@
       </div>
 
       <!-- Group 2: Non-Surgical Specialists -->
-      <div class="fee-group" id="fee-group-2">
+      <div class="fee-group collapsed" id="fee-group-2">
         <div class="fee-group-header" style="background:#e6f1fb;color:#0c447c" onclick="toggleFeeGroup(this)">
           <div class="fee-group-header-left">
             <div class="fee-group-title">Non-Surgical Specialists</div>
             <div class="fee-group-sub">PM&amp;R (Physiatry), Neurology, Pain Management, Cardiology, Psychiatry, Podiatry &amp; Urology</div>
           </div>
           <div class="fee-group-header-actions">
-            <button class="fee-download-btn" onclick="event.stopPropagation();downloadFeeGroup('fee-group-2','CaseLynx Fee Schedule — Non-Surgical Specialists')">↓ Download</button>
+            <a class="fee-download-btn" href="https://raw.githubusercontent.com/arielkramer12/caselynx-fee-schedule-group2-2026/main/fee-schedule-group2.pdf" download target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">↓ PDF</a>
             <span class="fee-toggle-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
           </div>
         </div>
@@ -1289,14 +1321,14 @@
       </div>
 
       <!-- Group 3: General Practice -->
-      <div class="fee-group" id="fee-group-3">
+      <div class="fee-group collapsed" id="fee-group-3">
         <div class="fee-group-header" style="background:#eaf3de;color:#173404" onclick="toggleFeeGroup(this)">
           <div class="fee-group-header-left">
             <div class="fee-group-title">General Practice</div>
             <div class="fee-group-sub">Dentistry / Oral Surgery, Chiropractic, &amp; Family Medicine / Internal Medicine</div>
           </div>
           <div class="fee-group-header-actions">
-            <button class="fee-download-btn" onclick="event.stopPropagation();downloadFeeGroup('fee-group-3','CaseLynx Fee Schedule — General Practice')">↓ Download</button>
+            <a class="fee-download-btn" href="https://raw.githubusercontent.com/arielkramer12/caselynx-fee-schedule-group3-2026/main/fee-schedule-group3.pdf" download target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">↓ PDF</a>
             <span class="fee-toggle-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
           </div>
         </div>
@@ -1385,7 +1417,7 @@
   <div class="drawer-bio" id="drawer-bio"></div>
   <div class="drawer-sub-chips" id="drawer-sub-chips"></div>
   <div class="drawer-dots" id="drawer-dots"></div>
-  <a class="drawer-cv-btn" id="drawer-cv-btn" href="#">Request CV →</a>
+  <div class="drawer-file-btns" id="drawer-file-btns"></div>
 </div>
 
 <!-- Mobile Filter Drawer -->
@@ -1418,9 +1450,7 @@
 
 <!-- Sticky Help Bar -->
 <div id="sticky-help-bar">
-  Need help finding the right expert for your specific case? We can help. &nbsp;
-  <a href="mailto:hello@caselynx.co">hello@caselynx.co</a> ·
-  <a href="tel:4073749080">(407) 374-9080</a>
+  Not sure which expert fits your case? We're happy to help — <a href="mailto:hello@caselynx.co">hello@caselynx.co</a> · <a href="tel:4073749080">(407) 374-9080</a>
   <button id="sticky-dismiss">&times;</button>
 </div>
 
@@ -1467,9 +1497,7 @@ function formatCounty(c) {
   if (!c) return '';
   return c.toLowerCase().replace(/_/g, ' ').replace(/\b\w/g, ch => ch.toUpperCase());
 }
-function cvMailto(name) {
-  return 'mailto:hello@caselynx.co?subject=CV%20Request%20%E2%80%93%20' + encodeURIComponent(name || '');
-}
+
 function isYes(v) { return v === 'YES' || v === 'Yes' || v === true; }
 function pinColor(rel) { return SPECIALTY_PIN_COLORS[rel] || '#5F5E5A'; }
 function utmParams() {
@@ -1570,23 +1598,6 @@ function expandAndScroll(id) {
   if (!group) return;
   group.classList.remove('collapsed');
   setTimeout(() => group.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
-}
-function downloadFeeGroup(groupId, filename) {
-  const group = document.getElementById(groupId);
-  if (!group) return;
-  const rows = [];
-  rows.push(['Service', 'Description', 'Fee']);
-  group.querySelectorAll('.fee-table tbody tr').forEach(tr => {
-    const cells = [...tr.querySelectorAll('td')].map(td => `"${td.textContent.replace(/"/g, '""').trim()}"`);
-    if (cells.length) rows.push(cells);
-  });
-  const csv = rows.map(r => r.join(',')).join('\r\n');
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = filename.replace(/[^a-z0-9 \-]/gi, '') + '.csv';
-  a.click();
-  URL.revokeObjectURL(a.href);
 }
 
 // ===== TABS =====
@@ -1938,15 +1949,22 @@ function renderRoster(doctors) {
     const travels = isYes(d.willingnessToTravel);
     const minors = isYes(d.willingnessToCommentOnMinors);
 
-    // Sub-specialty chips (surgical only) — deduplicate using normalized key
+    // Sub-specialty chips — subSpecialtyKeywords only (no leadSubSpecialty), deduplicate using normalizeKw
     let subChipsHtml = '';
     if (SURGICAL_RELS.has(d.relationship)) {
       const rawKws = Array.isArray(d.subSpecialtyKeywords) ? d.subSpecialtyKeywords : (d.subSpecialtyKeywords ? [d.subSpecialtyKeywords] : []);
-      if (d.leadSubSpecialty) rawKws.unshift(d.leadSubSpecialty);
       const seen = new Map();
       for (const k of rawKws) { const norm = normalizeKw(k); if (!seen.has(norm)) seen.set(norm, formatKw(k)); }
       subChipsHtml = [...seen.values()].map(k => `<span class="sub-chip">${k}</span>`).join('');
     }
+
+    // File links (CV + Elkins List)
+    const cvUrl = d.cvFileId && d.cvFileId.url ? d.cvFileId.url : null;
+    const elkinsUrl = d.elkinsListId && d.elkinsListId.url ? d.elkinsListId.url : null;
+    const fileLinksHtml = (cvUrl || elkinsUrl) ? `<div class="card-file-links">
+        ${cvUrl ? `<a class="cv-link" href="${cvUrl}" target="_blank" rel="noopener noreferrer">View CV →</a>` : ''}
+        ${elkinsUrl ? `<a class="cv-link" href="${elkinsUrl}" target="_blank" rel="noopener noreferrer">Trial Testimony List →</a>` : ''}
+      </div>` : '';
 
     card.innerHTML = `
       <div class="card-top">
@@ -1967,7 +1985,7 @@ function renderRoster(doctors) {
           <span class="dot-item"><span class="dot ${travels ? 'yes' : 'no'}"></span>Travels</span>
           <span class="dot-item"><span class="dot ${minors ? 'yes' : 'no'}"></span>Minors</span>
         </div>
-        <a class="cv-link" href="${cvMailto(d.name)}">Request CV →</a>
+        ${fileLinksHtml}
       </div>`;
     grid.appendChild(card);
   });
@@ -1975,7 +1993,7 @@ function renderRoster(doctors) {
 
 // Card click delegation
 document.getElementById('roster-grid').addEventListener('click', (e) => {
-  if (e.target.closest('.cv-link')) return;
+  if (e.target.closest('.cv-link') || e.target.closest('.card-file-links')) return;
   const card = e.target.closest('.doctor-card');
   if (!card) return;
   const id = card.dataset.id;
@@ -2035,12 +2053,11 @@ function openDrawer(d) {
   document.getElementById('drawer-location').textContent = [d.city ? `${d.city}, FL` : null, counties.map(formatCounty).join(' · ') || null].filter(Boolean).join(' · ') || '';
   document.getElementById('drawer-bio').textContent = d.bio || '';
 
-  // Sub chips
+  // Sub chips — subSpecialtyKeywords only (no leadSubSpecialty)
   const subChipsEl = document.getElementById('drawer-sub-chips');
   subChipsEl.innerHTML = '';
   if (SURGICAL_RELS.has(d.relationship)) {
     const rawKws = Array.isArray(d.subSpecialtyKeywords) ? d.subSpecialtyKeywords : (d.subSpecialtyKeywords ? [d.subSpecialtyKeywords] : []);
-    if (d.leadSubSpecialty) rawKws.unshift(d.leadSubSpecialty);
     const seenDrawer = new Map();
     for (const k of rawKws) { const norm = normalizeKw(k); if (!seenDrawer.has(norm)) seenDrawer.set(norm, formatKw(k)); }
     seenDrawer.forEach(label => {
@@ -2058,7 +2075,25 @@ function openDrawer(d) {
     <span class="dot-item"><span class="dot ${travels ? 'yes' : 'no'}"></span>Travels</span>
     <span class="dot-item"><span class="dot ${minors ? 'yes' : 'no'}"></span>Comments on minors</span>`;
 
-  document.getElementById('drawer-cv-btn').href = cvMailto(d.name);
+  // File buttons (CV + Elkins List)
+  const fileBtns = document.getElementById('drawer-file-btns');
+  fileBtns.innerHTML = '';
+  const cvUrl = d.cvFileId && d.cvFileId.url ? d.cvFileId.url : null;
+  const elkinsUrl = d.elkinsListId && d.elkinsListId.url ? d.elkinsListId.url : null;
+  if (cvUrl) {
+    const a = document.createElement('a');
+    a.className = 'drawer-file-btn';
+    a.href = cvUrl; a.target = '_blank'; a.rel = 'noopener noreferrer';
+    a.textContent = 'View CV';
+    fileBtns.appendChild(a);
+  }
+  if (elkinsUrl) {
+    const a = document.createElement('a');
+    a.className = 'drawer-file-btn';
+    a.href = elkinsUrl; a.target = '_blank'; a.rel = 'noopener noreferrer';
+    a.textContent = 'View Trial Testimony List';
+    fileBtns.appendChild(a);
+  }
 
   document.getElementById('profile-drawer').classList.add('open');
   document.getElementById('drawer-overlay').style.display = 'block';
