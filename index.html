@@ -139,8 +139,7 @@
   #app {
     display: none;
     flex-direction: column;
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
   }
   #app.visible { display: flex; }
 
@@ -154,7 +153,9 @@
     padding: 0 20px;
     gap: 12px;
     flex-shrink: 0;
-    z-index: 100;
+    position: sticky;
+    top: 0;
+    z-index: 200;
   }
   .header-logo-wrap {
     display: flex;
@@ -200,6 +201,9 @@
     gap: 0;
     flex-shrink: 0;
     overflow-x: auto;
+    position: sticky;
+    top: 56px;
+    z-index: 199;
   }
   .nav-tab {
     padding: 14px 16px 12px;
@@ -836,7 +840,7 @@
   #tab-fees { overflow-y: auto; }
   .fees-jump-nav {
     position: sticky;
-    top: 0;
+    top: 100px;
     background: var(--wh);
     border-bottom: 0.5px solid var(--bdr);
     padding: 12px 24px;
