@@ -1070,20 +1070,40 @@
     line-height: 1;
   }
   #intake-close:hover { color: var(--black); }
+  #intake-mobile-close {
+    display: none;
+  }
   @media (max-width: 768px) {
-    #intake-overlay { align-items: flex-end; background: none; }
+    #intake-overlay { align-items: flex-end; }
     #intake-modal {
       width: 100vw;
       max-width: 100vw;
-      max-height: 100vh;
-      border-radius: 0;
+      max-height: 95vh;
+      border-radius: 16px 16px 0 0;
       transform: translateY(100%);
-      transition: transform 0.2s ease;
+      transition: transform 0.25s ease;
     }
     #intake-overlay.open #intake-modal { transform: translateY(0); }
     .intake-drag-handle {
       width: 36px; height: 4px; background: #D1D1CE;
       border-radius: 2px; margin: 12px auto 4px;
+    }
+    #intake-close { display: none; }
+    #intake-mobile-close {
+      display: block;
+      position: sticky;
+      bottom: 0;
+      width: 100%;
+      padding: 12px 16px 24px;
+      background: var(--wh);
+      border: none;
+      border-top: 1px solid #EBEBEA;
+      font-size: 15px;
+      font-weight: 600;
+      color: #666;
+      cursor: pointer;
+      text-align: center;
+      letter-spacing: 0.01em;
     }
   }
   @media (min-width: 769px) {
@@ -1157,7 +1177,7 @@
       <span>·</span>
       <a href="tel:4073749080">(407) 374-9080</a>
     </div>
-    <button class="header-submit-btn" onclick="openCaseIntake()">Submit a case</button>
+    <button class="header-submit-btn" onclick="openCaseIntake()">Submit expert request</button>
   </header>
 
   <!-- Nav -->
@@ -1227,7 +1247,7 @@
         <div class="about-cta-heading">Not sure which expert is right for your case?</div>
         <p>Our team has deep experience matching cases to the right specialist — we're happy to talk it through.</p>
         <p><a href="mailto:hello@caselynx.co">hello@caselynx.co</a> &nbsp;·&nbsp; <a href="tel:4073749080">(407) 374-9080</a></p>
-        <button class="about-cta-btn" onclick="openCaseIntake()" style="margin-top:16px;border:none;cursor:pointer">Get in touch</button>
+        <button class="about-cta-btn" onclick="openCaseIntake()" style="margin-top:16px;border:none;cursor:pointer">Submit expert request</button>
       </div>
     </div>
   </div>
@@ -1454,7 +1474,7 @@
   <footer class="contact-bar">
     <a href="mailto:hello@caselynx.co">hello@caselynx.co</a> &nbsp;·&nbsp;
     <a href="tel:4073749080">(407) 374-9080</a> &nbsp;·&nbsp;
-    <button onclick="openCaseIntake()" style="background:none;border:none;color:var(--blue);font-size:inherit;font-family:inherit;cursor:pointer;padding:0">Submit a case →</button>
+    <button onclick="openCaseIntake()" style="background:none;border:none;color:var(--blue);font-size:inherit;font-family:inherit;cursor:pointer;padding:0">Submit expert request →</button>
   </footer>
 </div>
 
@@ -2268,6 +2288,7 @@ window.addEventListener('resize', () => {
         data-zite-inherit-parameters>
       </div>
     </div>
+    <button id="intake-mobile-close" onclick="closeIntake()">Close</button>
   </div>
 </div>
 <script src="https://server.fillout.com/embed/v2-zite/" defer></script>
