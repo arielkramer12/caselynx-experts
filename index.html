@@ -1070,9 +1070,8 @@
     line-height: 1;
   }
   #intake-close:hover { color: var(--black); }
-  #intake-mobile-close {
-    display: none;
-  }
+  #intake-mobile-header { display: none; }
+  #intake-mobile-close  { display: none; }
   @media (max-width: 768px) {
     #intake-overlay { align-items: flex-end; }
     #intake-modal {
@@ -1082,28 +1081,43 @@
       border-radius: 16px 16px 0 0;
       transform: translateY(100%);
       transition: transform 0.25s ease;
+      display: flex;
+      flex-direction: column;
     }
     #intake-overlay.open #intake-modal { transform: translateY(0); }
-    .intake-drag-handle {
-      width: 36px; height: 4px; background: #D1D1CE;
-      border-radius: 2px; margin: 12px auto 4px;
-    }
     #intake-close { display: none; }
-    #intake-mobile-close {
-      display: block;
-      position: sticky;
-      bottom: 0;
-      width: 100%;
-      padding: 12px 16px 24px;
-      background: var(--wh);
-      border: none;
-      border-top: 1px solid #EBEBEA;
+    .intake-drag-handle { display: none; }
+    #intake-mobile-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px 12px;
+      border-bottom: 1px solid #EBEBEA;
+      flex-shrink: 0;
+    }
+    #intake-mobile-header span {
       font-size: 15px;
+      font-weight: 600;
+      color: #1A1A1A;
+    }
+    #intake-mobile-close {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: none;
+      border: none;
+      font-size: 14px;
       font-weight: 600;
       color: #666;
       cursor: pointer;
-      text-align: center;
-      letter-spacing: 0.01em;
+      padding: 6px 10px;
+      border-radius: 8px;
+      background: #F5F5F4;
+    }
+    #intake-embed-container {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
   }
   @media (min-width: 769px) {
@@ -2279,8 +2293,13 @@ window.addEventListener('resize', () => {
 <!-- ===== CASE INTAKE MODAL ===== -->
 <div id="intake-overlay">
   <div id="intake-modal">
-    <div class="intake-drag-handle" id="intake-drag-handle"></div>
+    <!-- Desktop close button -->
     <button id="intake-close" aria-label="Close">&times;</button>
+    <!-- Mobile sticky header -->
+    <div id="intake-mobile-header">
+      <span>Submit Expert Request</span>
+      <button id="intake-mobile-close" onclick="closeIntake()" aria-label="Close">✕ Close</button>
+    </div>
     <div id="intake-embed-container" style="width:100%;min-height:600px">
       <div style="width:100%;height:700px"
         data-zite-id="rpp8wpszgq"
@@ -2288,7 +2307,6 @@ window.addEventListener('resize', () => {
         data-zite-inherit-parameters>
       </div>
     </div>
-    <button id="intake-mobile-close" onclick="closeIntake()">Close</button>
   </div>
 </div>
 <script src="https://server.fillout.com/embed/v2-zite/" defer></script>
