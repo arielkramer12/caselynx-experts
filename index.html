@@ -1012,7 +1012,21 @@
     #roster-grid { grid-template-columns: 1fr; padding: 16px; }
     .map-list-panel { display: none !important; }
     .map-body { height: calc(100vh - 220px); }
-    #tab-fees { padding: 20px 16px; }
+    /* Fee schedule mobile */
+    #tab-fees { padding: 0; }
+    .fees-jump-nav { padding: 10px 12px; gap: 6px; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .jump-btn { font-size: 11px; padding: 5px 12px; flex-shrink: 0; }
+    .fees-inner { padding: 16px 12px 24px; }
+    .fee-group-header { padding: 14px 14px; }
+    .fee-group-header-actions { gap: 6px; }
+    .fee-group-body { padding: 14px 12px; }
+    .fee-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .fee-table { font-size: 12px; min-width: 0; }
+    .fee-table th, .fee-table td { padding: 8px 10px; white-space: normal; }
+    .fee-table td:first-child { white-space: nowrap; min-width: 90px; }
+    .fee-table td:last-child { white-space: nowrap; }
+    /* Hide description column on mobile — Service + Fee is enough */
+    .fee-table th:nth-child(2), .fee-table td:nth-child(2) { display: none; }
     #sticky-help-bar { display: block; }
     #profile-drawer {
       top: auto;
@@ -1342,7 +1356,7 @@
         </div>
         <div class="fee-group-body">
           <div class="fee-section-label">Core Services</div>
-          <table class="fee-table">
+          <div class="fee-table-wrap"><table class="fee-table">
             <thead><tr><th>Service</th><th>Description</th><th>Fee</th></tr></thead>
             <tbody>
               <tr><td>IME / CME</td><td>Record review up to 600 pages, physical exam, and written expert report</td><td>$5,750</td></tr>
@@ -1356,16 +1370,16 @@
               <tr><td>Expedite Fee</td><td>Records uploaded less than 21 days before exam or report due date</td><td>$1,500</td></tr>
               <tr><td>Room Reservation Fee</td><td>CaseLynx books exam location</td><td>$150</td></tr>
             </tbody>
-          </table>
+          </table></div>
           <div class="fee-section-label">Court-Related Services</div>
-          <table class="fee-table">
+          <div class="fee-table-wrap"><table class="fee-table">
             <thead><tr><th>Service</th><th>Description</th><th>Fee</th></tr></thead>
             <tbody>
               <tr><td>Deposition</td><td>Expert participation including sworn testimony</td><td>$3,500 for first 2 hours; then $1,000/hour (2-hour minimum)</td></tr>
               <tr><td>Court Testimony</td><td>In-person or virtual testimony or appearance</td><td>$14,500/day</td></tr>
               <tr><td>Preparation for Testimony</td><td>Report/case review and supporting materials prior to deposition or trial</td><td>$1,000/hour</td></tr>
             </tbody>
-          </table>
+          </table></div>
         </div>
       </div>
 
@@ -1383,7 +1397,7 @@
         </div>
         <div class="fee-group-body">
           <div class="fee-section-label">Core Services</div>
-          <table class="fee-table">
+          <div class="fee-table-wrap"><table class="fee-table">
             <thead><tr><th>Service</th><th>Description</th><th>Fee</th></tr></thead>
             <tbody>
               <tr><td>IME / CME</td><td>Record review up to 600 pages, physical exam, and written expert report</td><td>$4,600</td></tr>
@@ -1397,16 +1411,16 @@
               <tr><td>Expedite Fee</td><td>Records uploaded less than 21 days before exam or report due date</td><td>$1,500</td></tr>
               <tr><td>Room Reservation Fee</td><td>CaseLynx books exam location</td><td>$150</td></tr>
             </tbody>
-          </table>
+          </table></div>
           <div class="fee-section-label">Court-Related Services</div>
-          <table class="fee-table">
+          <div class="fee-table-wrap"><table class="fee-table">
             <thead><tr><th>Service</th><th>Description</th><th>Fee</th></tr></thead>
             <tbody>
               <tr><td>Deposition</td><td>Expert participation including sworn testimony</td><td>$2,800 for first 2 hours; then $800/hour (2-hour minimum)</td></tr>
               <tr><td>Court Testimony</td><td>In-person or virtual testimony or appearance</td><td>$11,600/day</td></tr>
               <tr><td>Preparation for Testimony</td><td>Report/case review and supporting materials prior to deposition or trial</td><td>$800/hour</td></tr>
             </tbody>
-          </table>
+          </table></div>
         </div>
       </div>
 
@@ -1424,7 +1438,7 @@
         </div>
         <div class="fee-group-body">
           <div class="fee-section-label">Core Services</div>
-          <table class="fee-table">
+          <div class="fee-table-wrap"><table class="fee-table">
             <thead><tr><th>Service</th><th>Description</th><th>Fee</th></tr></thead>
             <tbody>
               <tr><td>IME / CME</td><td>Record review up to 600 pages, physical exam, and written expert report</td><td>$3,750</td></tr>
@@ -1438,16 +1452,16 @@
               <tr><td>Expedite Fee</td><td>Records uploaded less than 21 days before exam or report due date</td><td>$1,500</td></tr>
               <tr><td>Room Reservation Fee</td><td>CaseLynx books exam location</td><td>$150</td></tr>
             </tbody>
-          </table>
+          </table></div>
           <div class="fee-section-label">Court-Related Services</div>
-          <table class="fee-table">
+          <div class="fee-table-wrap"><table class="fee-table">
             <thead><tr><th>Service</th><th>Description</th><th>Fee</th></tr></thead>
             <tbody>
               <tr><td>Deposition</td><td>Expert participation including sworn testimony</td><td>$2,275 for first 2 hours; then $650/hour (2-hour minimum)</td></tr>
               <tr><td>Court Testimony</td><td>In-person or virtual testimony or appearance</td><td>$9,425/day</td></tr>
               <tr><td>Preparation for Testimony</td><td>Report/case review and supporting materials prior to deposition or trial</td><td>$650/hour</td></tr>
             </tbody>
-          </table>
+          </table></div>
         </div>
       </div>
 
@@ -1462,7 +1476,7 @@
           </div>
         </div>
         <div class="fee-group-body">
-          <table class="fee-table">
+          <div class="fee-table-wrap"><table class="fee-table">
             <thead><tr><th>Term</th><th>Details</th></tr></thead>
             <tbody>
               <tr><td>Retainer</td><td style="font-weight:normal;white-space:normal">Base fee plus applicable travel fee due within 14 days of scheduling to confirm exam date</td></tr>
@@ -1472,7 +1486,7 @@
               <tr><td>Late Payments</td><td style="font-weight:normal;white-space:normal">Invoices unpaid after 30 days accrue 1.5% monthly interest; services may be suspended</td></tr>
               <tr><td>Accepted Payment Methods</td><td style="font-weight:normal;white-space:normal">Secure online payment (ACH or wire) strongly preferred; checks payable to CaseLynx, Inc. also accepted</td></tr>
             </tbody>
-          </table>
+          </table></div>
         </div>
       </div>
 
@@ -2338,15 +2352,6 @@ window.addEventListener('resize', () => {
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && overlay.classList.contains('open')) closeIntake();
   });
-
-  // Mobile swipe-down to close
-  let touchStartY = 0;
-  document.getElementById('intake-drag-handle').addEventListener('touchstart', (e) => {
-    touchStartY = e.touches[0].clientY;
-  }, { passive: true });
-  document.getElementById('intake-drag-handle').addEventListener('touchend', (e) => {
-    if (e.changedTouches[0].clientY - touchStartY > 60) closeIntake();
-  }, { passive: true });
 
   // Expose globally so buttons can open the modal
   window.openCaseIntake = openIntake;
