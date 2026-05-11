@@ -379,10 +379,12 @@
 
   /* Content rows */
   .about-rows { border: 0.5px solid #e5e5e0; border-radius: 12px; overflow: hidden; margin-bottom: 28px; }
+  /* Desktop: force details open by setting display:grid — browser ignores [open] when display is non-default */
   .about-row { display: grid; grid-template-columns: 160px 1fr; gap: 32px; padding: 24px 28px; border-bottom: 0.5px solid #e5e5e0; align-items: start; }
   .about-row:last-child { border-bottom: none; }
-  .about-row-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.8px; color: #1a56db; padding-top: 2px; }
-  .about-row-body { font-size: 14px; color: var(--mid); line-height: 1.7; }
+  .about-row > summary { display: block; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.8px; color: #1a56db; padding-top: 2px; pointer-events: none; cursor: default; list-style: none; }
+  .about-row > summary::-webkit-details-marker { display: none; }
+  .about-row-body { font-size: 14px; color: var(--mid); line-height: 1.7; margin: 0; }
 
   /* CTA card */
   .about-cta { background: #EEF2FD; border-radius: 12px; padding: 28px; text-align: center; }
@@ -398,7 +400,29 @@
     .about-props { flex-direction: column; }
     .about-prop { border-right: none; border-bottom: 0.5px solid #e5e5e0; }
     .about-prop:last-child { border-bottom: none; }
-    .about-row { grid-template-columns: 1fr; gap: 8px; }
+    /* Accordion on mobile — details/summary, starts collapsed */
+    .about-row { display: block; padding: 0; }
+    .about-row > summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      pointer-events: auto;
+      cursor: pointer;
+    }
+    .about-row > summary::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-right: 1.5px solid #1a56db;
+      border-bottom: 1.5px solid #1a56db;
+      transform: rotate(45deg);
+      flex-shrink: 0;
+      margin-top: -4px;
+      transition: transform 0.15s ease;
+    }
+    .about-row[open] > summary::after { transform: rotate(-135deg); margin-top: 4px; }
+    .about-row-body { padding: 0 20px 16px; font-size: 14px; }
   }
 
   /* ===== ROSTER TAB ===== */
@@ -1290,18 +1314,18 @@
 
       <!-- Content rows -->
       <div class="about-rows">
-        <div class="about-row">
-          <div class="about-row-label">Who we are</div>
+        <details class="about-row">
+          <summary>Who we are</summary>
           <div class="about-row-body">Founded by physicians and operators with firsthand experience on IMEs, CMEs, and medical record reviews. After working with hundreds of doctors and firms, we built a better way — fewer delays, less administrative burden, more predictable outcomes.</div>
-        </div>
-        <div class="about-row">
-          <div class="about-row-label">What we do</div>
+        </details>
+        <details class="about-row">
+          <summary>What we do</summary>
           <div class="about-row-body">We connect Florida law firms and carriers with a tightly vetted network of board-certified specialists for IMEs, CMEs, and record reviews. Our doctors deliver direct, clear findings — no surprises. Deposition and trial testimony available when needed.</div>
-        </div>
-        <div class="about-row">
-          <div class="about-row-label">How we work</div>
+        </details>
+        <details class="about-row">
+          <summary>How we work</summary>
           <div class="about-row-body">Every case runs through MyCaseLynx — one place for scheduling, records, billing, and communication. A dedicated point of contact, clear updates at every step, and a commitment to being the best partner you've ever worked with.</div>
-        </div>
+        </details>
       </div>
 
       <!-- CTA card -->
