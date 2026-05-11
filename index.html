@@ -1014,8 +1014,20 @@
     .map-body { height: calc(100vh - 220px); }
     /* Fee schedule mobile */
     #tab-fees { padding: 0; }
-    .fees-jump-nav { padding: 10px 12px; gap: 6px; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    .jump-btn { font-size: 11px; padding: 5px 12px; flex-shrink: 0; }
+    .fees-jump-nav {
+      position: static;
+      display: block;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      white-space: nowrap;
+      padding: 12px 16px;
+      border-bottom: 0.5px solid #e5e5e0;
+      background: white;
+      z-index: auto;
+      flex-wrap: unset;
+      gap: unset;
+    }
+    .jump-btn { display: inline-block; margin-right: 8px; white-space: nowrap; font-size: 11px; padding: 5px 12px; }
     .fees-inner { padding: 16px 12px 24px; }
     .fee-group-header { padding: 14px 14px; }
     .fee-group-header-actions { gap: 6px; }
@@ -1084,59 +1096,74 @@
     line-height: 1;
   }
   #intake-close:hover { color: var(--black); }
-  #intake-mobile-header { display: none; }
-  #intake-mobile-close  { display: none; }
-  @media (max-width: 768px) {
-    #intake-overlay { align-items: flex-end; }
+
+  /* Fixed close bar — mobile only, always visible above scrollable form */
+  #intake-close-bar {
+    display: none; /* shown via JS when modal opens on mobile */
+  }
+  #intake-scroll-hint { display: none; }
+
+  @media (max-width: 767px) {
+    /* Close bar: position:fixed so it stays at top regardless of scroll */
+    #intake-close-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 48px;
+      background: white;
+      border-bottom: 0.5px solid #e5e5e0;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 4px 0 16px;
+      z-index: 5000;
+    }
+    #intake-close-bar.visible { display: flex; }
+    #intake-close-bar-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: #1A1A1A;
+    }
+    #intake-close-bar-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      min-width: 44px;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: #555;
+    }
+    /* Modal: full-screen, no border-radius, no overflow */
+    #intake-overlay { background: rgba(0,0,0,0.3); align-items: flex-end; }
     #intake-modal {
       width: 100vw;
       max-width: 100vw;
-      max-height: 95vh;
-      border-radius: 16px 16px 0 0;
-      transform: translateY(100%);
-      transition: transform 0.25s ease;
-      display: flex;
-      flex-direction: column;
+      height: 100vh;
+      max-height: 100vh;
+      border-radius: 0;
       overflow: hidden;
+      box-shadow: none;
     }
-    #intake-overlay.open #intake-modal { transform: translateY(0); }
-    #intake-close { display: none; }
-    .intake-drag-handle { display: none; }
-    #intake-mobile-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 20px 12px;
-      border-bottom: 1px solid #EBEBEA;
-      flex-shrink: 0;
-    }
-    #intake-mobile-header span {
-      font-size: 15px;
-      font-weight: 600;
-      color: #1A1A1A;
-    }
-    #intake-mobile-close {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      background: none;
-      border: none;
-      font-size: 14px;
-      font-weight: 600;
-      color: #666;
-      cursor: pointer;
-      padding: 6px 10px;
-      border-radius: 8px;
-      background: #F5F5F4;
-    }
+    /* Scrollable content pushed below fixed close bar */
     #intake-embed-container {
-      flex: 1;
+      margin-top: 48px;
+      height: calc(100vh - 48px);
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
     }
-  }
-  @media (min-width: 769px) {
-    .intake-drag-handle { display: none; }
+    /* Scroll hint — hidden after first scroll via JS */
+    #intake-scroll-hint {
+      display: block;
+      text-align: center;
+      font-size: 12px;
+      color: #888;
+      padding: 10px 16px 2px;
+    }
+    #intake-scroll-hint.hidden { display: none; }
+    #intake-close { display: none; }
   }
 </style>
 </head>
@@ -2306,16 +2333,19 @@ window.addEventListener('resize', () => {
 </script>
 
 <!-- ===== CASE INTAKE MODAL ===== -->
+<!-- Fixed close bar: position:fixed, outside scroll, always visible on mobile -->
+<div id="intake-close-bar">
+  <span id="intake-close-bar-title">New Case Request</span>
+  <button id="intake-close-bar-btn" aria-label="Close">&#xd7;</button>
+</div>
+
 <div id="intake-overlay">
   <div id="intake-modal">
     <!-- Desktop close button -->
     <button id="intake-close" aria-label="Close">&times;</button>
-    <!-- Mobile sticky header -->
-    <div id="intake-mobile-header">
-      <span>Submit Expert Request</span>
-      <button id="intake-mobile-close" onclick="closeIntake()" aria-label="Close">✕ Close</button>
-    </div>
     <div id="intake-embed-container" style="width:100%;min-height:600px">
+      <!-- Scroll hint: visible on open, disappears on first scroll (mobile only) -->
+      <div id="intake-scroll-hint">Scroll to fill out form ↓</div>
       <div style="width:100%;height:700px"
         data-zite-id="rpp8wpszgq"
         data-zite-embed-type="standard"
@@ -2328,23 +2358,36 @@ window.addEventListener('resize', () => {
 <script>
 // ===== INTAKE MODAL =====
 (function() {
-  const overlay = document.getElementById('intake-overlay');
-  const modal   = document.getElementById('intake-modal');
+  const overlay   = document.getElementById('intake-overlay');
+  const closeBar  = document.getElementById('intake-close-bar');
+  const embedCont = document.getElementById('intake-embed-container');
+  const scrollHint = document.getElementById('intake-scroll-hint');
+
+  function isMobile() { return window.innerWidth <= 767; }
 
   function openIntake() {
     overlay.classList.add('open');
     document.body.style.overflow = 'hidden';
+    if (isMobile()) {
+      closeBar.classList.add('visible');
+      // Reset scroll hint on each open
+      if (scrollHint) scrollHint.classList.remove('hidden');
+    }
   }
 
   function closeIntake() {
     overlay.classList.remove('open');
+    closeBar.classList.remove('visible');
     document.body.style.overflow = '';
   }
 
-  // Close button
+  // Desktop close button
   document.getElementById('intake-close').addEventListener('click', closeIntake);
 
-  // Click overlay to close (desktop)
+  // Mobile fixed close bar button
+  document.getElementById('intake-close-bar-btn').addEventListener('click', closeIntake);
+
+  // Click backdrop to close (desktop)
   overlay.addEventListener('click', (e) => {
     if (e.target === overlay) closeIntake();
   });
@@ -2354,8 +2397,16 @@ window.addEventListener('resize', () => {
     if (e.key === 'Escape' && overlay.classList.contains('open')) closeIntake();
   });
 
-  // Expose globally so buttons can open the modal
+  // Hide scroll hint on first scroll
+  if (embedCont && scrollHint) {
+    embedCont.addEventListener('scroll', function hideHint() {
+      scrollHint.classList.add('hidden');
+      embedCont.removeEventListener('scroll', hideHint);
+    }, { passive: true });
+  }
+
   window.openCaseIntake = openIntake;
+  window.closeIntake = closeIntake;
 })();
 </script>
 </body>
