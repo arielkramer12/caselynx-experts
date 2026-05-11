@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@400,500,600,700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
   :root {
@@ -357,77 +358,48 @@
   .map-help-callout a { color: var(--blue); }
 
   /* ===== ABOUT TAB ===== */
+  /* ===== ABOUT TAB ===== */
   #tab-about { overflow-y: auto; background: var(--page); }
-  .about-inner { max-width: 720px; margin: 0 auto; padding: 48px 32px; }
-  .about-logomark { display: flex; justify-content: center; margin-bottom: 24px; }
-  .about-heading {
-    font-family: 'Cabinet Grotesk', sans-serif;
-    font-size: 28px;
-    font-weight: 500;
-    color: var(--black);
-    text-align: center;
-    margin-bottom: 8px;
+  .about-inner { max-width: 720px; margin: 0 auto; padding: 40px 24px; }
+
+  /* Header */
+  .about-logomark { display: flex; justify-content: center; margin-bottom: 16px; }
+  .about-heading { font-family: 'Cabinet Grotesk', sans-serif; font-size: 24px; font-weight: 500; color: var(--black); text-align: center; margin-bottom: 8px; }
+  .about-subline { font-size: 14px; color: #888; text-align: center; line-height: 1.5; }
+  .about-divider { height: 0.5px; background: var(--bdr); margin: 28px 0; }
+
+  /* Value prop columns */
+  .about-props { border: 0.5px solid #e5e5e0; border-radius: 12px; overflow: hidden; margin-bottom: 28px; display: flex; }
+  .about-prop { flex: 1; padding: 22px 24px; border-right: 0.5px solid #e5e5e0; }
+  .about-prop:last-child { border-right: none; }
+  .about-prop-icon { width: 32px; height: 32px; border-radius: 8px; background: #EEF2FD; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+  .about-prop-icon i { font-size: 16px; color: #1a56db; }
+  .about-prop-label { font-size: 13px; font-weight: 500; color: var(--black); margin-bottom: 6px; }
+  .about-prop-body { font-size: 13px; color: var(--mid); line-height: 1.55; }
+
+  /* Content rows */
+  .about-rows { border: 0.5px solid #e5e5e0; border-radius: 12px; overflow: hidden; margin-bottom: 28px; }
+  .about-row { display: grid; grid-template-columns: 160px 1fr; gap: 32px; padding: 24px 28px; border-bottom: 0.5px solid #e5e5e0; align-items: start; }
+  .about-row:last-child { border-bottom: none; }
+  .about-row-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.8px; color: #1a56db; padding-top: 2px; }
+  .about-row-body { font-size: 14px; color: var(--mid); line-height: 1.7; }
+
+  /* CTA card */
+  .about-cta { background: #EEF2FD; border-radius: 12px; padding: 28px; text-align: center; }
+  .about-cta-heading { font-size: 16px; font-weight: 500; color: var(--black); margin-bottom: 6px; }
+  .about-cta-body { font-size: 13px; color: #555; margin-bottom: 14px; line-height: 1.6; }
+  .about-cta-contact { font-size: 13px; color: #1a56db; margin-bottom: 16px; }
+  .about-cta-contact a { color: #1a56db; text-decoration: none; }
+  .about-cta-contact a:hover { text-decoration: underline; }
+  .about-cta-btn { background: #1a56db; color: #fff; border: none; border-radius: 20px; padding: 10px 24px; font-size: 13px; font-weight: 500; font-family: 'Open Sans', sans-serif; cursor: pointer; transition: background .15s; }
+  .about-cta-btn:hover { background: #1644bb; }
+
+  @media (max-width: 767px) {
+    .about-props { flex-direction: column; }
+    .about-prop { border-right: none; border-bottom: 0.5px solid #e5e5e0; }
+    .about-prop:last-child { border-bottom: none; }
+    .about-row { grid-template-columns: 1fr; gap: 8px; }
   }
-  .about-subline {
-    font-size: 14px;
-    color: var(--muted);
-    text-align: center;
-    margin-bottom: 40px;
-    line-height: 1.5;
-  }
-  .about-divider { height: 0.5px; background: var(--bdr); margin-bottom: 24px; }
-  .about-card {
-    background: var(--wh);
-    border-radius: 12px;
-    border: 0.5px solid var(--bdr);
-    padding: 24px 28px;
-    margin-bottom: 16px;
-    box-shadow: 0 1px 4px rgba(0,0,0,.05);
-  }
-  .about-card-label {
-    font-size: 11px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: .8px;
-    color: var(--blue);
-    margin-bottom: 8px;
-  }
-  .about-card p {
-    font-size: 14px;
-    line-height: 1.7;
-    color: #444;
-    margin: 0;
-  }
-  .about-cta {
-    background: var(--blue-lt);
-    border-radius: 12px;
-    padding: 24px 28px;
-    text-align: center;
-    margin-top: 8px;
-  }
-  .about-cta-heading {
-    font-family: 'Cabinet Grotesk', sans-serif;
-    font-size: 16px;
-    font-weight: 500;
-    color: var(--black);
-    margin-bottom: 8px;
-  }
-  .about-cta p { font-size: 13px; color: var(--mid); margin-bottom: 16px; line-height: 1.6; }
-  .about-cta a { color: var(--blue); text-decoration: none; font-weight: 500; }
-  .about-cta a:hover { text-decoration: underline; }
-  .about-cta-btn {
-    display: inline-block;
-    background: var(--blue);
-    color: #fff;
-    border-radius: 20px;
-    padding: 10px 24px;
-    font-size: 13px;
-    font-family: 'Open Sans', sans-serif;
-    font-weight: 500;
-    text-decoration: none;
-    transition: background .15s;
-  }
-  .about-cta-btn:hover { background: #1644bb; color: #fff; }
 
   /* ===== ROSTER TAB ===== */
   #tab-roster { overflow: hidden; }
@@ -1285,9 +1257,10 @@
   <!-- About Tab -->
   <div id="tab-about" class="tab-content active" data-tab="about">
     <div class="about-inner">
-      <!-- Logo mark -->
+
+      <!-- Header -->
       <div class="about-logomark">
-        <svg width="48" height="48" viewBox="0 0 366 266" xmlns="http://www.w3.org/2000/svg">
+        <svg width="40" height="40" viewBox="0 0 366 266" xmlns="http://www.w3.org/2000/svg">
           <polygon fill="#1a56db" points="366.39 153.64 240.67 265.55 1.73 265.55 127.45 153.64 366.39 153.64"/>
           <polygon fill="#6e80ff" points="240 4.58 240 134.01 119.93 134.01 0 240.82 0 4.58 120.02 93.46 240 4.58"/>
         </svg>
@@ -1295,24 +1268,52 @@
       <div class="about-heading">About CaseLynx</div>
       <div class="about-subline">Florida's expert testimony network, built by people who've done this work firsthand.</div>
       <div class="about-divider"></div>
-      <div class="about-card">
-        <div class="about-card-label">Who we are</div>
-        <p>CaseLynx was founded by physicians and operators with firsthand experience coordinating IMEs, CMEs, and medical record reviews for law firms and insurance carriers. After working with hundreds of doctors and firms, we built a better way — with fewer delays, less administrative burden, and more predictable outcomes.</p>
+
+      <!-- Value props -->
+      <div class="about-props">
+        <div class="about-prop">
+          <div class="about-prop-icon"><i class="ti ti-shield-check"></i></div>
+          <div class="about-prop-label">The best doctors in Florida</div>
+          <div class="about-prop-body">A tight network of board-certified specialists vetted for quality — not a database of unknown names.</div>
+        </div>
+        <div class="about-prop">
+          <div class="about-prop-icon"><i class="ti ti-layout-dashboard"></i></div>
+          <div class="about-prop-label">Purpose-built platform</div>
+          <div class="about-prop-body">Scheduling, records, billing, and updates in one place — less back-and-forth, fewer delays.</div>
+        </div>
+        <div class="about-prop">
+          <div class="about-prop-icon"><i class="ti ti-users"></i></div>
+          <div class="about-prop-label">Partner-first approach</div>
+          <div class="about-prop-body">A dedicated point of contact and a commitment to taking expert testimony off your stress list.</div>
+        </div>
       </div>
-      <div class="about-card">
-        <div class="about-card-label">What we do</div>
-        <p>We connect Florida defense firms and carriers with a tightly vetted network of board-certified specialists for Independent Medical Examinations, Compulsory Medical Examinations, and medical record reviews. Our doctors deliver direct, clear, high-quality findings — no surprises. When your case requires it, our experts are also available for depositions and trial testimony.</p>
+
+      <!-- Content rows -->
+      <div class="about-rows">
+        <div class="about-row">
+          <div class="about-row-label">Who we are</div>
+          <div class="about-row-body">Founded by physicians and operators with firsthand experience on IMEs, CMEs, and medical record reviews. After working with hundreds of doctors and firms, we built a better way — fewer delays, less administrative burden, more predictable outcomes.</div>
+        </div>
+        <div class="about-row">
+          <div class="about-row-label">What we do</div>
+          <div class="about-row-body">We connect Florida defense firms and carriers with a tightly vetted network of board-certified specialists for IMEs, CMEs, and record reviews. Our doctors deliver direct, clear findings — no surprises. Deposition and trial testimony available when needed.</div>
+        </div>
+        <div class="about-row">
+          <div class="about-row-label">How we work</div>
+          <div class="about-row-body">Every case runs through MyCaseLynx — one place for scheduling, records, billing, and communication. A dedicated point of contact, clear updates at every step, and a commitment to being the best partner you've ever worked with.</div>
+        </div>
       </div>
-      <div class="about-card">
-        <div class="about-card-label">How we work</div>
-        <p>Every case is managed through our purpose-built platform, MyCaseLynx — keeping scheduling, records, billing, and communication organized in one place. You'll have a dedicated point of contact and clear, proactive updates at every step. We hold ourselves to being the best partner you've ever worked with, and take medical expert testimony completely off your stress list.</p>
-      </div>
+
+      <!-- CTA card -->
       <div class="about-cta">
         <div class="about-cta-heading">Not sure which expert is right for your case?</div>
-        <p>Our team has deep experience matching cases to the right specialist — we're happy to talk it through.</p>
-        <p><a href="mailto:hello@caselynx.co">hello@caselynx.co</a> &nbsp;·&nbsp; <a href="tel:4073749080">(407) 374-9080</a></p>
-        <button class="about-cta-btn" onclick="openCaseIntake()" style="margin-top:16px;border:none;cursor:pointer">Submit expert request</button>
+        <div class="about-cta-body">Our team has deep experience matching cases to the right specialist — we're happy to talk it through.</div>
+        <div class="about-cta-contact">
+          <a href="mailto:hello@caselynx.co">hello@caselynx.co</a> &nbsp;·&nbsp; <a href="tel:4073749080">(407) 374-9080</a>
+        </div>
+        <button class="about-cta-btn" onclick="openCaseIntake()">Submit a case request</button>
       </div>
+
     </div>
   </div>
 
