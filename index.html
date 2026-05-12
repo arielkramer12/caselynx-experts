@@ -346,16 +346,21 @@
   .map-info-link { font-size: 12px; color: var(--blue); cursor: pointer; font-weight: 500; }
   .map-info-link:hover { text-decoration: underline; }
   .map-help-callout {
-    background: var(--blue-lt);
-    border-radius: 12px;
-    margin: 16px 24px;
-    padding: 20px 24px;
-    text-align: center;
+    padding: 10px 24px;
+    background: var(--page);
+    border-top: 0.5px solid #e5e5e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #888;
+    white-space: nowrap;
+    flex-wrap: wrap;
     flex-shrink: 0;
   }
-  .map-help-callout-heading { font-size: 15px; font-weight: 500; color: var(--black); margin-bottom: 6px; font-family: 'Cabinet Grotesk', sans-serif; }
-  .map-help-callout-body { font-size: 13px; color: #555; margin-bottom: 10px; line-height: 1.6; }
-  .map-help-callout a { color: var(--blue); }
+  .map-help-callout a { color: #1a56db; text-decoration: none; }
+  .map-help-callout a:hover { text-decoration: underline; }
 
   /* ===== ABOUT TAB ===== */
   /* ===== ABOUT TAB ===== */
@@ -875,19 +880,24 @@
   .fee-group-header-left { flex: 1; min-width: 0; }
   .fee-group-header-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
   .fee-download-btn {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--blue);
-    background: rgba(255,255,255,0.7);
-    border: 1px solid rgba(0,0,0,0.12);
-    border-radius: 6px;
-    padding: 4px 10px;
-    cursor: pointer;
-    font-family: 'Open Sans', sans-serif;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #1a56db;
+    color: white;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 20px;
+    text-decoration: none;
     white-space: nowrap;
+    border: none;
+    cursor: pointer;
+    flex-shrink: 0;
+    font-family: 'Open Sans', sans-serif;
     transition: background .15s;
   }
-  .fee-download-btn:hover { background: rgba(255,255,255,0.95); }
+  .fee-download-btn:hover { background: #1447b8; }
   .fee-toggle-icon {
     width: 18px;
     height: 18px;
@@ -1030,6 +1040,7 @@
     .fees-inner { padding: 16px 12px 24px; }
     .fee-group-header { padding: 14px 14px; }
     .fee-group-header-actions { gap: 6px; }
+    .fee-download-btn { font-size: 12px; padding: 7px 12px; }
     .fee-group-body { padding: 14px 12px; }
     .fee-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     .fee-table { font-size: 12px; min-width: 0; }
@@ -1272,9 +1283,10 @@
       </div>
     </div>
     <div class="map-help-callout">
-      <div class="map-help-callout-heading">Not sure which expert is right for your case?</div>
-      <div class="map-help-callout-body">Our team has deep experience matching cases to the right specialist — we're happy to talk it through.</div>
-      <a href="mailto:hello@caselynx.co">hello@caselynx.co</a> &nbsp;·&nbsp; <a href="tel:4073749080">(407) 374-9080</a>
+      Not sure which expert is right for your case? Our team is happy to help —
+      <a href="mailto:hello@caselynx.co">hello@caselynx.co</a>
+      <span style="color:#888;">·</span>
+      <a href="tel:4073749080">(407) 374-9080</a>
     </div>
   </div>
 
@@ -1421,7 +1433,7 @@
             <div class="fee-group-sub">Orthopedic Surgery &amp; Neurosurgery</div>
           </div>
           <div class="fee-group-header-actions">
-            <a class="fee-download-btn" href="https://raw.githubusercontent.com/arielkramer12/caselynx-fee-schedule-group1-2026/main/fee-schedule-group1.pdf" download="CaseLynx 2026 Fee Schedule - Group 1 Surgical Specialists.pdf" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">↓ PDF</a>
+            <a class="fee-download-btn" href="https://raw.githubusercontent.com/arielkramer12/caselynx-fee-schedule-group1-2026/main/fee-schedule-group1.pdf" download="CaseLynx 2026 Fee Schedule - Group 1 Surgical Specialists.pdf" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">↓ Download Fee Schedule PDF</a>
             <span class="fee-toggle-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
           </div>
         </div>
@@ -1462,7 +1474,7 @@
             <div class="fee-group-sub">PM&amp;R (Physiatry), Neurology, Pain Management, Cardiology, Psychiatry, Podiatry &amp; Urology</div>
           </div>
           <div class="fee-group-header-actions">
-            <a class="fee-download-btn" href="https://raw.githubusercontent.com/arielkramer12/caselynx-fee-schedule-group2-2026/main/fee-schedule-group2.pdf" download="CaseLynx 2026 Fee Schedule - Group 2 Non-Surgical Specialists.pdf" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">↓ PDF</a>
+            <a class="fee-download-btn" href="https://raw.githubusercontent.com/arielkramer12/caselynx-fee-schedule-group2-2026/main/fee-schedule-group2.pdf" download="CaseLynx 2026 Fee Schedule - Group 2 Non-Surgical Specialists.pdf" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">↓ Download Fee Schedule PDF</a>
             <span class="fee-toggle-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
           </div>
         </div>
@@ -1503,7 +1515,7 @@
             <div class="fee-group-sub">Dentistry / Oral Surgery, Chiropractic, &amp; Family Medicine / Internal Medicine</div>
           </div>
           <div class="fee-group-header-actions">
-            <a class="fee-download-btn" href="https://raw.githubusercontent.com/arielkramer12/caselynx-fee-schedule-group3-2026/main/fee-schedule-group3.pdf" download="CaseLynx 2026 Fee Schedule - Group 3 General Practice.pdf" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">↓ PDF</a>
+            <a class="fee-download-btn" href="https://raw.githubusercontent.com/arielkramer12/caselynx-fee-schedule-group3-2026/main/fee-schedule-group3.pdf" download="CaseLynx 2026 Fee Schedule - Group 3 General Practice.pdf" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">↓ Download Fee Schedule PDF</a>
             <span class="fee-toggle-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
           </div>
         </div>
