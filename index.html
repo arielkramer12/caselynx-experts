@@ -1314,15 +1314,15 @@
 
       <!-- Content rows -->
       <div class="about-rows">
-        <details class="about-row">
+        <details class="about-row" open>
           <summary>Who we are</summary>
           <div class="about-row-body">Founded by physicians and operators with firsthand experience on IMEs, CMEs, and medical record reviews. After working with hundreds of doctors and firms, we built a better way — fewer delays, less administrative burden, more predictable outcomes.</div>
         </details>
-        <details class="about-row">
+        <details class="about-row" open>
           <summary>What we do</summary>
           <div class="about-row-body">We connect Florida law firms and carriers with a tightly vetted network of board-certified specialists for IMEs, CMEs, and record reviews. Our doctors deliver direct, clear findings — no surprises. Deposition and trial testimony available when needed.</div>
         </details>
-        <details class="about-row">
+        <details class="about-row" open>
           <summary>How we work</summary>
           <div class="about-row-body">Every case runs through MyCaseLynx — one place for scheduling, records, billing, and communication. A dedicated point of contact, clear updates at every step, and a commitment to being the best partner you've ever worked with.</div>
         </details>
@@ -1782,6 +1782,11 @@ document.querySelector('.fee-jump-select').addEventListener('change', function()
   expandAndScroll(id);
   this.value = ''; // reset so same option can be re-selected
 });
+
+// ===== ABOUT ACCORDION (mobile only — start collapsed) =====
+if (window.innerWidth < 768) {
+  document.querySelectorAll('.about-row').forEach(d => d.removeAttribute('open'));
+}
 
 // ===== TABS =====
 document.querySelectorAll('.nav-tab').forEach(tab => {
