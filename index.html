@@ -345,22 +345,6 @@
   .map-info-dots { display: flex; gap: 10px; font-size: 11px; color: var(--mid); margin-bottom: 10px; }
   .map-info-link { font-size: 12px; color: var(--blue); cursor: pointer; font-weight: 500; }
   .map-info-link:hover { text-decoration: underline; }
-  .map-footer-bar {
-    padding: 10px 24px;
-    background: var(--page);
-    border-top: 0.5px solid #e5e5e0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    font-size: 13px;
-    color: #888;
-    flex-wrap: wrap;
-    text-align: center;
-    flex-shrink: 0;
-  }
-  .map-footer-bar a { color: #1a56db; text-decoration: none; }
-  .map-footer-bar a:hover { text-decoration: underline; }
 
   /* ===== ABOUT TAB ===== */
   /* ===== ABOUT TAB ===== */
@@ -1282,14 +1266,6 @@
         </div>
       </div>
     </div>
-    <div class="map-footer-bar">
-      Not sure which expert is right for your case? Our team is happy to help —
-      <a href="mailto:hello@caselynx.co">hello@caselynx.co</a>
-      &nbsp;·&nbsp;
-      <a href="tel:4073749080">(407) 374-9080</a>
-      &nbsp;·&nbsp;
-      <a href="#" class="submit-case-trigger">Submit expert request →</a>
-    </div>
   </div>
 
   <!-- About Tab -->
@@ -1585,6 +1561,7 @@
 
   <!-- Contact Bar -->
   <footer class="contact-bar">
+    Not sure which expert is right for your case? Our team is happy to help —
     <a href="mailto:hello@caselynx.co">hello@caselynx.co</a> &nbsp;·&nbsp;
     <a href="tel:4073749080">(407) 374-9080</a> &nbsp;·&nbsp;
     <button onclick="openCaseIntake()" style="background:none;border:none;color:var(--blue);font-size:inherit;font-family:inherit;cursor:pointer;padding:0">Submit expert request →</button>
@@ -1785,14 +1762,8 @@ function toggleFeeGroup(header) {
 function scrollToFeeGroup(targetId) {
   const target = document.getElementById(targetId);
   if (!target) return;
-  // Expand if collapsed
   target.classList.remove('collapsed');
-  // Scroll to top of group header, accounting for sticky nav heights
-  const mainNav = document.querySelector('.app-nav');
-  const stickyNav = document.querySelector('.fees-jump-nav') || document.querySelector('.fee-jump-select');
-  const offset = (mainNav?.offsetHeight || 44) + (stickyNav?.offsetHeight || 44) + 8;
-  const top = target.getBoundingClientRect().top + window.scrollY - offset;
-  window.scrollTo({ top, behavior: 'smooth' });
+  setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
 }
 
 // Wire up pill buttons
@@ -1811,13 +1782,6 @@ if (feeSelect) {
   });
 }
 
-// Map footer "Submit expert request" trigger
-document.addEventListener('click', function(e) {
-  if (e.target.closest('.submit-case-trigger')) {
-    e.preventDefault();
-    openCaseIntake();
-  }
-});
 
 // ===== ABOUT ACCORDION (mobile only — start collapsed) =====
 if (window.innerWidth < 768) {
