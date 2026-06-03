@@ -352,10 +352,10 @@
   .about-inner { max-width: 720px; margin: 0 auto; padding: 40px 24px; }
 
   /* Header */
-  .about-logomark { display: flex; justify-content: center; margin-bottom: 16px; }
-  .about-heading { font-family: 'Cabinet Grotesk', sans-serif; font-size: 24px; font-weight: 500; color: var(--black); text-align: center; margin-bottom: 8px; }
-  .about-subline { font-size: 14px; color: #888; text-align: center; line-height: 1.5; }
-  .about-divider { height: 0.5px; background: var(--bdr); margin: 28px 0; }
+  .about-hero { border-radius: 12px; overflow: hidden; background: linear-gradient(135deg, #0c2340 0%, #1a56db 100%); padding: 52px 48px; margin-bottom: 28px; }
+  .about-hero-eyebrow { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.55); margin-bottom: 14px; }
+  .about-hero-headline { font-size: 32px; font-weight: 500; color: white; line-height: 1.2; margin-bottom: 12px; max-width: 520px; }
+  .about-hero-subline { font-size: 15px; color: rgba(255,255,255,0.72); line-height: 1.6; max-width: 460px; margin: 0; }
 
   /* Value prop columns */
   .about-props { border: 0.5px solid #e5e5e0; border-radius: 12px; overflow: hidden; margin-bottom: 28px; display: flex; }
@@ -386,6 +386,8 @@
   .about-cta-btn:hover { background: #1644bb; }
 
   @media (max-width: 767px) {
+    .about-hero { padding: 32px 24px; }
+    .about-hero-headline { font-size: 22px; }
     .about-props { flex-direction: column; }
     .about-prop { border-right: none; border-bottom: 0.5px solid #e5e5e0; }
     .about-prop:last-child { border-bottom: none; }
@@ -1272,16 +1274,12 @@
   <div id="tab-about" class="tab-content active" data-tab="about">
     <div class="about-inner">
 
-      <!-- Header -->
-      <div class="about-logomark">
-        <svg width="40" height="40" viewBox="0 0 366 266" xmlns="http://www.w3.org/2000/svg">
-          <polygon fill="#1a56db" points="366.39 153.64 240.67 265.55 1.73 265.55 127.45 153.64 366.39 153.64"/>
-          <polygon fill="#6e80ff" points="240 4.58 240 134.01 119.93 134.01 0 240.82 0 4.58 120.02 93.46 240 4.58"/>
-        </svg>
+      <!-- Hero -->
+      <div class="about-hero">
+        <div class="about-hero-eyebrow">About CaseLynx</div>
+        <div class="about-hero-headline">Medical expert testimony, handled.</div>
+        <p class="about-hero-subline">We connect Florida law firms and carriers with the right medical expert — and handle everything that comes after.</p>
       </div>
-      <div class="about-heading">About CaseLynx</div>
-      <div class="about-subline">Florida's expert testimony network, built by people who've done this work firsthand.</div>
-      <div class="about-divider"></div>
 
       <!-- Value props -->
       <div class="about-props">
