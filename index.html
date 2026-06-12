@@ -959,9 +959,9 @@
   /* ===== CONTACT BAR ===== */
   .contact-bar {
     border-top: 0.5px solid var(--bdr);
-    padding: 20px;
+    padding: 10px 16px;
     text-align: center;
-    font-size: 13px;
+    font-size: 12px;
     color: var(--muted);
     background: var(--wh);
     flex-shrink: 0;
@@ -1409,8 +1409,46 @@
     </select>
     <div class="fees-inner">
 
-      <!-- Group 1: Surgical Specialists -->
-      <div class="fee-group" id="fee-group-1">
+      <!-- Group: Neurosurgery -->
+      <div class="fee-group" id="fee-group-neurosurgery">
+        <div class="fee-group-header" style="background:#f0e8fa;color:#4a1279" onclick="toggleFeeGroup(this)">
+          <div class="fee-group-header-left">
+            <div class="fee-group-title">Neurosurgery</div>
+            <div class="fee-group-sub">Neurosurgical IME / CME, Record Review &amp; Expert Testimony</div>
+          </div>
+          <div class="fee-group-header-actions">
+            <a class="fee-download-btn" href="https://raw.githubusercontent.com/arielkramer12/caselynx-fee-schedule-group0-2026/main/fee-schedule-group0.pdf" download="CaseLynx 2026 Fee Schedule - Neurosurgery.pdf" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">↓ Download Fee Schedule PDF</a>
+            <span class="fee-toggle-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </div>
+        </div>
+        <div class="fee-group-body">
+          <div class="fee-section-label">Core Services</div>
+          <div class="fee-table-wrap"><table class="fee-table">
+            <thead><tr><th>Service</th><th>Description</th><th>Fee</th></tr></thead>
+            <tbody>
+              <tr><td>IME / CME</td><td>Record review up to 600 pages, physical exam, and written expert report</td><td>$8,495</td></tr>
+              <tr><td>Record Review Only</td><td>Record review up to 600 pages and case preparation (no physical exam)</td><td>$6,245</td></tr>
+              <tr><td>Exam Only</td><td>Physical exam if added after record review</td><td>$2,250</td></tr>
+              <tr><td>Page Overage</td><td>Additional records pages in excess of 600</td><td>$11.50/pg (all page counts)</td></tr>
+              <tr><td>Imaging Review</td><td>Per imaging study reviewed</td><td>X-ray/standard: $150/study · MRI/CT: $300/study</td></tr>
+              <tr><td>Teleconference</td><td>Phone meeting with attorney (non-testimony)</td><td>$1,150/hour (1-hour minimum)</td></tr>
+              <tr><td>Travel Time</td><td>Based on distance from doctor home to exam location</td><td>$1,150/hour</td></tr>
+            </tbody>
+          </table></div>
+          <div class="fee-section-label">Court-Related Services</div>
+          <div class="fee-table-wrap"><table class="fee-table">
+            <thead><tr><th>Service</th><th>Description</th><th>Fee</th></tr></thead>
+            <tbody>
+              <tr><td>Deposition</td><td>Expert participation including sworn testimony</td><td>$4,000 for first 2 hours; then $1,150/hour (2-hour minimum)</td></tr>
+              <tr><td>Court Testimony</td><td>In-person or virtual testimony or appearance</td><td>$17,500/day</td></tr>
+              <tr><td>Preparation for Testimony</td><td>Report/case review and supporting materials prior to deposition or trial</td><td>$1,150/hour</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </div>
+
+      <!-- Group 1: Orthopedics -->
+      <div class="fee-group collapsed" id="fee-group-1">
         <div class="fee-group-header" style="background:#faeeda;color:#633806" onclick="toggleFeeGroup(this)">
           <div class="fee-group-header-left">
             <div class="fee-group-title">Orthopedics</div>
@@ -1527,44 +1565,6 @@
               <tr><td>Deposition</td><td>Expert participation including sworn testimony</td><td>$2,275 for first 2 hours; then $650/hour (2-hour minimum)</td></tr>
               <tr><td>Court Testimony</td><td>In-person or virtual testimony or appearance</td><td>$9,425/day</td></tr>
               <tr><td>Preparation for Testimony</td><td>Report/case review and supporting materials prior to deposition or trial</td><td>$650/hour</td></tr>
-            </tbody>
-          </table></div>
-        </div>
-      </div>
-
-      <!-- Group: Neurosurgery -->
-      <div class="fee-group collapsed" id="fee-group-neurosurgery">
-        <div class="fee-group-header" style="background:#f0e8fa;color:#4a1279" onclick="toggleFeeGroup(this)">
-          <div class="fee-group-header-left">
-            <div class="fee-group-title">Neurosurgery</div>
-            <div class="fee-group-sub">Neurosurgical IME / CME, Record Review &amp; Expert Testimony</div>
-          </div>
-          <div class="fee-group-header-actions">
-            <a class="fee-download-btn" href="https://raw.githubusercontent.com/arielkramer12/caselynx-fee-schedule-group0-2026/main/fee-schedule-group0.pdf" download="CaseLynx 2026 Fee Schedule - Neurosurgery.pdf" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">↓ Download Fee Schedule PDF</a>
-            <span class="fee-toggle-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          </div>
-        </div>
-        <div class="fee-group-body">
-          <div class="fee-section-label">Core Services</div>
-          <div class="fee-table-wrap"><table class="fee-table">
-            <thead><tr><th>Service</th><th>Description</th><th>Fee</th></tr></thead>
-            <tbody>
-              <tr><td>IME / CME</td><td>Record review up to 600 pages, physical exam, and written expert report</td><td>$8,495</td></tr>
-              <tr><td>Record Review Only</td><td>Record review up to 600 pages and case preparation (no physical exam)</td><td>$6,245</td></tr>
-              <tr><td>Exam Only</td><td>Physical exam if added after record review</td><td>$2,250</td></tr>
-              <tr><td>Page Overage</td><td>Additional records pages in excess of 600</td><td>$11.50/pg (all page counts)</td></tr>
-              <tr><td>Imaging Review</td><td>Per imaging study reviewed</td><td>X-ray/standard: $150/study · MRI/CT: $300/study</td></tr>
-              <tr><td>Teleconference</td><td>Phone meeting with attorney (non-testimony)</td><td>$1,150/hour (1-hour minimum)</td></tr>
-              <tr><td>Travel Time</td><td>Based on distance from doctor home to exam location</td><td>$1,150/hour</td></tr>
-            </tbody>
-          </table></div>
-          <div class="fee-section-label">Court-Related Services</div>
-          <div class="fee-table-wrap"><table class="fee-table">
-            <thead><tr><th>Service</th><th>Description</th><th>Fee</th></tr></thead>
-            <tbody>
-              <tr><td>Deposition</td><td>Expert participation including sworn testimony</td><td>$4,000 for first 2 hours; then $1,150/hour (2-hour minimum)</td></tr>
-              <tr><td>Court Testimony</td><td>In-person or virtual testimony or appearance</td><td>$17,500/day</td></tr>
-              <tr><td>Preparation for Testimony</td><td>Report/case review and supporting materials prior to deposition or trial</td><td>$1,150/hour</td></tr>
             </tbody>
           </table></div>
         </div>
