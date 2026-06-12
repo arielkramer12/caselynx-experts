@@ -955,6 +955,8 @@
 
   /* ===== ESTIMATOR TAB ===== */
   #tab-estimator { overflow: hidden; }
+  #tab-estimator.active ~ .contact-bar { display: none; }
+  #tab-estimator iframe { flex: 1; height: 100%; }
 
   /* ===== CONTACT BAR ===== */
   .contact-bar {
@@ -1635,7 +1637,7 @@
 
   <!-- Fee Estimator Tab -->
   <div id="tab-estimator" class="tab-content" data-tab="estimator">
-    <iframe src="https://arielkramer12.github.io/caselynx-fee-estimator/" width="100%" height="600px" style="border:none;display:block"></iframe>
+    <iframe src="https://arielkramer12.github.io/caselynx-fee-estimator/" width="100%" style="border:none;display:block;width:100%;height:100%;flex:1"></iframe>
   </div>
 
   <!-- Contact Bar -->
