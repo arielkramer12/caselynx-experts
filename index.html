@@ -852,6 +852,7 @@
     overflow: hidden;
     border: 0.5px solid var(--bdr);
     margin-bottom: 40px;
+    scroll-margin-top: 64px;
   }
   .fee-group-header {
     padding: 16px 20px;
@@ -920,7 +921,10 @@
     margin-top: 16px;
   }
   .fee-section-label:first-child { margin-top: 0; }
-  .fee-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 0; }
+  .fee-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 0; table-layout: fixed; }
+  .fee-table th:nth-child(1), .fee-table td:nth-child(1) { width: 18%; }
+  .fee-table th:nth-child(2), .fee-table td:nth-child(2) { width: 50%; }
+  .fee-table th:nth-child(3), .fee-table td:nth-child(3) { width: 32%; }
   .fee-table th {
     background: var(--page);
     font-weight: 600;
@@ -1386,20 +1390,20 @@
   <!-- Fee Schedule Tab -->
   <div id="tab-fees" class="tab-content" data-tab="fees">
     <nav class="fees-jump-nav">
+      <button class="jump-btn" data-target="fee-group-neurosurgery">Neurosurgery</button>
       <button class="jump-btn" data-target="fee-group-1">Orthopedics</button>
       <button class="jump-btn" data-target="fee-group-2">Non-Surgical Experts</button>
       <button class="jump-btn" data-target="fee-group-3">General Practice</button>
-      <button class="jump-btn" data-target="fee-group-neurosurgery">Neurosurgery</button>
       <button class="jump-btn" data-target="fee-group-radiology">Radiology</button>
       <button class="jump-btn" data-target="fee-group-4">Payment Terms &amp; Policies</button>
     </nav>
     <!-- Mobile-only dropdown — replaces pill nav on small screens -->
     <select class="fee-jump-select">
       <option value="">Jump to fee schedule...</option>
+      <option value="fee-group-neurosurgery">Neurosurgery</option>
       <option value="fee-group-1">Orthopedics</option>
       <option value="fee-group-2">Non-Surgical Experts</option>
       <option value="fee-group-3">General Practice</option>
-      <option value="fee-group-neurosurgery">Neurosurgery</option>
       <option value="fee-group-radiology">Radiology</option>
       <option value="fee-group-4">Payment Terms &amp; Policies</option>
     </select>
@@ -1409,7 +1413,7 @@
       <div class="fee-group" id="fee-group-1">
         <div class="fee-group-header" style="background:#faeeda;color:#633806" onclick="toggleFeeGroup(this)">
           <div class="fee-group-header-left">
-            <div class="fee-group-title">Surgical Specialists</div>
+            <div class="fee-group-title">Orthopedics</div>
             <div class="fee-group-sub">Orthopedic Surgery</div>
           </div>
           <div class="fee-group-header-actions">
