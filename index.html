@@ -1393,7 +1393,7 @@
   <div id="tab-fees" class="tab-content" data-tab="fees">
     <nav class="fees-jump-nav">
       <button class="jump-btn" data-target="fee-group-neurosurgery">Neurosurgery</button>
-      <button class="jump-btn" data-target="fee-group-1">Orthopedics</button>
+      <button class="jump-btn" data-target="fee-group-1">Orthopedic Surgery</button>
       <button class="jump-btn" data-target="fee-group-2">Non-Surgical Experts</button>
       <button class="jump-btn" data-target="fee-group-3">General Practice</button>
       <button class="jump-btn" data-target="fee-group-radiology">Radiology</button>
@@ -1403,7 +1403,7 @@
     <select class="fee-jump-select">
       <option value="">Jump to fee schedule...</option>
       <option value="fee-group-neurosurgery">Neurosurgery</option>
-      <option value="fee-group-1">Orthopedics</option>
+      <option value="fee-group-1">Orthopedic Surgery</option>
       <option value="fee-group-2">Non-Surgical Experts</option>
       <option value="fee-group-3">General Practice</option>
       <option value="fee-group-radiology">Radiology</option>
@@ -1449,11 +1449,11 @@
         </div>
       </div>
 
-      <!-- Group 1: Orthopedics -->
+      <!-- Group 1: Orthopedic Surgery -->
       <div class="fee-group collapsed" id="fee-group-1">
         <div class="fee-group-header" style="background:#faeeda;color:#633806" onclick="toggleFeeGroup(this)">
           <div class="fee-group-header-left">
-            <div class="fee-group-title">Orthopedics</div>
+            <div class="fee-group-title">Orthopedic Surgery</div>
             <div class="fee-group-sub">Orthopedic Surgery</div>
           </div>
           <div class="fee-group-header-actions">
@@ -1707,12 +1707,15 @@ const API_BASE = 'https://caselynx-email-server-production.up.railway.app';
 const CASE_MAILTO = 'mailto:hello@caselynx.co?subject=Case%20Request&body=Hi%20CaseLynx%20team%2C%0D%0A%0D%0APlease%20find%20my%20case%20request%20details%20below%3A%0D%0A%0D%0APlaintiff%20Name%3A%0D%0ADate%20of%20Birth%3A%0D%0ADate%20of%20Loss%3A%0D%0AService%20Requested%20(IME%20%2F%20CME%20%2F%20Record%20Review)%3A%0D%0AMedical%20Specialty%3A%0D%0AExam%20Location%20(if%20applicable)%3A%0D%0ATimeline%3A%0D%0AAdditional%20Details%20(e.g.%20specific%20bodily%20injuries%2C%20other%20considerations)%3A%0D%0A%0D%0AThanks%2C';
 
 const SPECIALTY_LABELS = {
-  'ORTHOPEDICS':     'Orthopedics',
-  'NEUROSURGERY':    'Neurosurgery',
-  'NEUROLOGY':       'Neurology',
-  'PAIN_MANAGEMENT': 'Pain Management',
-  'CARDIOLOGY':      'Cardiology',
-  'DENTAL_SURGERY':  'Dental Surgery',
+  'ORTHOPEDICS':       'Orthopedic Surgery',
+  'NEUROSURGERY':      'Neurosurgery',
+  'NEUROLOGY':         'Neurology',
+  'NEUROPSYCHOLOGY':   'Neuropsychology',
+  'PAIN_MANAGEMENT':   'Pain Management',
+  'CARDIOLOGY':        'Cardiology',
+  'DENTAL_SURGERY':    'Dental Surgery',
+  'RADIOLOGY':         'Radiology',
+  'PULMONOLOGY':       'Pulmonology',
 };
 const SURGICAL_RELS = new Set(['ORTHOPEDICS', 'NEUROSURGERY']);
 
@@ -1731,7 +1734,7 @@ function initials(name) {
   if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   return parts[0][0].toUpperCase();
 }
-function specialtyLabel(rel) { return SPECIALTY_LABELS[rel] || (rel ? rel.replace(/_/g, ' ') : 'Specialist'); }
+function specialtyLabel(rel) { return SPECIALTY_LABELS[rel] || (rel ? rel.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, c => c.toUpperCase()) : 'Specialist'); }
 function formatKw(kw) {
   if (!kw) return '';
   return kw.toLowerCase().replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
